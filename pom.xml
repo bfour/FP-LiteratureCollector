@@ -1,0 +1,96 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.github.bfour.fpliteraturecollector</groupId>
+	<artifactId>com.github.bfour.fpliteraturecollector</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>FP-LiteratureCollector</name>
+	<description>Application for collecting literature.</description>
+
+	<repositories>
+		<repository>
+			<id>com.github.bfour.MavenRepository</id>
+			<name>bfours's git-based repository</name>
+			<url>https://raw.githubusercontent.com/bfour/MavenRepository/master/</url>
+			<layout>default</layout>
+		</repository>
+		<repository>
+			<id>sonatype-nexus-releases</id>
+			<name>Sonatype Nexus Snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</repository>
+	</repositories>
+
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.3.6</version>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>com.github.bfour.fp-jgui</groupId>
+			<artifactId>fp-jgui</artifactId>
+			<version>0.0.3-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.orientechnologies</groupId>
+			<artifactId>orient-commons</artifactId>
+			<version>1.7.6</version>
+			<type>bundle</type>
+		</dependency>
+		<dependency>
+			<groupId>com.orientechnologies</groupId>
+			<artifactId>orientdb-core</artifactId>
+			<version>1.7.6</version>
+			<type>bundle</type>
+		</dependency>
+		<dependency>
+			<groupId>com.orientechnologies</groupId>
+			<artifactId>orientdb-graphdb</artifactId>
+			<version>1.7.6</version>
+		</dependency>
+		<!-- INCLUDE THIS IF YOU'RE CONNECTING TO THE SERVER THROUGH THE REMOTE 
+			ENGINE -->
+		<dependency>
+			<groupId>com.orientechnologies</groupId>
+			<artifactId>orientdb-client</artifactId>
+			<version>1.7.6</version>
+			<type>bundle</type>
+		</dependency>
+		<!-- END REMOTE ENGINE DEPENDENCY -->
+
+		<!-- INCLUDE THIS IF YOU'RE USING THE TINKERPOP'S BLUEPRINTS API -->
+		<dependency>
+			<groupId>com.tinkerpop.blueprints</groupId>
+			<artifactId>blueprints-core</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+		<!-- END BLUEPRINTS DEPENDENCY -->
+
+		<dependency>
+			<groupId>com.tinkerpop.blueprints</groupId>
+			<artifactId>blueprints-orient-graph</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+
+
+	</dependencies>
+
+</project>
