@@ -20,9 +20,6 @@ package com.github.bfour.fpliteraturecollector.domain;
  * -///////////////////////////////-
  */
 
-
-
-
 import java.util.Date;
 
 import com.github.bfour.fpjcommons.model.Entity;
@@ -38,13 +35,13 @@ public class Person extends Entity {
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
-	
+
 	public Person(String firstName, String lastName) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
-	
+
 	public Person() {
 		super();
 	}
@@ -55,6 +52,11 @@ public class Person extends Entity {
 
 	public String getLastName() {
 		return lastName;
+	}
+
+	@Override
+	public String toString() {
+		return getFirstName() + " " + getLastName() + " (ID " + getID() + ")";
 	}
 
 }

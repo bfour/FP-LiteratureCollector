@@ -23,9 +23,13 @@ package com.github.bfour.fpliteraturecollector.application;
 
 
 
+import java.util.List;
+
 import javax.swing.JOptionPane;
 
 import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpliteraturecollector.domain.Person;
+import com.github.bfour.fpliteraturecollector.service.PersonService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager.ServiceManagerMode;
 
@@ -34,7 +38,18 @@ public class Application {
 	public static void main(String[] args) {
 		
 		try {
-			ServiceManager.getInstance(ServiceManagerMode.DEFAULT);
+			ServiceManager servMan = ServiceManager.getInstance(ServiceManagerMode.DEFAULT);
+			
+			// test
+			PersonService personServ = servMan.getPersonService();
+			
+			personServ.create(new Person("Miezi", "Katz"));
+			
+			List<Person> list = personServ.getAll();
+			for (Person p : list) {
+				System.out.println(p);
+			}
+			
 		} catch (ServiceException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Sorry, the application cannot continue and will terminate.\n\n"

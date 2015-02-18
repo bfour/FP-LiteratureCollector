@@ -44,7 +44,7 @@ package com.github.bfour.fpliteraturecollector.service;
 
 
 import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphAPIService;
+import com.github.bfour.fpliteraturecollector.service.database.FPLCOrientDBGraphService;
 
 /**
 * TODO add comments
@@ -61,7 +61,9 @@ public class ServiceManager {
 
 	private ServiceManager(ServiceManagerMode mode) throws ServiceException {
 		if (mode == ServiceManagerMode.DEFAULT) {
-			OrientDBGraphAPIService graphService = OrientDBGraphAPIService.getInstance();
+			FPLCOrientDBGraphService graphService = FPLCOrientDBGraphService.getInstance();
+			graphService.setDatabase("plocal:testdb", "admin", "admin"); // TODO change
+//			graphService.initializeAndSetLocalDatabase("testdb");
 			this.personServ = DefaultPersonService.getInstance(graphService);
 		} else {
 			throw new ServiceException("invalid service manager mode: " + mode);

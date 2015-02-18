@@ -47,7 +47,7 @@ import java.util.Date;
 
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpliteraturecollector.domain.Person;
-import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphAPIService;
+import com.github.bfour.fpliteraturecollector.service.database.AbstractOrientDBGraphService;
 import com.tinkerpop.blueprints.Vertex;
 
 public class OrientDBPersonDAO extends AbstractOrientDBDAO<Person> implements
@@ -90,11 +90,11 @@ public class OrientDBPersonDAO extends AbstractOrientDBDAO<Person> implements
 
 	private static OrientDBPersonDAO instance;
 
-	protected OrientDBPersonDAO(OrientDBGraphAPIService dbs) {
+	protected OrientDBPersonDAO(AbstractOrientDBGraphService dbs) {
 		super(dbs, "person");
 	}
 
-	public static OrientDBPersonDAO getInstance(OrientDBGraphAPIService dbs) {
+	public static OrientDBPersonDAO getInstance(AbstractOrientDBGraphService dbs) {
 		if (instance == null)
 			instance = new OrientDBPersonDAO(dbs);
 		return instance;

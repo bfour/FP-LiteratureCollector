@@ -25,7 +25,7 @@ package com.github.bfour.fpliteraturecollector.service;
 
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Person;
-import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphAPIService;
+import com.github.bfour.fpliteraturecollector.service.database.AbstractOrientDBGraphService;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBPersonDAO;
 
 public class DefaultPersonService extends EventCreatingCRUDService<Person>
@@ -33,11 +33,11 @@ public class DefaultPersonService extends EventCreatingCRUDService<Person>
 
 	private static DefaultPersonService instance;
 	
-	private DefaultPersonService(OrientDBGraphAPIService graphService) {
+	private DefaultPersonService(AbstractOrientDBGraphService graphService) {
 		super(OrientDBPersonDAO.getInstance(graphService));
 	}
 	
-	public static DefaultPersonService getInstance(OrientDBGraphAPIService graphService) {
+	public static DefaultPersonService getInstance(AbstractOrientDBGraphService graphService) {
 		if (instance == null) instance = new DefaultPersonService(graphService);
 		return instance;
 	}

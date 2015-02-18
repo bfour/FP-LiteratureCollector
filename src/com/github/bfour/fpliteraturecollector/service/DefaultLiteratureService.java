@@ -22,20 +22,20 @@ package com.github.bfour.fpliteraturecollector.service;
 
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
-import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphAPIService;
+import com.github.bfour.fpliteraturecollector.service.database.AbstractOrientDBGraphService;
 
 public class DefaultLiteratureService extends EventCreatingCRUDService<Literature>
 		implements LiteratureService {
 
 	private static DefaultLiteratureService instance;
 	
-	private DefaultLiteratureService(OrientDBGraphAPIService graphService) {
+	private DefaultLiteratureService(AbstractOrientDBGraphService graphService) {
 		// TODO implement
 		super(null);
 		// super(OrientDBPersonDAO.getInstance(graphService));
 	}
 	
-	public static DefaultLiteratureService getInstance(OrientDBGraphAPIService graphService) {
+	public static DefaultLiteratureService getInstance(AbstractOrientDBGraphService graphService) {
 		if (instance == null) instance = new DefaultLiteratureService(graphService);
 		return instance;
 	}

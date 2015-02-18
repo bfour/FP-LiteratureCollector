@@ -20,34 +20,16 @@ package com.github.bfour.fpliteraturecollector.service.database;
  * -///////////////////////////////-
  */
 
-
-
-
 import java.io.IOException;
 
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.tinkerpop.blueprints.Parameter;
-import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
-import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
 
-public class OrientDBGraphAPIService {
+public abstract class AbstractOrientDBGraphService {
 
-	private static OrientDBGraphAPIService instance;
 	private OrientGraph lastDB;
 	private String lastURL;
 	private String lastUser;
 	private String lastPassword;
-
-	private OrientDBGraphAPIService() {
-	}
-
-	public static OrientDBGraphAPIService getInstance() {
-		if (instance == null)
-			instance = new OrientDBGraphAPIService();
-		return instance;
-	}
 
 	public void shutdown() {
 		if (lastDB != null)
@@ -98,8 +80,8 @@ public class OrientDBGraphAPIService {
 		if (lastDB != null)
 			lastDB.shutdown();
 
-		String URL = "remote:"+host+"/"+dbName;
-		
+		String URL = "remote:" + host + "/" + dbName;
+
 		setupSchema(URL, user, password);
 		OrientGraph db = new OrientGraph(URL, user, password);
 
@@ -114,48 +96,6 @@ public class OrientDBGraphAPIService {
 		setLastDB(db, URL, user, password);
 	}
 
-	private void setupSchema(String URL, String user, String password) {
-
-		// TODO finish
-
-		// open as non-transactional
-		OrientGraphNoTx db = new OrientGraphNoTx(URL, user, password);
-		
-		// setup counters as workaround for sequence
-		OrientVertexType counterClass = db.createVertexType("counters");
-		counterClass.createProperty("name", OType.STRING);
-		counterClass.createProperty("value", OType.LONG);
-
-		db.createKeyIndex("name", Vertex.class, new Parameter<>("type",
-				"UNIQUE"), new Parameter<>("class", "counters"));		
-		
-		// setup literature
-		OrientVertexType literatureClass = db.createVertexType("literature");
-		literatureClass.createProperty("ID", OType.LONG);
-		literatureClass.createProperty("title", OType.STRING);
-		literatureClass.createProperty("persons", OType.LINKLIST);
-		literatureClass.createProperty("registrationTime", OType.DATETIME);
-		literatureClass.createProperty("lastChangeTime", OType.DATETIME);
-
-		db.createKeyIndex("ID", Vertex.class,
-				new Parameter<>("type", "UNIQUE"), new Parameter<>("class",
-						"literature"));
-		db.addVertex("class:counters", "name", "literature", "value", 0);
-
-		// setup persons
-		OrientVertexType personClass = db.createVertexType("person");
-		personClass.createProperty("ID", OType.LONG);
-		personClass.createProperty("firstName", OType.STRING);
-		personClass.createProperty("lastName", OType.STRING);
-
-		db.createKeyIndex("ID", Vertex.class,
-				new Parameter<>("type", "UNIQUE"), new Parameter<>("class",
-						"person"));		
-		db.addVertex("class:counters", "name", "person", "value", 0);		
-		
-		// end
-		db.shutdown();
-
-	}
+	protected abstract void setupSchema(String URL, String user, String password);
 
 }

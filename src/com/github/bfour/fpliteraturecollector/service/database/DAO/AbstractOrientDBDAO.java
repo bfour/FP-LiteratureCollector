@@ -20,9 +20,6 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  * -///////////////////////////////-
  */
 
-
-
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -31,7 +28,7 @@ import com.github.bfour.fpjcommons.model.Entity;
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.CRUD.CRUDDAO;
 import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
-import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphAPIService;
+import com.github.bfour.fpliteraturecollector.service.database.AbstractOrientDBGraphService;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
@@ -39,11 +36,11 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 public abstract class AbstractOrientDBDAO<T extends Entity> implements
 		CRUDDAO<T> {
 
-	protected OrientDBGraphAPIService dbs;
+	protected AbstractOrientDBGraphService dbs;
 	protected OrientGraph db;
 	String dbClassName;
 
-	protected AbstractOrientDBDAO(OrientDBGraphAPIService dbs,
+	protected AbstractOrientDBDAO(AbstractOrientDBGraphService dbs,
 			String dbClassName) {
 		this.dbs = dbs;
 		this.db = dbs.getLastDB();
@@ -171,10 +168,10 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 		return entityToVertex(entity, ID, null);
 	}
 
-	protected abstract Vertex entityToVertex(T entity, long ID, Vertex givenVertex)
-			throws DatalayerException;
+	protected abstract Vertex entityToVertex(T entity, long ID,
+			Vertex givenVertex) throws DatalayerException;
 
-	public synchronized OrientDBGraphAPIService getDBService() {
+	public synchronized AbstractOrientDBGraphService getDBService() {
 		return dbs;
 	}
 
