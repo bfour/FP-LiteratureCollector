@@ -24,6 +24,8 @@ import java.io.IOException;
 
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
+// TODO improve procedure for detecting and handling initialization states
+// TODO improve schema checking and repair
 public abstract class AbstractOrientDBGraphService {
 
 	private OrientGraph lastDB;
