@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.github.bfour.fpliteraturecollector</groupId>
-	<artifactId>com.github.bfour.fpliteraturecollector</artifactId>
+	<groupId>com.github.bfour.fp-literaturecollector</groupId>
+	<artifactId>fp-literaturecollector</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>FP-LiteratureCollector</name>
 	<description>Application for collecting literature.</description>
@@ -38,7 +38,75 @@
 				<version>2.3.6</version>
 				<extensions>true</extensions>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>1.8</version>
+				<configuration>
+					<organizationName>Florian Pollak</organizationName>
+					<inceptionYear>2015</inceptionYear>
+					<processStartTag>-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-</processStartTag>
+					<processEndTag>-///////////////////////////////-</processEndTag>
+					<sectionDelimiter>=================================</sectionDelimiter>
+					<verbose>false</verbose>
+					<addSvnKeyWords>false</addSvnKeyWords>
+					<licenseName>apache_v2</licenseName>
+				</configuration>
+				<executions>
+					<execution>
+						<id>first</id>
+						<goals>
+							<goal>update-file-header</goal>
+						</goals>
+						<phase>process-sources</phase>
+						<configuration>
+							<licenseName>apache_v2</licenseName>
+							<roots>
+								<root>src</root>
+								<root>test</root>
+							</roots>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											license-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.8,)
+										</versionRange>
+										<goals>
+											<goal>
+												update-file-header
+											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<dependencies>
@@ -89,7 +157,11 @@
 			<artifactId>blueprints-orient-graph</artifactId>
 			<version>2.4.0</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.tinkerpop</groupId>
+			<artifactId>frames</artifactId>
+			<version>2.5.0</version>
+		</dependency>
 
 	</dependencies>
 

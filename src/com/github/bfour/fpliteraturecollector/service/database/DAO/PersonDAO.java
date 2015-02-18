@@ -1,4 +1,4 @@
-package com.github.bfour.fpliteraturecollector.service;
+package com.github.bfour.fpliteraturecollector.service.database.DAO;
 
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
@@ -20,26 +20,12 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
-import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
-import com.github.bfour.fpliteraturecollector.domain.Query;
-import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphAPIService;
 
-public class DefaultQueryService extends EventCreatingCRUDService<Query>
-		implements QueryService {
 
-	private static DefaultQueryService instance;
 
-	private DefaultQueryService(OrientDBGraphAPIService graphService) {
-		// TODO implement
-		super(null);
-		// super(OrientDBPersonDAO.getInstance(graphService));
-	}
+import com.github.bfour.fpjcommons.services.CRUD.CRUDDAO;
+import com.github.bfour.fpliteraturecollector.domain.Person;
 
-	public static DefaultQueryService getInstance(
-			OrientDBGraphAPIService graphService) {
-		if (instance == null)
-			instance = new DefaultQueryService(graphService);
-		return instance;
-	}
+public interface PersonDAO extends CRUDDAO<Person> {
 
 }
