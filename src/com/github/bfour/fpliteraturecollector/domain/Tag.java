@@ -1,13 +1,10 @@
 package com.github.bfour.fpliteraturecollector.domain;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
  * FP-LiteratureCollector
  * =================================
- * Copyright (C) 2014 - 2015 Florian Pollak
+ * Copyright (C) 2015 Florian Pollak
  * =================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,36 +20,35 @@ import java.util.List;
  * -///////////////////////////////-
  */
 
-public class AtomicRequest {
 
-	private SupportedSearchEngine searchEngine;
-	private String searchString;
-	private List<Literature> results;
+import java.awt.Color;
+import java.util.Date;
 
-	public AtomicRequest(SupportedSearchEngine searchEngine,
-			String searchString, List<Literature> results) {
-		this.searchEngine = searchEngine;
-		this.searchString = searchString;
+import com.github.bfour.fpjcommons.model.Entity;
+
+public class Tag extends Entity {
+
+	private String name;	
+	private Color colour;
+	
+	public Tag(long ID, Date creationTime, Date lastChangeTime, String name, Color colour) {
+		super(ID, creationTime, lastChangeTime);
+		this.name = name;
+		this.colour = colour;
 	}
-
-	public AtomicRequest(SupportedSearchEngine searchEngine, String searchString) {
-		this(searchEngine, searchString, new LinkedList<Literature>());
-	}
-
-	public AtomicRequest() {
+	
+	public Tag(String name, Color colour) {
 		super();
+		this.name = name;
+		this.colour = colour;
 	}
 
-	public SupportedSearchEngine getSearchEngine() {
-		return searchEngine;
+	public String getName() {
+		return name;
 	}
 
-	public String getSearchString() {
-		return searchString;
+	public Color getColour() {
+		return colour;
 	}
-
-	public List<Literature> getResults() {
-		return results;
-	}
-
+	
 }

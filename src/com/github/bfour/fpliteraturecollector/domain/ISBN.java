@@ -4,7 +4,7 @@ package com.github.bfour.fpliteraturecollector.domain;
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
  * FP-LiteratureCollector
  * =================================
- * Copyright (C) 2014 - 2015 Florian Pollak
+ * Copyright (C) 2015 Florian Pollak
  * =================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,23 +20,9 @@ package com.github.bfour.fpliteraturecollector.domain;
  * -///////////////////////////////-
  */
 
-import java.util.Date;
-import java.util.List;
 
-import com.github.bfour.fpjcommons.model.Entity;
+public class ISBN {
 
-public class Query extends Entity {
-
-	private List<AtomicRequest> atomicRequests;
-
-	public Query(long iD, Date creationTime, Date lastChangeTime,
-			List<AtomicRequest> atomicRequests) {
-		super(iD, creationTime, lastChangeTime);
-		this.atomicRequests = atomicRequests;
-	}
-
-	public List<AtomicRequest> getAtomicRequests() {
-		return atomicRequests;
-	}
-
+	
+	
 }

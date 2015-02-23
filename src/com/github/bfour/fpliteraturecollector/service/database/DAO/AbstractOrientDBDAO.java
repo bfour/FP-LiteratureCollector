@@ -104,8 +104,8 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 
 	@Override
 	public T create(T entity) throws DatalayerException {
-		long ID = entity.getID();
-		if (ID < 0)
+		Long ID = entity.getID();
+		if (ID == -1)
 			ID = getNewEntityID();
 		Vertex newEntity = entityToVertex(entity, ID);
 		db.commit();
@@ -161,7 +161,7 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 		return getNewEntityID();
 	}
 
-	protected abstract T vertexToEntity(Vertex vertex)
+	public abstract T vertexToEntity(Vertex vertex)
 			throws DatalayerException;
 
 	private Vertex entityToVertex(T entity, long ID) throws DatalayerException {

@@ -1,10 +1,10 @@
-package com.github.bfour.fpliteraturecollector.domain;
+package com.github.bfour.fpliteraturecollector.domain.builders;
 
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
  * FP-LiteratureCollector
  * =================================
- * Copyright (C) 2014 - 2015 Florian Pollak
+ * Copyright (C) 2015 Florian Pollak
  * =================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,23 +20,41 @@ package com.github.bfour.fpliteraturecollector.domain;
  * -///////////////////////////////-
  */
 
-import java.util.Date;
+
 import java.util.List;
 
-import com.github.bfour.fpjcommons.model.Entity;
+import com.github.bfour.fpjcommons.lang.Builder;
+import com.github.bfour.fpjcommons.model.EntityBuilder;
+import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
+import com.github.bfour.fpliteraturecollector.domain.Query;
 
-public class Query extends Entity {
+public class QueryBuilder extends EntityBuilder<Query> implements
+		Builder<Query> {
 
 	private List<AtomicRequest> atomicRequests;
-
-	public Query(long iD, Date creationTime, Date lastChangeTime,
-			List<AtomicRequest> atomicRequests) {
-		super(iD, creationTime, lastChangeTime);
-		this.atomicRequests = atomicRequests;
+	
+	public QueryBuilder() {
+		super();
+	}
+	
+	public QueryBuilder(Query q) {
+		setID(q.getID());
+		setCreationTime(q.getCreationTime());
+		setLastChangeTime(q.getLastChangeTime());
+		setAtomicRequests(q.getAtomicRequests());
+	}
+	
+	@Override
+	public Query getObject() {
+		return new Query(getID(), getCreationTime(), getLastChangeTime(), getAtomicRequests());
 	}
 
 	public List<AtomicRequest> getAtomicRequests() {
 		return atomicRequests;
+	}
+
+	public void setAtomicRequests(List<AtomicRequest> atomicRequests) {
+		this.atomicRequests = atomicRequests;
 	}
 
 }

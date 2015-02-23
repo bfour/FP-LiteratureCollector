@@ -4,7 +4,7 @@ package com.github.bfour.fpliteraturecollector.service;
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
  * FP-LiteratureCollector
  * =================================
- * Copyright (C) 2014 - 2015 Florian Pollak
+ * Copyright (C) 2015 Florian Pollak
  * =================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,47 +20,47 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
+
 import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpliteraturecollector.domain.Person;
+import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
+import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.service.database.AbstractOrientDBGraphService;
-import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBPersonDAO;
 
-public class DefaultPersonService extends EventCreatingEntityCRUDService<Person>
-		implements PersonService {
+public class DefaultTagService extends EventCreatingCRUDService<Tag> implements
+		TagService {
 
-	private static DefaultPersonService instance;
+	private static DefaultTagService instance;
 
-	private DefaultPersonService(AbstractOrientDBGraphService graphService) {
-		super(OrientDBPersonDAO.getInstance(graphService));
+	private DefaultTagService(AbstractOrientDBGraphService graphService) {
+		// TODO implement
+		super(null);
+		// super(OrientDBPersonDAO.getInstance(graphService));
 	}
 
-	public static DefaultPersonService getInstance(
+	public static DefaultTagService getInstance(
 			AbstractOrientDBGraphService graphService) {
 		if (instance == null)
-			instance = new DefaultPersonService(graphService);
+			instance = new DefaultTagService(graphService);
 		return instance;
 	}
 
 	@Override
-	public Person create(Person entity) throws ServiceException {
-		checkIntegrity(entity);
+	public Tag create(Tag entity) throws ServiceException {
+		integrityCheck(entity);
 		return super.create(entity);
 	}
 
 	@Override
-	public Person update(Person oldEntity, Person newEntity)
-			throws ServiceException {
-		checkIntegrity(newEntity);
+	public Tag update(Tag oldEntity, Tag newEntity) throws ServiceException {
+		integrityCheck(newEntity);
 		return super.update(oldEntity, newEntity);
 	}
-
-	private void checkIntegrity(Person entity) throws ServiceException {
-		if (entity.getFirstName() == null)
-			throw new ServiceException(
-					"first name of person must be specified (can be empty)");
-		if (entity.getLastName() == null)
-			throw new ServiceException(
-					"last name of person must be specified (can be empty)");
+	
+	private void integrityCheck(Tag tag) throws ServiceException {
+		if (tag.getName() == null)
+			throw new ServiceException("name of tag must be specified");
+		if (tag.getColour() == null)
+			throw new ServiceException("colour of tag must be specified");
 	}
 
 }

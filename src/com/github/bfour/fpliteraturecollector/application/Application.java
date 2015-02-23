@@ -20,9 +20,7 @@ package com.github.bfour.fpliteraturecollector.application;
  * -///////////////////////////////-
  */
 
-
-
-
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -33,32 +31,49 @@ import com.github.bfour.fpliteraturecollector.service.PersonService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager.ServiceManagerMode;
 
+// TODO import mit einfacher text-file
+// TODO evtl. request-generator tool (Kombinations-Tool)
+
+// TODO letzter Schritt: Output nur distinct; CSV generieren
+
 public class Application {
 
 	public static void main(String[] args) {
-		
+
 		try {
-			ServiceManager servMan = ServiceManager.getInstance(ServiceManagerMode.DEFAULT);
-			
+			ServiceManager servMan = ServiceManager
+					.getInstance(ServiceManagerMode.DEFAULT);
+
 			// test
 			PersonService personServ = servMan.getPersonService();
-			
-			personServ.create(new Person("Miezi", "Katz"));
-			
+
+			personServ.create(new Person(-1, new Date(), new Date(), "Miezi",
+					"Katz"));
+
 			List<Person> list = personServ.getAll();
 			for (Person p : list) {
 				System.out.println(p);
 			}
-			
+
 		} catch (ServiceException e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Sorry, the application cannot continue and will terminate.\n\n"
-					+ "This might be because the application is not configured properly or the database is unavailable. "
-					+ "Reinstalling the application might solve this problem.\n"
-					+ "Please report this to the developer at .\n"
-					+ "Details: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane
+					.showMessageDialog(
+							null,
+							"Sorry, the application cannot continue and will terminate.\n\n"
+									+ "This might be because the application is not configured properly or the database is unavailable.\n"
+									+ "Reinstalling the application might solve this problem.\n"
+									+ "Please report this to the developer at .\n" // TODO
+																					// (high)
+																					// insert
+																					// link
+																					// to
+																					// issue
+																					// tracker
+									+ "Details: " + e.getMessage(), "Error",
+							JOptionPane.ERROR_MESSAGE);
 		}
-		
+
 	}
 
 }

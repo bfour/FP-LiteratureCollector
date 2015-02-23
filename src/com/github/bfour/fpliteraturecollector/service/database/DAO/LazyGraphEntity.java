@@ -1,10 +1,10 @@
-package com.github.bfour.fpliteraturecollector.domain;
+package com.github.bfour.fpliteraturecollector.service.database.DAO;
 
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
  * FP-LiteratureCollector
  * =================================
- * Copyright (C) 2014 - 2015 Florian Pollak
+ * Copyright (C) 2015 Florian Pollak
  * =================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,23 +20,39 @@ package com.github.bfour.fpliteraturecollector.domain;
  * -///////////////////////////////-
  */
 
+
 import java.util.Date;
-import java.util.List;
 
 import com.github.bfour.fpjcommons.model.Entity;
+import com.tinkerpop.blueprints.Vertex;
 
-public class Query extends Entity {
+public class LazyGraphEntity extends Entity {
 
-	private List<AtomicRequest> atomicRequests;
+	private Vertex vertex;
 
-	public Query(long iD, Date creationTime, Date lastChangeTime,
-			List<AtomicRequest> atomicRequests) {
-		super(iD, creationTime, lastChangeTime);
-		this.atomicRequests = atomicRequests;
+	public LazyGraphEntity(Vertex vertex) {
+		this.vertex = vertex;
 	}
 
-	public List<AtomicRequest> getAtomicRequests() {
-		return atomicRequests;
+	@Override
+	public Long getID() {
+		if (ID == null)
+			ID = vertex.getProperty("ID");
+		return ID;
+	}
+
+	@Override
+	public Date getCreationTime() {
+		if (creationTime == null)
+			creationTime = vertex.getProperty("creationTime");
+		return creationTime;
+	}
+
+	@Override
+	public Date getLastChangeTime() {
+		if (lastChangeTime == null)
+			lastChangeTime = vertex.getProperty("lastChangeTime");
+		return lastChangeTime;
 	}
 
 }

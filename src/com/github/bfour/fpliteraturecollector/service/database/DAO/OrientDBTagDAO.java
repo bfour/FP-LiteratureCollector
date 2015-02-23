@@ -42,92 +42,45 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  * *
  */
 
-import java.util.Date;
 
+import java.awt.Color;
+
+import com.github.bfour.fpjcommons.model.Entity;
 import com.github.bfour.fpjcommons.services.DatalayerException;
-import com.github.bfour.fpliteraturecollector.domain.Person;
+import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.service.database.AbstractOrientDBGraphService;
 import com.tinkerpop.blueprints.Vertex;
 
-public class OrientDBPersonDAO extends OrientDBEntityDAO<Person> implements
-		PersonDAO {
+public class OrientDBTagDAO extends OrientDBEntityDAO<Tag> implements
+		TagDAO {
 
-	private static class LazyPerson extends Person {
+	private static OrientDBTagDAO instance;
 
-		private Vertex vertex;
-		private LazyGraphEntity entity;
-
-		public LazyPerson(Vertex vertex) {
-			this.vertex = vertex;
-			this.entity = new LazyGraphEntity(vertex);
-		}
-
-		@Override
-		public String getFirstName() {
-			if (firstName == null)
-				firstName = vertex.getProperty("firstName");
-			return firstName;
-		}
-
-		@Override
-		public String getLastName() {
-			if (lastName == null)
-				lastName = vertex.getProperty("lastName");
-			return lastName;
-		}
-
-		@Override
-		public Long getID() {
-			return entity.getID();
-		}
-
-		@Override
-		public Date getCreationTime() {
-			return entity.getCreationTime();
-		}
-
-		@Override
-		public Date getLastChangeTime() {
-			return entity.getLastChangeTime();
-		}
-
+	protected OrientDBTagDAO(AbstractOrientDBGraphService dbs) {
+		super(dbs, "tag");
 	}
 
-	private static OrientDBPersonDAO instance;
-
-	protected OrientDBPersonDAO(AbstractOrientDBGraphService dbs) {
-		super(dbs, "person");
-	}
-
-	public static OrientDBPersonDAO getInstance(AbstractOrientDBGraphService dbs) {
+	public static OrientDBTagDAO getInstance(AbstractOrientDBGraphService dbs) {
 		if (instance == null)
-			instance = new OrientDBPersonDAO(dbs);
+			instance = new OrientDBTagDAO(dbs);
 		return instance;
 	}
 
 	@Override
-	protected Vertex entityToVertex(Person entity, long ID, Vertex givenVertex)
+	protected Vertex entityToVertex(Tag entity, long ID, Vertex givenVertex)
 			throws DatalayerException {
-
 		Vertex entityVertex = super.entityToVertex(entity, ID, givenVertex);
-
-		if (entity.getFirstName() == null)
-			entityVertex.removeProperty("firstName");
-		if (entity.getLastName() == null)
-			entityVertex.removeProperty("lastName");
-
-		entityVertex.setProperty("firstName", entity.getFirstName());
-		entityVertex.setProperty("lastName", entity.getLastName());
-
+		entityVertex.setProperty("name", entity.getName());
+		entityVertex.setProperty("colour", entity.getColour());
 		return entityVertex;
-
 	}
 
 	@Override
-	public Person vertexToEntity(Vertex vertex) {
-		if (vertex == null)
-			return null;
-		return new LazyPerson(vertex);
+	public Tag vertexToEntity(Vertex vertex) throws DatalayerException {
+		Entity e = super.vertexToRawEntity(vertex);
+		String name = vertex.getProperty("name");
+		Color color = vertex.getProperty("colour");
+		return new Tag(e.getID(), e.getCreationTime(), e.getLastChangeTime(), name, color);
 	}
 
 }

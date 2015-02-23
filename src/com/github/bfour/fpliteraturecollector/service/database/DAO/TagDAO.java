@@ -1,10 +1,10 @@
-package com.github.bfour.fpliteraturecollector.domain;
+package com.github.bfour.fpliteraturecollector.service.database.DAO;
 
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
  * FP-LiteratureCollector
  * =================================
- * Copyright (C) 2014 - 2015 Florian Pollak
+ * Copyright (C) 2015 Florian Pollak
  * =================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,26 +21,9 @@ package com.github.bfour.fpliteraturecollector.domain;
  */
 
 
+import com.github.bfour.fpjcommons.services.CRUD.CRUDDAO;
+import com.github.bfour.fpliteraturecollector.domain.Tag;
 
-
-import java.util.Set;
-
-public class ProcessedAtomicRequest extends AtomicRequest {
-
-	private Set<Literature> results;
-
-	public ProcessedAtomicRequest(SupportedSearchEngine searchEngine,
-			String searchString, Set<Literature> results) {
-		super(searchEngine, searchString);
-		this.results = results;
-	}
-
-	public ProcessedAtomicRequest(AtomicRequest request, Set<Literature> results) {
-		this(request.getSearchEngine(), request.getSearchString(), results);
-	}
-
-	public Set<Literature> getResults() {
-		return results;
-	}
+public interface TagDAO extends CRUDDAO<Tag> {
 
 }

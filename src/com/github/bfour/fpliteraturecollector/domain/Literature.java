@@ -20,22 +20,35 @@ package com.github.bfour.fpliteraturecollector.domain;
  * -///////////////////////////////-
  */
 
-
-
-
+import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 import com.github.bfour.fpjcommons.model.Entity;
 
 public class Literature extends Entity {
 
-	private String title;
-	private List<Person> authors;
-	
-	public Literature(long iD, String title, List<Person> authors) {
-		super(iD);
+	protected String title;
+	protected List<Person> authors;
+	protected String DOI;
+	protected ISBN ISBN;
+
+	// TODO: also important: type of publication (journal, proceeding
+	// (Konferenzband), book chapter), Verlag, Datum (Jahr)
+
+	protected File fulltext;
+
+	public Literature(long iD, Date creationTime, Date lastChangeTime,
+			String title, List<Person> authors, String DOI, ISBN ISBN) {
+		super(iD, creationTime, lastChangeTime);
 		this.title = title;
 		this.authors = authors;
+		this.DOI = DOI;
+		this.ISBN = ISBN;
+	}
+	
+	public Literature() {
+		super();
 	}
 
 	public String getTitle() {
@@ -45,5 +58,17 @@ public class Literature extends Entity {
 	public List<Person> getAuthors() {
 		return authors;
 	}
-	
+
+	public String getDOI() {
+		return DOI;
+	}
+
+	public ISBN getISBN() {
+		return ISBN;
+	}
+
+	public File getFulltext() {
+		return fulltext;
+	}
+
 }

@@ -42,55 +42,46 @@ package com.github.bfour.fpliteraturecollector.domain.builders;
  * *
  */
 
-
-import java.util.Date;
-
-import com.github.bfour.fpjgui.abstraction.EntityBuilder;
+import com.github.bfour.fpjcommons.lang.Builder;
+import com.github.bfour.fpjcommons.model.EntityBuilder;
 import com.github.bfour.fpliteraturecollector.domain.Person;
-import com.tinkerpop.frames.Property;
 
-public class PersonBuilder extends Person implements EntityBuilder<Person> {
+public class PersonBuilder extends EntityBuilder<Person> implements
+		Builder<Person> {
+
+	private String firstName;
+	private String lastName;
 
 	public PersonBuilder() {
-		this.ID = -1;
-		this.creationTime = new Date();
-		this.lastChangeTime = new Date();
+		super();
 	}
-	
+
 	public PersonBuilder(Person person) {
-		this.ID = person.getID();
-		this.creationTime = person.getCreationTime();
-		this.lastChangeTime = person.getLastChangeTime();
-		this.firstName = person.getFirstName();
-		this.lastName = person.getLastName();
+		setID(person.getID());
+		setCreationTime(person.getCreationTime());
+		setLastChangeTime(person.getLastChangeTime());
+		setFirstName(person.getFirstName());
+		setLastName(person.getLastName());
 	}
 
 	@Override
-	public Person getEntity() {
-		return new Person(ID, creationTime, lastChangeTime, firstName, lastName);
+	public Person getObject() {
+		return new Person(getID(), getCreationTime(), getLastChangeTime(),
+				getFirstName(), getLastName());
 	}
-	
-	@Property("ID")
-	public void setID(long ID) {
-		this.ID = ID;
+
+	public String getFirstName() {
+		return firstName;
 	}
-	
-	@Property("creationTime")
-	public void setCreationTime(Date time) {
-		this.creationTime = time;
-	}
-	
-	@Property("lastChangeTime")
-	public void setLastChangeTime(Date time) {
-		this.lastChangeTime = time;
-	}
-	
-	@Property("firstName")
+
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-	
-	@Property("lastName")
+
+	public String getLastName() {
+		return lastName;
+	}
+
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
