@@ -40,9 +40,11 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 
 		private Vertex vertex;
 		private OrientDBPersonDAO personDAO;
+		private LazyGraphEntity entity;
 
 		public LazyLiterature(Vertex vertex, OrientDBPersonDAO personDAO) {
 			this.vertex = vertex;
+			this.entity = new LazyGraphEntity(vertex);
 			this.personDAO = personDAO;
 		}
 
@@ -88,23 +90,17 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 
 		@Override
 		public Long getID() {
-			if (ID == null)
-				ID = vertex.getProperty("ID");
-			return ID;
+			return entity.getID();
 		}
 
 		@Override
 		public Date getCreationTime() {
-			if (creationTime == null)
-				creationTime = vertex.getProperty("creationTime");
-			return creationTime;
+			return entity.getCreationTime();
 		}
 
 		@Override
 		public Date getLastChangeTime() {
-			if (lastChangeTime == null)
-				lastChangeTime = vertex.getProperty("lastChangeTime");
-			return lastChangeTime;
+			return entity.getLastChangeTime();
 		}
 
 	}

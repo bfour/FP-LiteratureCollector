@@ -36,23 +36,23 @@ public class LazyGraphEntity extends Entity {
 
 	@Override
 	public Long getID() {
-		if (ID == null)
-			ID = vertex.getProperty("ID");
-		return ID;
+		if (super.getID() == null)
+			setID((Long) vertex.getProperty("ID"));
+		return super.getID();
 	}
 
 	@Override
 	public Date getCreationTime() {
-		if (creationTime == null)
-			creationTime = vertex.getProperty("creationTime");
-		return creationTime;
+		if (super.getCreationTime() == null)
+			setCreationTime((Date) vertex.getProperty("creationTime"));
+		return super.getCreationTime();
 	}
 
 	@Override
 	public Date getLastChangeTime() {
-		if (lastChangeTime == null)
-			lastChangeTime = vertex.getProperty("lastChangeTime");
-		return lastChangeTime;
+		if (super.getLastChangeTime() == null)
+			setLastChangeTime((Date) vertex.getProperty("lastChangeTime"));
+		return super.getLastChangeTime();
 	}
 
 }

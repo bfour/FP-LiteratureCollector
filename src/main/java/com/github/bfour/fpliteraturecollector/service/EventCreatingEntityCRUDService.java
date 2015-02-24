@@ -21,6 +21,8 @@ package com.github.bfour.fpliteraturecollector.service;
  */
 
 
+import java.util.Date;
+
 import com.github.bfour.fpjcommons.model.Entity;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.CRUDDAO;
@@ -35,21 +37,32 @@ public class EventCreatingEntityCRUDService<E extends Entity> extends
 
 	@Override
 	public E create(E entity) throws ServiceException {
+		setDefaultsIfRequired(entity);
 		checkIntegrity(entity);
 		return super.create(entity);
 	}
 
 	@Override
 	public E update(E oldEntity, E newEntity) throws ServiceException {
+		setDefaultsIfRequired(newEntity);
 		checkIntegrity(newEntity);
 		return super.update(oldEntity, newEntity);
 	}
 
+	private void setDefaultsIfRequired(E entity) {
+		if (entity.getCreationTime() == null)
+			entity.setCreationTime(new Date());
+		if (entity.getLastChangeTime() == null) 
+			entity.setLastChangeTime(new Date());
+	}
+	
 	private void checkIntegrity(E entity) throws ServiceException {
 		if (entity.getCreationTime() == null)
 			throw new ServiceException("creation time must be specified");
 		if (entity.getLastChangeTime() == null) 
 			throw new ServiceException("last change time must be specified");
+		if (entity.getCreationTime().after(entity.getLastChangeTime()))
+			throw new ServiceException("creation time must not be after last change time");
 	}
 
 }
