@@ -1,4 +1,4 @@
-package com.github.bfour.fpliteraturecollector.service;
+package com.github.bfour.fpliteraturecollector.service.database.DAO;
 
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
@@ -43,42 +43,44 @@ package com.github.bfour.fpliteraturecollector.service;
  */
 
 
-import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpliteraturecollector.service.database.FPLCOrientDBGraphService;
+import java.awt.Color;
 
-/**
-* TODO add comments
-*/
-public class ServiceManager {
+import com.github.bfour.fpjcommons.model.Entity;
+import com.github.bfour.fpjcommons.services.DatalayerException;
+import com.github.bfour.fpliteraturecollector.domain.Tag;
+import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
+import com.tinkerpop.blueprints.Vertex;
 
-	public static enum ServiceManagerMode {
-		DEFAULT;
+public class OrientDBTagDAO extends OrientDBEntityDAO<Tag> implements
+		TagDAO {
+
+	private static OrientDBTagDAO instance;
+
+	protected OrientDBTagDAO(OrientDBGraphService dbs) {
+		super(dbs, "tag");
 	}
 
-	private static ServiceManager instance;
-
-	private PersonService personServ;
-
-	private ServiceManager(ServiceManagerMode mode) throws ServiceException {
-		if (mode == ServiceManagerMode.DEFAULT) {
-			FPLCOrientDBGraphService graphService = FPLCOrientDBGraphService.getInstance();
-			graphService.setDatabase("plocal:testdb", "admin", "admin"); // TODO change
-//			graphService.initializeAndSetLocalDatabase("testdb");
-			this.personServ = DefaultPersonService.getInstance(graphService);
-		} else {
-			throw new ServiceException("invalid service manager mode: " + mode);
-		}
-	}
-
-	public static ServiceManager getInstance(ServiceManagerMode mode)
-			throws ServiceException {
+	public static OrientDBTagDAO getInstance(OrientDBGraphService dbs) {
 		if (instance == null)
-			instance = new ServiceManager(mode);
+			instance = new OrientDBTagDAO(dbs);
 		return instance;
 	}
 
-	public PersonService getPersonService() {
-		return personServ;
+	@Override
+	protected Vertex entityToVertex(Tag entity, long ID, Vertex givenVertex)
+			throws DatalayerException {
+		Vertex entityVertex = super.entityToVertex(entity, ID, givenVertex);
+		entityVertex.setProperty("name", entity.getName());
+		entityVertex.setProperty("colour", entity.getColour());
+		return entityVertex;
 	}
-	
+
+	@Override
+	public Tag vertexToEntity(Vertex vertex) throws DatalayerException {
+		Entity e = super.vertexToRawEntity(vertex);
+		String name = vertex.getProperty("name");
+		Color color = vertex.getProperty("colour");
+		return new Tag(e.getID(), e.getCreationTime(), e.getLastChangeTime(), name, color);
+	}
+
 }

@@ -24,21 +24,21 @@ package com.github.bfour.fpliteraturecollector.service;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
-import com.github.bfour.fpliteraturecollector.service.database.AbstractOrientDBGraphService;
+import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 
 public class DefaultTagService extends EventCreatingCRUDService<Tag> implements
 		TagService {
 
 	private static DefaultTagService instance;
 
-	private DefaultTagService(AbstractOrientDBGraphService graphService) {
+	private DefaultTagService(OrientDBGraphService graphService) {
 		// TODO implement
 		super(null);
 		// super(OrientDBPersonDAO.getInstance(graphService));
 	}
 
 	public static DefaultTagService getInstance(
-			AbstractOrientDBGraphService graphService) {
+			OrientDBGraphService graphService) {
 		if (instance == null)
 			instance = new DefaultTagService(graphService);
 		return instance;

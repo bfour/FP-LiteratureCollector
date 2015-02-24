@@ -20,14 +20,9 @@ package com.github.bfour.fpliteraturecollector.application;
  * -///////////////////////////////-
  */
 
-import java.util.Date;
-import java.util.List;
-
 import javax.swing.JOptionPane;
 
 import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpliteraturecollector.domain.Person;
-import com.github.bfour.fpliteraturecollector.service.PersonService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager.ServiceManagerMode;
 
@@ -44,16 +39,7 @@ public class Application {
 			ServiceManager servMan = ServiceManager
 					.getInstance(ServiceManagerMode.DEFAULT);
 
-			// test
-			PersonService personServ = servMan.getPersonService();
-
-			personServ.create(new Person(-1, new Date(), new Date(), "Miezi",
-					"Katz"));
-
-			List<Person> list = personServ.getAll();
-			for (Person p : list) {
-				System.out.println(p);
-			}
+			
 
 		} catch (ServiceException e) {
 			e.printStackTrace();

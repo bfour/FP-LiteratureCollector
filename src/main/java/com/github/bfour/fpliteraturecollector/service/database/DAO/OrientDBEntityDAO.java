@@ -25,12 +25,12 @@ import java.util.Date;
 
 import com.github.bfour.fpjcommons.model.Entity;
 import com.github.bfour.fpjcommons.services.DatalayerException;
-import com.github.bfour.fpliteraturecollector.service.database.AbstractOrientDBGraphService;
+import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Vertex;
 
 public abstract class OrientDBEntityDAO<T extends Entity> extends AbstractOrientDBDAO<T> {
 
-	protected OrientDBEntityDAO(AbstractOrientDBGraphService dbs,
+	protected OrientDBEntityDAO(OrientDBGraphService dbs,
 			String dbClassName) {
 		super(dbs, dbClassName);
 	}

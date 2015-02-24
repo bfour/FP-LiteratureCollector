@@ -1,4 +1,4 @@
-package com.github.bfour.fpliteraturecollector.service.database.DAO;
+package com.github.bfour.fpliteraturecollector.service;
 
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
@@ -42,45 +42,58 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  * *
  */
 
+import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpliteraturecollector.service.database.FPLCOrientDBGraphService;
+import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 
-import java.awt.Color;
+/**
+ * TODO add comments
+ */
+public class ServiceManager {
 
-import com.github.bfour.fpjcommons.model.Entity;
-import com.github.bfour.fpjcommons.services.DatalayerException;
-import com.github.bfour.fpliteraturecollector.domain.Tag;
-import com.github.bfour.fpliteraturecollector.service.database.AbstractOrientDBGraphService;
-import com.tinkerpop.blueprints.Vertex;
-
-public class OrientDBTagDAO extends OrientDBEntityDAO<Tag> implements
-		TagDAO {
-
-	private static OrientDBTagDAO instance;
-
-	protected OrientDBTagDAO(AbstractOrientDBGraphService dbs) {
-		super(dbs, "tag");
+	public static enum ServiceManagerMode {
+		DEFAULT, TEST;
 	}
 
-	public static OrientDBTagDAO getInstance(AbstractOrientDBGraphService dbs) {
+	private static ServiceManager instance;
+
+	private ServiceManagerMode modeMemory;
+	private OrientDBGraphService graphService;
+	private PersonService personServ;
+
+	private ServiceManager(ServiceManagerMode mode) throws ServiceException {
+		modeMemory = mode;
+		if (mode == ServiceManagerMode.DEFAULT) {
+			graphService = FPLCOrientDBGraphService.getInstance();
+			graphService.setLocalDatabase("devDatabase");
+			this.personServ = DefaultPersonService.getInstance(graphService);
+		} else if (mode == ServiceManagerMode.TEST) {
+			graphService = FPLCOrientDBGraphService.getInstance();
+			graphService.setLocalDatabase("junitTestDatabase");
+			this.personServ = DefaultPersonService.getInstance(graphService);
+		} else {
+			throw new ServiceException("invalid service manager mode: " + mode);
+		}
+	}
+
+	public static ServiceManager getInstance(ServiceManagerMode mode)
+			throws ServiceException {
 		if (instance == null)
-			instance = new OrientDBTagDAO(dbs);
+			instance = new ServiceManager(mode);
 		return instance;
 	}
 
-	@Override
-	protected Vertex entityToVertex(Tag entity, long ID, Vertex givenVertex)
-			throws DatalayerException {
-		Vertex entityVertex = super.entityToVertex(entity, ID, givenVertex);
-		entityVertex.setProperty("name", entity.getName());
-		entityVertex.setProperty("colour", entity.getColour());
-		return entityVertex;
+	/**
+	 * Deletes all user data and re-initializes.
+	 */
+	public void resetAllData() throws ServiceException {
+		graphService.getLastDB().drop();
+		graphService.shutdown();
+		instance = new ServiceManager(modeMemory);
 	}
 
-	@Override
-	public Tag vertexToEntity(Vertex vertex) throws DatalayerException {
-		Entity e = super.vertexToRawEntity(vertex);
-		String name = vertex.getProperty("name");
-		Color color = vertex.getProperty("colour");
-		return new Tag(e.getID(), e.getCreationTime(), e.getLastChangeTime(), name, color);
+	public PersonService getPersonService() {
+		return personServ;
 	}
 
 }

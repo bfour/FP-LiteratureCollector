@@ -27,7 +27,7 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
 
-public class FPLCOrientDBGraphService extends AbstractOrientDBGraphService {
+public class FPLCOrientDBGraphService extends OrientDBGraphService {
 
 	private static FPLCOrientDBGraphService instance;
 	

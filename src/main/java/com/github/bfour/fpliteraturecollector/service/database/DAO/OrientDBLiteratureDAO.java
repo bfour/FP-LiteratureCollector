@@ -30,7 +30,7 @@ import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpliteraturecollector.domain.ISBN;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Person;
-import com.github.bfour.fpliteraturecollector.service.database.AbstractOrientDBGraphService;
+import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Vertex;
 
 public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
@@ -112,12 +112,12 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 	private static OrientDBLiteratureDAO instance;
 	private OrientDBPersonDAO personDAO;
 
-	private OrientDBLiteratureDAO(AbstractOrientDBGraphService dbs) {
+	private OrientDBLiteratureDAO(OrientDBGraphService dbs) {
 		super(dbs, "literature");
 	}
 
 	public static OrientDBLiteratureDAO getInstance(
-			AbstractOrientDBGraphService dbs) {
+			OrientDBGraphService dbs) {
 		if (instance == null)
 			instance = new OrientDBLiteratureDAO(dbs);
 		return instance;

@@ -28,7 +28,7 @@ import com.github.bfour.fpjcommons.model.Entity;
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.CRUD.CRUDDAO;
 import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
-import com.github.bfour.fpliteraturecollector.service.database.AbstractOrientDBGraphService;
+import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
@@ -36,11 +36,11 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 public abstract class AbstractOrientDBDAO<T extends Entity> implements
 		CRUDDAO<T> {
 
-	protected AbstractOrientDBGraphService dbs;
+	protected OrientDBGraphService dbs;
 	protected OrientGraph db;
 	String dbClassName;
 
-	protected AbstractOrientDBDAO(AbstractOrientDBGraphService dbs,
+	protected AbstractOrientDBDAO(OrientDBGraphService dbs,
 			String dbClassName) {
 		this.dbs = dbs;
 		this.db = dbs.getLastDB();
@@ -171,7 +171,7 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 	protected abstract Vertex entityToVertex(T entity, long ID,
 			Vertex givenVertex) throws DatalayerException;
 
-	public synchronized AbstractOrientDBGraphService getDBService() {
+	public synchronized OrientDBGraphService getDBService() {
 		return dbs;
 	}
 

@@ -20,13 +20,12 @@ package com.github.bfour.fpliteraturecollector.service.database;
  * -///////////////////////////////-
  */
 
-import java.io.IOException;
-
+import com.github.bfour.fpjcommons.services.ServiceException;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
 // TODO improve procedure for detecting and handling initialization states
 // TODO improve schema checking and repair
-public abstract class AbstractOrientDBGraphService {
+public abstract class OrientDBGraphService {
 
 	private OrientGraph lastDB;
 	private String lastURL;
@@ -34,8 +33,11 @@ public abstract class AbstractOrientDBGraphService {
 	private String lastPassword;
 
 	public void shutdown() {
-		if (lastDB != null)
-			lastDB.shutdown();
+		if (lastDB != null) {
+			if (!lastDB.isClosed())
+				lastDB.shutdown();
+			lastDB = null;
+		}
 	}
 
 	public OrientGraph getLastDB() {
@@ -58,10 +60,12 @@ public abstract class AbstractOrientDBGraphService {
 	 * @param user
 	 * @param password
 	 * @return
+	 * @throws ServiceException
 	 */
-	public void initializeAndSetLocalDatabase(String location) {
+	private void initializeLocalDatabase(String location)
+			throws ServiceException {
 
-		if (lastDB != null)
+		if (lastDB != null && !lastDB.isClosed())
 			lastDB.shutdown();
 
 		String URL = "plocal:" + location;
@@ -69,33 +73,64 @@ public abstract class AbstractOrientDBGraphService {
 								// and password
 		String password = "admin";
 
-		setupSchema(URL, user, password);
-		OrientGraph db = new OrientGraph(URL, user, password);
+		// check db already exists
+		if (databaseExists(URL, user, password))
+			throw new ServiceException(
+					"failed to initialize local database at " + location
+							+ ": database already exists");
 
-		setLastDB(db, URL, user, password);
+		setupSchema(URL, user, password);
 
 	}
 
-	public void initializeAndSetRemoteDatabase(String host, String dbName,
-			String user, String password) throws IOException {
+	private void initializeRemoteDatabase(String host, String dbName,
+			String user, String password) throws ServiceException {
 
-		if (lastDB != null)
+		if (lastDB != null && !lastDB.isClosed())
 			lastDB.shutdown();
 
 		String URL = "remote:" + host + "/" + dbName;
 
-		setupSchema(URL, user, password);
-		OrientGraph db = new OrientGraph(URL, user, password);
+		// check db already exists
+		if (databaseExists(URL, user, password))
+			throw new ServiceException(
+					"failed to initialize remote database at " + host + "/"
+							+ dbName + ": database already exists");
 
-		setLastDB(db, URL, user, password);
+		setupSchema(URL, user, password);
 
 	}
 
-	public void setDatabase(String URL, String user, String password) {
+	private void setDatabase(String URL, String user, String password) {
 		if (lastDB != null)
 			lastDB.shutdown();
 		OrientGraph db = new OrientGraph(URL, user, password);
 		setLastDB(db, URL, user, password);
+	}
+
+	public void setRemoteDatabase(String host, String dbName, String user,
+			String password) throws ServiceException {
+		String URL = "remote:" + host + "/" + dbName;
+		if (!databaseExists(URL, user, password))
+			initializeRemoteDatabase(host, dbName, user, password);
+		setDatabase(URL, user, password);
+	}
+
+	public void setLocalDatabase(String location) throws ServiceException {
+		String URL = "plocal:" + location;
+		String user = "admin";
+		String password = "admin";
+		if (!databaseExists(URL, user, password))
+			initializeLocalDatabase(location);
+		setDatabase(URL, user, password);
+	}
+
+	public boolean databaseExists(String URL, String user, String password) {
+		// TODO (low) improve
+		OrientGraph db = new OrientGraph(URL, user, password);
+		long verticeCount = db.countVertices();
+		db.shutdown();
+		return verticeCount > 0;
 	}
 
 	protected abstract void setupSchema(String URL, String user, String password);
