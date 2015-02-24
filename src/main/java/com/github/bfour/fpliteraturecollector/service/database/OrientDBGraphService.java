@@ -21,35 +21,36 @@ package com.github.bfour.fpliteraturecollector.service.database;
  */
 
 import com.github.bfour.fpjcommons.services.ServiceException;
+import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
 // TODO improve procedure for detecting and handling initialization states
 // TODO improve schema checking and repair
 public abstract class OrientDBGraphService {
 
-	private OrientGraph lastDB;
-	private String lastURL;
-	private String lastUser;
-	private String lastPassword;
+	private OrientGraph currentDB;
+	private String currentURL;
+	private String currentUser;
+	private String currentPassword;
 
 	public void shutdown() {
-		if (lastDB != null) {
-			if (!lastDB.isClosed())
-				lastDB.shutdown();
-			lastDB = null;
+		if (currentDB != null) {
+			if (!currentDB.isClosed())
+				currentDB.shutdown();
+			currentDB = null;
 		}
 	}
 
-	public OrientGraph getLastDB() {
-		return new OrientGraph(lastURL, lastUser, lastPassword);
+	public OrientGraph getCurrentDB() {
+		return new OrientGraph(currentURL, currentUser, currentPassword);
 	}
 
-	private void setLastDB(OrientGraph db, String URL, String user,
+	private void setCurrentDB(OrientGraph db, String URL, String user,
 			String password) {
-		this.lastDB = db;
-		this.lastURL = URL;
-		this.lastUser = user;
-		this.lastPassword = password;
+		this.currentDB = db;
+		this.currentURL = URL;
+		this.currentUser = user;
+		this.currentPassword = password;
 	}
 
 	/**
@@ -65,8 +66,8 @@ public abstract class OrientDBGraphService {
 	private void initializeLocalDatabase(String location)
 			throws ServiceException {
 
-		if (lastDB != null && !lastDB.isClosed())
-			lastDB.shutdown();
+		if (currentDB != null && !currentDB.isClosed())
+			currentDB.shutdown();
 
 		String URL = "plocal:" + location;
 		String user = "admin"; // this is a local database, so we don't use user
@@ -86,8 +87,8 @@ public abstract class OrientDBGraphService {
 	private void initializeRemoteDatabase(String host, String dbName,
 			String user, String password) throws ServiceException {
 
-		if (lastDB != null && !lastDB.isClosed())
-			lastDB.shutdown();
+		if (currentDB != null && !currentDB.isClosed())
+			currentDB.shutdown();
 
 		String URL = "remote:" + host + "/" + dbName;
 
@@ -102,10 +103,10 @@ public abstract class OrientDBGraphService {
 	}
 
 	private void setDatabase(String URL, String user, String password) {
-		if (lastDB != null)
-			lastDB.shutdown();
+		if (currentDB != null)
+			currentDB.shutdown();
 		OrientGraph db = new OrientGraph(URL, user, password);
-		setLastDB(db, URL, user, password);
+		setCurrentDB(db, URL, user, password);
 	}
 
 	public void setRemoteDatabase(String host, String dbName, String user,
@@ -134,5 +135,14 @@ public abstract class OrientDBGraphService {
 	}
 
 	protected abstract void setupSchema(String URL, String user, String password);
+	
+	public void deleteAllDataInCurrentDB() throws ServiceException {
+		OrientGraph db = getCurrentDB();
+		if (db == null)
+			throw new ServiceException(
+					"failed to delete all data: no database set as current database");
+		for (Vertex v : db.getVertices())
+			db.removeVertex(v);
+	}
 
 }

@@ -40,10 +40,9 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 	protected OrientGraph db;
 	String dbClassName;
 
-	protected AbstractOrientDBDAO(OrientDBGraphService dbs,
-			String dbClassName) {
+	protected AbstractOrientDBDAO(OrientDBGraphService dbs, String dbClassName) {
 		this.dbs = dbs;
-		this.db = dbs.getLastDB();
+		this.db = dbs.getCurrentDB();
 		this.dbClassName = dbClassName;
 	}
 
@@ -115,6 +114,9 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 	@Override
 	public T update(T oldEntity, T newEntity) throws DatalayerException {
 		Vertex v = getVertexForEntity(oldEntity);
+		if (v == null)
+			throw new DatalayerException(
+					"failed to update old entity: old entity no longer exists");
 		entityToVertex(newEntity, oldEntity.getID(), v);
 		db.commit();
 		return vertexToEntity(v);
@@ -161,8 +163,7 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 		return getNewEntityID();
 	}
 
-	public abstract T vertexToEntity(Vertex vertex)
-			throws DatalayerException;
+	public abstract T vertexToEntity(Vertex vertex) throws DatalayerException;
 
 	private Vertex entityToVertex(T entity, long ID) throws DatalayerException {
 		return entityToVertex(entity, ID, null);

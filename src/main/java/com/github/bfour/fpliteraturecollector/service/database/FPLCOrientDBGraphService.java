@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.service.database;
  * -///////////////////////////////-
  */
 
-
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.tinkerpop.blueprints.Parameter;
 import com.tinkerpop.blueprints.Vertex;
@@ -30,15 +29,16 @@ import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
 public class FPLCOrientDBGraphService extends OrientDBGraphService {
 
 	private static FPLCOrientDBGraphService instance;
-	
+
 	private FPLCOrientDBGraphService() {
 	}
-	
+
 	public static FPLCOrientDBGraphService getInstance() {
-		if (instance == null) instance = new FPLCOrientDBGraphService();
+		if (instance == null)
+			instance = new FPLCOrientDBGraphService();
 		return instance;
 	}
-	
+
 	@Override
 	protected void setupSchema(String URL, String user, String password) {
 
@@ -83,4 +83,5 @@ public class FPLCOrientDBGraphService extends OrientDBGraphService {
 		db.shutdown();
 
 	}
+
 }

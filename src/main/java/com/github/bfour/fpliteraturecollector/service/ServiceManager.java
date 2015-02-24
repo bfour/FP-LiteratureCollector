@@ -57,12 +57,10 @@ public class ServiceManager {
 
 	private static ServiceManager instance;
 
-	private ServiceManagerMode modeMemory;
 	private OrientDBGraphService graphService;
 	private PersonService personServ;
 
 	private ServiceManager(ServiceManagerMode mode) throws ServiceException {
-		modeMemory = mode;
 		if (mode == ServiceManagerMode.DEFAULT) {
 			graphService = FPLCOrientDBGraphService.getInstance();
 			graphService.setLocalDatabase("devDatabase");
@@ -83,17 +81,19 @@ public class ServiceManager {
 		return instance;
 	}
 
+	public PersonService getPersonService() {
+		return personServ;
+	}
+	
 	/**
 	 * Deletes all user data and re-initializes.
 	 */
 	public void resetAllData() throws ServiceException {
-		graphService.getLastDB().drop();
-		graphService.shutdown();
-		instance = new ServiceManager(modeMemory);
+		graphService.deleteAllDataInCurrentDB();
 	}
-
-	public PersonService getPersonService() {
-		return personServ;
+	
+	public void close() {
+		graphService.shutdown();
 	}
 
 }
