@@ -144,5 +144,10 @@ public abstract class OrientDBGraphService {
 		for (Vertex v : db.getVertices())
 			db.removeVertex(v);
 	}
+	
+	public void dropCurrentDB() throws ServiceException {
+		getCurrentDB().drop();
+		setCurrentDB(null, null, null, null);
+	}
 
 }

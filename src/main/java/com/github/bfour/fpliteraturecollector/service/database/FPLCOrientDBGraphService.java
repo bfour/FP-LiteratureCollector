@@ -55,6 +55,28 @@ public class FPLCOrientDBGraphService extends OrientDBGraphService {
 		db.createKeyIndex("name", Vertex.class, new Parameter<>("type",
 				"UNIQUE"), new Parameter<>("class", "counters"));
 
+		// setup persons
+		OrientVertexType personClass = db.createVertexType("person");
+		personClass.createProperty("ID", OType.LONG);
+		personClass.createProperty("firstName", OType.STRING);
+		personClass.createProperty("lastName", OType.STRING);
+
+		db.createKeyIndex("ID", Vertex.class,
+				new Parameter<>("type", "UNIQUE"), new Parameter<>("class",
+						"person"));
+		db.addVertex("class:counters", "name", "person", "value", 0);
+		
+		// setup tags
+		OrientVertexType tagClass = db.createVertexType("tag");
+		tagClass.createProperty("ID", OType.LONG);
+		tagClass.createProperty("name", OType.STRING);
+		tagClass.createProperty("colour", OType.BINARY); // Color
+		
+		db.createKeyIndex("ID", Vertex.class,
+				new Parameter<>("type", "UNIQUE"), new Parameter<>("class",
+						"tag"));
+		db.addVertex("class:counters", "name", "tag", "value", 0);
+		
 		// setup literature
 		OrientVertexType literatureClass = db.createVertexType("literature");
 		literatureClass.createProperty("ID", OType.LONG);
@@ -68,16 +90,7 @@ public class FPLCOrientDBGraphService extends OrientDBGraphService {
 						"literature"));
 		db.addVertex("class:counters", "name", "literature", "value", 0);
 
-		// setup persons
-		OrientVertexType personClass = db.createVertexType("person");
-		personClass.createProperty("ID", OType.LONG);
-		personClass.createProperty("firstName", OType.STRING);
-		personClass.createProperty("lastName", OType.STRING);
 
-		db.createKeyIndex("ID", Vertex.class,
-				new Parameter<>("type", "UNIQUE"), new Parameter<>("class",
-						"person"));
-		db.addVertex("class:counters", "name", "person", "value", 0);
 
 		// end
 		db.shutdown();

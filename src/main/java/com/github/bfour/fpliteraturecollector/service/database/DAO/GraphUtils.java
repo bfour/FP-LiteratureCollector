@@ -71,39 +71,6 @@ public class GraphUtils {
 			vertex.addEdge(edgeName, itemVertex);
 		}
 
-		// List<Person> entityAuthors = entity.getAuthors();
-		// List<Person> vertexAuthors = new LinkedList<Person>();
-		// Iterable<Edge> vertexAuthorEdges =
-		// entityVertex.getEdges(Direction.OUT,
-		// "author");
-		// for (Edge vertexAuthorEdge : vertexAuthorEdges) {
-		// vertexAuthors.add(personDAO.vertexToEntity(vertexAuthorEdge
-		// .getVertex(Direction.IN)));
-		// }
-		//
-		// List<Person> authorsToRemove = new LinkedList<Person>();
-		// for (Person vertexAuthor : vertexAuthors) {
-		// if (!entityAuthors.contains(vertexAuthor))
-		// authorsToRemove.add(vertexAuthor);
-		// }
-		// List<Person> authorsToAdd = new LinkedList<Person>();
-		// for (Person entityAuthor : entityAuthors) {
-		// if (!vertexAuthors.contains(entityAuthor))
-		// authorsToAdd.add(entityAuthor);
-		// }
-		//
-		// vertexAuthorEdges = entityVertex.getEdges(Direction.OUT, "author");
-		// for (Edge vertexAuthorEdge : vertexAuthorEdges) {
-		// Person p = personDAO.vertexToEntity(vertexAuthorEdge
-		// .getVertex(Direction.IN));
-		// if (authorsToRemove.contains(p))
-		// vertexAuthorEdge.remove();
-		// }
-		// for (Person authorToAdd : authorsToAdd) {
-		// Vertex authorVertex = personDAO.getVertexForEntity(authorToAdd);
-		// entityVertex.addEdge("author", authorVertex);
-		// }
-
 	}
 
 	public static <T extends Entity> List<T> getCollectionFromVertexProperty(

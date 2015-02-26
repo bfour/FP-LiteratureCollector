@@ -42,44 +42,76 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  * *
  */
 
-import com.github.bfour.fpjcommons.model.Entity;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import com.github.bfour.fpjcommons.services.DatalayerException;
-import com.github.bfour.fpliteraturecollector.domain.Tag;
+import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
+import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Vertex;
 
-public class OrientDBTagDAO extends OrientDBEntityDAO<Tag> implements TagDAO {
+public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements QueryDAO {
 
-	private static OrientDBTagDAO instance;
+	private static class LazyQuery extends Query {
 
-	protected OrientDBTagDAO(OrientDBGraphService dbs) {
-		super(dbs, "tag");
+		private Vertex vertex;
+		private LazyGraphEntity entity;
+
+		public LazyQuery(Vertex vertex) {
+			this.vertex = vertex;
+			this.entity = new LazyGraphEntity(vertex);
+		}
+
+		@Override
+		public List<AtomicRequest> getAtomicRequests() {
+			// TODO
+			return new ArrayList<AtomicRequest>();
+		}
+
+		@Override
+		public Long getID() {
+			return entity.getID();
+		}
+		
+		@Override
+		public Date getCreationTime() {
+			return entity.getCreationTime();
+		}
+
+
+		@Override
+		public Date getLastChangeTime() {
+			return entity.getLastChangeTime();
+		}
+		
+	}
+	
+	private static OrientDBQueryDAO instance;
+
+	protected OrientDBQueryDAO(OrientDBGraphService dbs) {
+		super(dbs, "query");
 	}
 
-	public static OrientDBTagDAO getInstance(OrientDBGraphService dbs,
+	public static OrientDBQueryDAO getInstance(OrientDBGraphService dbs,
 			boolean forceCreateNewInstance) {
 		if (instance == null || forceCreateNewInstance)
-			instance = new OrientDBTagDAO(dbs);
+			instance = new OrientDBQueryDAO(dbs);
 		return instance;
 	}
 
 	@Override
-	protected Vertex entityToVertex(Tag entity, long ID, Vertex givenVertex)
+	protected Vertex entityToVertex(Query entity, long ID, Vertex givenVertex)
 			throws DatalayerException {
 		Vertex entityVertex = super.entityToVertex(entity, ID, givenVertex);
-		entityVertex.setProperty("name", entity.getName());
-		entityVertex.setProperty("colour",
-				new OSerializableColor(entity.getColour()));
+		entityVertex.setProperty("atomicRequests", entity.getAtomicRequests());
 		return entityVertex;
 	}
 
 	@Override
-	public Tag vertexToEntity(Vertex vertex) throws DatalayerException {
-		Entity e = super.vertexToRawEntity(vertex);
-		String name = vertex.getProperty("name");
-		OSerializableColor color = vertex.getProperty("colour");
-		return new Tag(e.getID(), e.getCreationTime(), e.getLastChangeTime(),
-				name, color);
+	public Query vertexToEntity(Vertex vertex) throws DatalayerException {
+		return new LazyQuery(vertex);
 	}
 
 }

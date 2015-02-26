@@ -57,21 +57,13 @@ public class ServiceManager {
 
 	private static ServiceManager instance;
 
+	private ServiceManagerMode modeMemory;
 	private OrientDBGraphService graphService;
 	private PersonService personServ;
+	private TagService tagServ;
 
 	private ServiceManager(ServiceManagerMode mode) throws ServiceException {
-		if (mode == ServiceManagerMode.DEFAULT) {
-			graphService = FPLCOrientDBGraphService.getInstance();
-			graphService.setLocalDatabase("devDatabase");
-			this.personServ = DefaultPersonService.getInstance(graphService);
-		} else if (mode == ServiceManagerMode.TEST) {
-			graphService = FPLCOrientDBGraphService.getInstance();
-			graphService.setLocalDatabase("junitTestDatabase");
-			this.personServ = DefaultPersonService.getInstance(graphService);
-		} else {
-			throw new ServiceException("invalid service manager mode: " + mode);
-		}
+		initialize(mode);
 	}
 
 	public static ServiceManager getInstance(ServiceManagerMode mode)
@@ -80,11 +72,38 @@ public class ServiceManager {
 			instance = new ServiceManager(mode);
 		return instance;
 	}
+	
+	private void initialize(ServiceManagerMode mode) throws ServiceException {
+		
+		modeMemory = mode;
+		
+		if (mode == ServiceManagerMode.DEFAULT
+				|| mode == ServiceManagerMode.TEST) {
+
+			graphService = FPLCOrientDBGraphService.getInstance();
+
+			if (mode == ServiceManagerMode.DEFAULT)
+				graphService.setLocalDatabase("devDatabase");
+			else if (mode == ServiceManagerMode.TEST)
+				graphService.setLocalDatabase("junitTestDatabase");
+
+			this.personServ = DefaultPersonService.getInstance(graphService, true);
+			this.tagServ = DefaultTagService.getInstance(graphService, true);
+			
+		} else {
+			throw new ServiceException("invalid service manager mode: " + mode);
+		}
+		
+	}
 
 	public PersonService getPersonService() {
 		return personServ;
 	}
-	
+
+	public TagService getTagService() {
+		return tagServ;
+	}
+
 	/**
 	 * Deletes all user data and re-initializes.
 	 */
@@ -92,6 +111,11 @@ public class ServiceManager {
 		graphService.deleteAllDataInCurrentDB();
 	}
 	
+	public void dropAndReinitDatabase() throws ServiceException {
+		graphService.dropCurrentDB();
+		initialize(modeMemory);
+	}
+
 	public void close() {
 		graphService.shutdown();
 	}

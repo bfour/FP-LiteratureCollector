@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  * -///////////////////////////////-
  */
 
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,8 +58,8 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 		public List<Person> getAuthors() {
 			if (authors == null) {
 				try {
-					authors = GraphUtils.getCollectionFromVertexProperty(vertex, "authors",
-							personDAO);
+					authors = GraphUtils.getCollectionFromVertexProperty(
+							vertex, "authors", personDAO);
 				} catch (DatalayerException e) {
 					authors = new ArrayList<Person>(0);
 					// TODO (low) improve
@@ -112,9 +111,9 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 		super(dbs, "literature");
 	}
 
-	public static OrientDBLiteratureDAO getInstance(
-			OrientDBGraphService dbs) {
-		if (instance == null)
+	public static OrientDBLiteratureDAO getInstance(OrientDBGraphService dbs,
+			boolean forceCreateNewInstance) {
+		if (instance == null || forceCreateNewInstance)
 			instance = new OrientDBLiteratureDAO(dbs);
 		return instance;
 	}
@@ -143,8 +142,6 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 
 	@Override
 	public Literature vertexToEntity(Vertex vertex) {
-		if (vertex == null)
-			return null;
 		return new LazyLiterature(vertex, personDAO);
 	}
 

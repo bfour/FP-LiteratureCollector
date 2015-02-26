@@ -25,19 +25,22 @@ import com.github.bfour.fpliteraturecollector.domain.Person;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBPersonDAO;
 
-public class DefaultPersonService extends EventCreatingEntityCRUDService<Person>
-		implements PersonService {
+public class DefaultPersonService extends
+		EventCreatingEntityCRUDService<Person> implements PersonService {
 
 	private static DefaultPersonService instance;
 
-	private DefaultPersonService(OrientDBGraphService graphService) {
-		super(OrientDBPersonDAO.getInstance(graphService));
+	private DefaultPersonService(OrientDBGraphService graphService,
+			boolean forceCreateNewInstance) {
+		super(OrientDBPersonDAO.getInstance(graphService,
+				forceCreateNewInstance));
 	}
 
 	public static DefaultPersonService getInstance(
-			OrientDBGraphService graphService) {
-		if (instance == null)
-			instance = new DefaultPersonService(graphService);
+			OrientDBGraphService graphService, boolean forceCreateNewInstance) {
+		if (instance == null || forceCreateNewInstance)
+			instance = new DefaultPersonService(graphService,
+					forceCreateNewInstance);
 		return instance;
 	}
 

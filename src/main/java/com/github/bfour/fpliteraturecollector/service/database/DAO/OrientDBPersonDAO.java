@@ -99,8 +99,9 @@ public class OrientDBPersonDAO extends OrientDBEntityDAO<Person> implements
 		super(dbs, "person");
 	}
 
-	public static OrientDBPersonDAO getInstance(OrientDBGraphService dbs) {
-		if (instance == null)
+	public static OrientDBPersonDAO getInstance(OrientDBGraphService dbs,
+			boolean forceCreateNewInstance) {
+		if (instance == null || forceCreateNewInstance)
 			instance = new OrientDBPersonDAO(dbs);
 		return instance;
 	}

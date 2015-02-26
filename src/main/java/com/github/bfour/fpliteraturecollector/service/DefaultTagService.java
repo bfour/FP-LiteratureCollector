@@ -22,41 +22,39 @@ package com.github.bfour.fpliteraturecollector.service;
 
 
 import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBTagDAO;
 
-public class DefaultTagService extends EventCreatingCRUDService<Tag> implements
+public class DefaultTagService extends EventCreatingEntityCRUDService<Tag> implements
 		TagService {
 
 	private static DefaultTagService instance;
 
-	private DefaultTagService(OrientDBGraphService graphService) {
-		// TODO implement
-		super(null);
-		// super(OrientDBPersonDAO.getInstance(graphService));
+	private DefaultTagService(OrientDBGraphService graphService, boolean forceCreateNewInstance) {
+		super(OrientDBTagDAO.getInstance(graphService, forceCreateNewInstance));
 	}
 
 	public static DefaultTagService getInstance(
-			OrientDBGraphService graphService) {
-		if (instance == null)
-			instance = new DefaultTagService(graphService);
+			OrientDBGraphService graphService, boolean forceCreateNewInstance) {
+		if (instance == null || forceCreateNewInstance)
+			instance = new DefaultTagService(graphService, forceCreateNewInstance);
 		return instance;
 	}
 
 	@Override
 	public Tag create(Tag entity) throws ServiceException {
-		integrityCheck(entity);
+		checkIntegrity(entity);
 		return super.create(entity);
 	}
 
 	@Override
 	public Tag update(Tag oldEntity, Tag newEntity) throws ServiceException {
-		integrityCheck(newEntity);
+		checkIntegrity(newEntity);
 		return super.update(oldEntity, newEntity);
 	}
 	
-	private void integrityCheck(Tag tag) throws ServiceException {
+	private void checkIntegrity(Tag tag) throws ServiceException {
 		if (tag.getName() == null)
 			throw new ServiceException("name of tag must be specified");
 		if (tag.getColour() == null)

@@ -77,6 +77,9 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 
 			@Override
 			public T next() throws DatalayerException {
+				Vertex v = vertexIterator.next();
+				if (v == null)
+					return null;
 				return vertexToEntity(vertexIterator.next());
 			}
 
@@ -108,6 +111,8 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 			ID = getNewEntityID();
 		Vertex newEntity = entityToVertex(entity, ID);
 		db.commit();
+		if (newEntity == null)
+			return null;
 		return vertexToEntity(newEntity);
 	}
 
@@ -123,14 +128,13 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 	}
 
 	protected Vertex getVertexForEntity(T entity) {
-		if (entity == null)
+		if (entity == null || entity.getID() == null)
 			return null;
 		Iterator<Vertex> iter = db.getVertices(dbClassName + ".ID",
 				entity.getID()).iterator();
 		if (!iter.hasNext())
 			return null;
-		Vertex v = iter.next();
-		return v;
+		return iter.next();
 	}
 
 	/**
@@ -163,6 +167,16 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 		return getNewEntityID();
 	}
 
+	/**
+	 * Converts the given vertex to a corresponding entity.
+	 * 
+	 * @param vertex
+	 *            vertex from database; must not be null
+	 * @return an entity that corresponds to the given vertex
+	 * @throws DatalayerException
+	 *             if creation of the entity is not possible (eg. database
+	 *             connection lost)
+	 */
 	public abstract T vertexToEntity(Vertex vertex) throws DatalayerException;
 
 	private Vertex entityToVertex(T entity, long ID) throws DatalayerException {
