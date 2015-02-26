@@ -7,16 +7,15 @@ import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
-import com.github.bfour.fpliteraturecollector.service.TagService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager.ServiceManagerMode;
+import com.github.bfour.fpliteraturecollector.service.TagService;
 
 public class TagTest {
 

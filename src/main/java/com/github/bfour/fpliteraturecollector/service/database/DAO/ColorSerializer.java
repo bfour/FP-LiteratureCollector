@@ -1,8 +1,6 @@
 package com.github.bfour.fpliteraturecollector.service.database.DAO;
 
 import java.awt.Color;
-import java.awt.color.ColorSpace;
-import java.awt.image.ColorModel;
 import java.nio.ByteBuffer;
 
 class ColorSerializer {
