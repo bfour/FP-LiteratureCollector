@@ -95,6 +95,32 @@ public class FPLCOrientDBGraphService extends OrientDBGraphService {
 				new Parameter<>("type", "UNIQUE"), new Parameter<>("class",
 						"literature"));
 		db.addVertex("class:counters", "name", "literature", "value", 0);
+		
+		// setup atomic request
+		OrientVertexType atomicRequestClass = db.createVertexType("atomicRequest");
+		atomicRequestClass.createProperty("ID", OType.LONG);
+		atomicRequestClass.createProperty("registrationTime", OType.DATETIME);
+		atomicRequestClass.createProperty("lastChangeTime", OType.DATETIME);
+		atomicRequestClass.createProperty("searchEngine", OType.STRING);
+		atomicRequestClass.createProperty("searchString", OType.STRING);
+		atomicRequestClass.createProperty("results", OType.LINKLIST);
+
+		db.createKeyIndex("ID", Vertex.class,
+				new Parameter<>("type", "UNIQUE"), new Parameter<>("class",
+						"atomicRequest"));
+		db.addVertex("class:counters", "name", "atomicRequest", "value", 0);
+		
+		// setup query
+		OrientVertexType queryClass = db.createVertexType("query");
+		queryClass.createProperty("ID", OType.LONG);
+		queryClass.createProperty("registrationTime", OType.DATETIME);
+		queryClass.createProperty("lastChangeTime", OType.DATETIME);
+		queryClass.createProperty("atomicRequests", OType.LINKLIST);
+
+		db.createKeyIndex("ID", Vertex.class,
+				new Parameter<>("type", "UNIQUE"), new Parameter<>("class",
+						"query"));
+		db.addVertex("class:counters", "name", "query", "value", 0);				
 
 		// end
 		db.shutdown();

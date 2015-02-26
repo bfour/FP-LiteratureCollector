@@ -21,46 +21,53 @@ package com.github.bfour.fpliteraturecollector.service;
  */
 
 import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpliteraturecollector.domain.Query;
+import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
-import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBQueryDAO;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBAtomicRequestDAO;
 
-public class DefaultQueryService extends EventCreatingEntityCRUDService<Query>
-		implements QueryService {
+public class DefaultAtomicRequestService extends
+		EventCreatingEntityCRUDService<AtomicRequest> implements
+		AtomicRequestService {
 
-	private static DefaultQueryService instance;
+	private static DefaultAtomicRequestService instance;
 
-	private DefaultQueryService(OrientDBGraphService graphService,
+	private DefaultAtomicRequestService(OrientDBGraphService graphService,
 			boolean forceCreateNewInstance) {
-		super(OrientDBQueryDAO
-				.getInstance(graphService, forceCreateNewInstance));
+		super(OrientDBAtomicRequestDAO.getInstance(graphService,
+				forceCreateNewInstance));
 	}
 
-	public static DefaultQueryService getInstance(
+	public static DefaultAtomicRequestService getInstance(
 			OrientDBGraphService graphService, boolean forceCreateNewInstance) {
 		if (instance == null || forceCreateNewInstance)
-			instance = new DefaultQueryService(graphService,
+			instance = new DefaultAtomicRequestService(graphService,
 					forceCreateNewInstance);
 		return instance;
 	}
 
 	@Override
-	public Query create(Query entity) throws ServiceException {
+	public AtomicRequest create(AtomicRequest entity) throws ServiceException {
 		checkIntegrity(entity);
 		return super.create(entity);
 	}
 
 	@Override
-	public Query update(Query oldEntity, Query newEntity)
+	public AtomicRequest update(AtomicRequest oldEntity, AtomicRequest newEntity)
 			throws ServiceException {
 		checkIntegrity(newEntity);
 		return super.update(oldEntity, newEntity);
 	}
 
-	private void checkIntegrity(Query entity) throws ServiceException {
-		if (entity.getAtomicRequests() == null)
+	private void checkIntegrity(AtomicRequest entity) throws ServiceException {
+		if (entity.getSearchEngine() == null)
+			throw new ServiceException("search engine must not be null");
+		if (entity.getSearchString() == null)
+			throw new ServiceException("search string must not be null");
+		if (entity.getSearchString().isEmpty())
+			throw new ServiceException("search string must not be empty");
+		if (entity.getResults() == null)
 			throw new ServiceException(
-					"atomic request list must not be null (may be empty)");
+					"results list must not be null (may be empty)");
 	}
 
 }

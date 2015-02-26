@@ -52,8 +52,8 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 		if (count > Integer.MAX_VALUE)
 			count = Integer.MAX_VALUE;
 		List<T> list = new ArrayList<>((int) count);
-		for (Vertex person : db.getVerticesOfClass(dbClassName)) {
-			list.add(vertexToEntity(person));
+		for (Vertex vertex : db.getVerticesOfClass(dbClassName)) {
+			list.add(vertexToEntity(vertex));
 		}
 		return list;
 	}

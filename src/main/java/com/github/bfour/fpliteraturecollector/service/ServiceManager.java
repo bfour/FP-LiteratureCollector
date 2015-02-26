@@ -62,6 +62,8 @@ public class ServiceManager {
 	private PersonService personServ;
 	private TagService tagServ;
 	private LiteratureService litServ;
+	private AtomicRequestService atomReqServ;
+	private QueryService queryServ;
 
 	private ServiceManager(ServiceManagerMode mode) throws ServiceException {
 		initialize(mode);
@@ -91,6 +93,8 @@ public class ServiceManager {
 			this.personServ = DefaultPersonService.getInstance(graphService, true);
 			this.tagServ = DefaultTagService.getInstance(graphService, true);
 			this.litServ = DefaultLiteratureService.getInstance(graphService, true);
+			this.atomReqServ = DefaultAtomicRequestService.getInstance(graphService, true);
+			this.queryServ = DefaultQueryService.getInstance(graphService, true);
 			
 		} else {
 			throw new ServiceException("invalid service manager mode: " + mode);
@@ -110,6 +114,14 @@ public class ServiceManager {
 		return litServ;
 	}
 
+	public AtomicRequestService getAtomicRequestService() {
+		return atomReqServ;
+	}
+	
+	public QueryService getQueryService() {
+		return queryServ;
+	}	
+	
 	/**
 	 * Deletes all user data and re-initializes.
 	 */

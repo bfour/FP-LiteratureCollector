@@ -1,4 +1,4 @@
-package com.github.bfour.fpliteraturecollector.domain;
+package com.github.bfour.fpliteraturecollector.service;
 
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
@@ -20,36 +20,9 @@ package com.github.bfour.fpliteraturecollector.domain;
  * -///////////////////////////////-
  */
 
-import java.util.Date;
-import java.util.List;
+import com.github.bfour.fpjcommons.services.CRUD.CRUDService;
+import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 
-import com.github.bfour.fpjcommons.model.Entity;
-
-public class Query extends Entity {
-
-	private List<AtomicRequest> atomicRequests;
-
-	public Query(long iD, Date creationTime, Date lastChangeTime,
-			List<AtomicRequest> atomicRequests) {
-		super(iD, creationTime, lastChangeTime);
-		this.atomicRequests = atomicRequests;
-	}
-	
-	public Query(List<AtomicRequest> atomicRequests) {
-		super();
-		this.atomicRequests = atomicRequests;
-	}
-
-	public Query() {
-		super();
-	}
-	
-	public List<AtomicRequest> getAtomicRequests() {
-		return atomicRequests;
-	}
-
-	public void setAtomicRequests(List<AtomicRequest> atomicRequests) {
-		this.atomicRequests = atomicRequests;
-	}
+public interface AtomicRequestService extends CRUDService<AtomicRequest> {
 
 }

@@ -52,52 +52,67 @@ import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Vertex;
 
-public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements QueryDAO {
+public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements
+		QueryDAO {
 
 	private static class LazyQuery extends Query {
 
 		private Vertex vertex;
 		private LazyGraphEntity entity;
+		private OrientDBAtomicRequestDAO atomicRequestDAO;
 
-		public LazyQuery(Vertex vertex) {
+		public LazyQuery(Vertex vertex,
+				OrientDBAtomicRequestDAO atomicRequestDAO) {
 			this.vertex = vertex;
 			this.entity = new LazyGraphEntity(vertex);
+			this.atomicRequestDAO = atomicRequestDAO;
 		}
 
 		@Override
 		public List<AtomicRequest> getAtomicRequests() {
-			// TODO
-			return new ArrayList<AtomicRequest>();
+			try {
+				if (getAtomicRequests() == null)
+					setAtomicRequests(GraphUtils
+							.getCollectionFromVertexProperty(vertex,
+									"atomicRequests", atomicRequestDAO));
+			} catch (DatalayerException e) {
+				// TODO (low) improve
+				setAtomicRequests(new ArrayList<AtomicRequest>(0));
+			}
+			return getAtomicRequests();
 		}
 
 		@Override
 		public Long getID() {
 			return entity.getID();
 		}
-		
+
 		@Override
 		public Date getCreationTime() {
 			return entity.getCreationTime();
 		}
 
-
 		@Override
 		public Date getLastChangeTime() {
 			return entity.getLastChangeTime();
 		}
-		
-	}
-	
-	private static OrientDBQueryDAO instance;
 
-	protected OrientDBQueryDAO(OrientDBGraphService dbs) {
+	}
+
+	private static OrientDBQueryDAO instance;
+	private OrientDBAtomicRequestDAO atomicRequestDAO;
+
+	protected OrientDBQueryDAO(OrientDBGraphService dbs,
+			boolean forceCreateNewInstance) {
 		super(dbs, "query");
+		this.atomicRequestDAO = OrientDBAtomicRequestDAO.getInstance(dbs,
+				forceCreateNewInstance);
 	}
 
 	public static OrientDBQueryDAO getInstance(OrientDBGraphService dbs,
 			boolean forceCreateNewInstance) {
 		if (instance == null || forceCreateNewInstance)
-			instance = new OrientDBQueryDAO(dbs);
+			instance = new OrientDBQueryDAO(dbs, forceCreateNewInstance);
 		return instance;
 	}
 
@@ -105,13 +120,14 @@ public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements QueryD
 	protected Vertex entityToVertex(Query entity, long ID, Vertex givenVertex)
 			throws DatalayerException {
 		Vertex entityVertex = super.entityToVertex(entity, ID, givenVertex);
-		entityVertex.setProperty("atomicRequests", entity.getAtomicRequests());
+		entityVertex.setProperty("atomicRequests", GraphUtils
+				.getCollectionFromVertexProperty(entityVertex,
+						"atomicRequests", atomicRequestDAO));
 		return entityVertex;
 	}
 
 	@Override
 	public Query vertexToEntity(Vertex vertex) throws DatalayerException {
-		return new LazyQuery(vertex);
+		return new LazyQuery(vertex, atomicRequestDAO);
 	}
-
 }

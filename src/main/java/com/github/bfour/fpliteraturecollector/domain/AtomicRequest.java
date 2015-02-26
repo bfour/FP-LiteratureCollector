@@ -3,6 +3,8 @@ package com.github.bfour.fpliteraturecollector.domain;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.github.bfour.fpjcommons.model.Entity;
+
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
  * FP-LiteratureCollector
@@ -23,7 +25,7 @@ import java.util.List;
  * -///////////////////////////////-
  */
 
-public class AtomicRequest {
+public class AtomicRequest extends Entity {
 
 	private SupportedSearchEngine searchEngine;
 	private String searchString;
@@ -33,6 +35,7 @@ public class AtomicRequest {
 			String searchString, List<Literature> results) {
 		this.searchEngine = searchEngine;
 		this.searchString = searchString;
+		this.results = results;
 	}
 
 	public AtomicRequest(SupportedSearchEngine searchEngine, String searchString) {
@@ -53,6 +56,18 @@ public class AtomicRequest {
 
 	public List<Literature> getResults() {
 		return results;
+	}
+
+	public void setSearchEngine(SupportedSearchEngine searchEngine) {
+		this.searchEngine = searchEngine;
+	}
+
+	public void setSearchString(String searchString) {
+		this.searchString = searchString;
+	}
+
+	public void setResults(List<Literature> results) {
+		this.results = results;
 	}
 
 }
