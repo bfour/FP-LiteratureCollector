@@ -84,7 +84,6 @@ public class TagTest {
 		
 	}
 	
-	@Ignore
 	@Test
 	public void createAndRemoveTagsAndTestDatabaseClean()
 			throws ServiceException, DatalayerException {

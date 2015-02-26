@@ -42,6 +42,8 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  * *
  */
 
+import java.awt.Color;
+
 import com.github.bfour.fpjcommons.model.Entity;
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
@@ -69,7 +71,7 @@ public class OrientDBTagDAO extends OrientDBEntityDAO<Tag> implements TagDAO {
 		Vertex entityVertex = super.entityToVertex(entity, ID, givenVertex);
 		entityVertex.setProperty("name", entity.getName());
 		entityVertex.setProperty("colour",
-				new OSerializableColor(entity.getColour()));
+				ColorSerializer.serialize(entity.getColour()));
 		return entityVertex;
 	}
 
@@ -77,7 +79,7 @@ public class OrientDBTagDAO extends OrientDBEntityDAO<Tag> implements TagDAO {
 	public Tag vertexToEntity(Vertex vertex) throws DatalayerException {
 		Entity e = super.vertexToRawEntity(vertex);
 		String name = vertex.getProperty("name");
-		OSerializableColor color = vertex.getProperty("colour");
+		Color color = ColorSerializer.deSerialize((byte[]) vertex.getProperty("colour"));
 		return new Tag(e.getID(), e.getCreationTime(), e.getLastChangeTime(),
 				name, color);
 	}
