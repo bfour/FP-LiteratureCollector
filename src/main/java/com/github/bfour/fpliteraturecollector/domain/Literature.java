@@ -47,6 +47,13 @@ public class Literature extends Entity {
 		this.ISBN = ISBN;
 	}
 	
+	public Literature(String title, List<Person> authors, String DOI, ISBN ISBN) {
+		this.title = title;
+		this.authors = authors;
+		this.DOI = DOI;
+		this.ISBN = ISBN;
+	}
+	
 	public Literature() {
 		super();
 	}

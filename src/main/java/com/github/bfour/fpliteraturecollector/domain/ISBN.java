@@ -1,5 +1,9 @@
 package com.github.bfour.fpliteraturecollector.domain;
 
+import java.security.InvalidParameterException;
+
+import org.apache.commons.validator.routines.ISBNValidator;
+
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
  * FP-LiteratureCollector
@@ -20,9 +24,61 @@ package com.github.bfour.fpliteraturecollector.domain;
  * -///////////////////////////////-
  */
 
-
 public class ISBN {
 
-	
-	
+	String v13String;
+
+	public ISBN(String v10OrV13String) {
+		
+		ISBNValidator validator = ISBNValidator.getInstance();
+		String normalizedString = getNormalizedString(v10OrV13String);
+		
+		if (validator.isValidISBN13(normalizedString))
+			this.v13String = normalizedString;
+		else if (validator.isValidISBN10(normalizedString))
+			this.v13String = validator.convertToISBN13(normalizedString);
+		else
+			throw new InvalidParameterException("String passed as ISBN is not a valid v10 or v13 ISBN");
+		
+	}
+
+	private String getNormalizedString(String v10OrV13String) {
+		v10OrV13String = v10OrV13String.trim();
+		v10OrV13String = v10OrV13String.replace(" ", "");
+		v10OrV13String = v10OrV13String.replace("-", "");
+		v10OrV13String = v10OrV13String.replace(".", "");
+		v10OrV13String = v10OrV13String.replace("/", "");
+		return v10OrV13String;
+	}
+
+	public String getV13String() {
+		return v13String;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((v13String == null) ? 0 : v13String.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ISBN other = (ISBN) obj;
+		if (v13String == null) {
+			if (other.v13String != null)
+				return false;
+		} else if (!v13String.equals(other.v13String))
+			return false;
+		return true;
+	}
+
 }

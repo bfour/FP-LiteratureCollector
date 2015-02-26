@@ -77,8 +77,9 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 
 		@Override
 		public ISBN getISBN() {
-			// TODO Auto-generated method stub
-			return super.getISBN();
+			if (ISBN == null)
+				ISBN = new ISBN((String) vertex.getProperty("ISBN"));
+			return ISBN;
 		}
 
 		@Override
@@ -107,14 +108,17 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 	private static OrientDBLiteratureDAO instance;
 	private OrientDBPersonDAO personDAO;
 
-	private OrientDBLiteratureDAO(OrientDBGraphService dbs) {
+	private OrientDBLiteratureDAO(OrientDBGraphService dbs,
+			boolean forceCreateNewInstance) {
 		super(dbs, "literature");
+		this.personDAO = OrientDBPersonDAO.getInstance(dbs,
+				forceCreateNewInstance);
 	}
 
 	public static OrientDBLiteratureDAO getInstance(OrientDBGraphService dbs,
 			boolean forceCreateNewInstance) {
 		if (instance == null || forceCreateNewInstance)
-			instance = new OrientDBLiteratureDAO(dbs);
+			instance = new OrientDBLiteratureDAO(dbs, forceCreateNewInstance);
 		return instance;
 	}
 
@@ -124,17 +128,22 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 
 		Vertex entityVertex = super.entityToVertex(entity, ID, givenVertex);
 
-		if (entity.getDOI() == null)
-			entityVertex.removeProperty("DOI");
-		if (entity.getISBN() == null)
-			entityVertex.removeProperty("ISBN");
-
 		// title
 		entityVertex.setProperty("title", entity.getTitle());
 
 		// authors
 		GraphUtils.setCollectionPropertyOnVertex(entityVertex, "authors",
 				entity.getAuthors(), personDAO);
+
+		// DOI ISBN
+		if (entity.getDOI() == null)
+			entityVertex.removeProperty("DOI");
+		else
+			entityVertex.setProperty("DOI", entity.getDOI());
+		if (entity.getISBN() == null)
+			entityVertex.removeProperty("ISBN");
+		else
+			entityVertex.setProperty("ISBN", entity.getISBN().getV13String());
 
 		return entityVertex;
 

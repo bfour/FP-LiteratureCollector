@@ -61,6 +61,7 @@ public class ServiceManager {
 	private OrientDBGraphService graphService;
 	private PersonService personServ;
 	private TagService tagServ;
+	private LiteratureService litServ;
 
 	private ServiceManager(ServiceManagerMode mode) throws ServiceException {
 		initialize(mode);
@@ -89,6 +90,7 @@ public class ServiceManager {
 
 			this.personServ = DefaultPersonService.getInstance(graphService, true);
 			this.tagServ = DefaultTagService.getInstance(graphService, true);
+			this.litServ = DefaultLiteratureService.getInstance(graphService, true);
 			
 		} else {
 			throw new ServiceException("invalid service manager mode: " + mode);
@@ -102,6 +104,10 @@ public class ServiceManager {
 
 	public TagService getTagService() {
 		return tagServ;
+	}
+	
+	public LiteratureService getLiteratureService() {
+		return litServ;
 	}
 
 	/**
