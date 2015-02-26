@@ -21,6 +21,7 @@ package com.github.bfour.fpliteraturecollector.service;
  */
 
 import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpjcommons.services.CRUD.EventCreatingEntityCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Person;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBPersonDAO;
