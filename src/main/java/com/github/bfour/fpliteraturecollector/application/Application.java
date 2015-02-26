@@ -22,7 +22,6 @@ package com.github.bfour.fpliteraturecollector.application;
 
 import javax.swing.JOptionPane;
 
-import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager.ServiceManagerMode;
 
@@ -38,10 +37,8 @@ public class Application {
 		try {
 			ServiceManager servMan = ServiceManager
 					.getInstance(ServiceManagerMode.DEFAULT);
-
 			
-
-		} catch (ServiceException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane
 					.showMessageDialog(
@@ -49,13 +46,7 @@ public class Application {
 							"Sorry, the application cannot continue and will terminate.\n\n"
 									+ "This might be because the application is not configured properly or the database is unavailable.\n"
 									+ "Reinstalling the application might solve this problem.\n"
-									+ "Please report this to the developer at .\n" // TODO
-																					// (high)
-																					// insert
-																					// link
-																					// to
-																					// issue
-																					// tracker
+									+ "Please report this to the developer at https://github.com/bfour/FP-LiteratureCollector/issues.\n"
 									+ "Details: " + e.getMessage(), "Error",
 							JOptionPane.ERROR_MESSAGE);
 		}
