@@ -17,13 +17,13 @@ import com.github.bfour.fpliteraturecollector.domain.ISBN;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Person;
 import com.github.bfour.fpliteraturecollector.domain.Query;
-import com.github.bfour.fpliteraturecollector.domain.SupportedSearchEngine;
 import com.github.bfour.fpliteraturecollector.service.AtomicRequestService;
 import com.github.bfour.fpliteraturecollector.service.LiteratureService;
 import com.github.bfour.fpliteraturecollector.service.PersonService;
 import com.github.bfour.fpliteraturecollector.service.QueryService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager.ServiceManagerMode;
+import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlerService;
 
 public class QueryTest {
 
@@ -32,6 +32,7 @@ public class QueryTest {
 	private static PersonService persServ;
 	private static AtomicRequestService atomReqServ;
 	private static QueryService queryServ;
+	private static CrawlerService crawlServ;
 
 	@BeforeClass
 	public static void preClass() throws ServiceException {
@@ -41,6 +42,7 @@ public class QueryTest {
 		persServ = servMan.getPersonService();
 		atomReqServ = servMan.getAtomicRequestService();
 		queryServ = servMan.getQueryService();
+		crawlServ = servMan.getCrawlerService();
 	}
 
 	@After
@@ -149,12 +151,13 @@ public class QueryTest {
 
 		// create AtomicRequests
 		List<AtomicRequest> atomReqs = new ArrayList<AtomicRequest>(3);
-		atomReqs.add(new AtomicRequest(SupportedSearchEngine.GOOGLE_SCHOLAR,
-				"LDL", literatureList));
-		atomReqs.add(new AtomicRequest(SupportedSearchEngine.GOOGLE_SCHOLAR,
-				"another test &%$$ öäüß ß é Á _:_::___' ", literatureList));
-		atomReqs.add(new AtomicRequest(SupportedSearchEngine.GOOGLE_SCHOLAR,
-				":-) 1861", new ArrayList<Literature>(0)));
+		atomReqs.add(new AtomicRequest(crawlServ.getAvailableCrawlers()
+				.iterator().next(), "LDL", literatureList));
+		atomReqs.add(new AtomicRequest(crawlServ.getAvailableCrawlers()
+				.iterator().next(), "another test &%$$ öäüß ß é Á _:_::___' ",
+				literatureList));
+		atomReqs.add(new AtomicRequest(crawlServ.getAvailableCrawlers()
+				.iterator().next(), ":-) 1861", new ArrayList<Literature>(0)));
 		for (AtomicRequest atomReq : atomReqs)
 			atomReqs.set(atomReqs.indexOf(atomReq), atomReqServ.create(atomReq));
 

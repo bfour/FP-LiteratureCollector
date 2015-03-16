@@ -43,6 +43,7 @@ package com.github.bfour.fpliteraturecollector.service;
  */
 
 import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlerService;
 import com.github.bfour.fpliteraturecollector.service.database.FPLCOrientDBGraphService;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 
@@ -64,6 +65,7 @@ public class ServiceManager {
 	private LiteratureService litServ;
 	private AtomicRequestService atomReqServ;
 	private QueryService queryServ;
+	private CrawlerService crawlServ;
 
 	private ServiceManager(ServiceManagerMode mode) throws ServiceException {
 		initialize(mode);
@@ -95,6 +97,7 @@ public class ServiceManager {
 			this.litServ = DefaultLiteratureService.getInstance(graphService, true);
 			this.atomReqServ = DefaultAtomicRequestService.getInstance(graphService, true);
 			this.queryServ = DefaultQueryService.getInstance(graphService, true);
+			this.crawlServ = CrawlerService.getInstance();
 			
 		} else {
 			throw new ServiceException("invalid service manager mode: " + mode);
@@ -120,7 +123,11 @@ public class ServiceManager {
 	
 	public QueryService getQueryService() {
 		return queryServ;
-	}	
+	}
+	
+	public CrawlerService getCrawlerService() {
+		return crawlServ;
+	}
 	
 	/**
 	 * Deletes all user data and re-initializes.

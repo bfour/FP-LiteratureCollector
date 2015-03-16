@@ -60,8 +60,8 @@ public class DefaultAtomicRequestService extends
 	}
 
 	private void checkIntegrity(AtomicRequest entity) throws ServiceException {
-		if (entity.getSearchEngine() == null)
-			throw new ServiceException("search engine must not be null");
+		if (entity.getCrawler() == null)
+			throw new ServiceException("crawler must not be null");
 		if (entity.getSearchString() == null)
 			throw new ServiceException("search string must not be null");
 		if (entity.getSearchString().isEmpty())

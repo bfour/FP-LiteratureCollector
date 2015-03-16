@@ -23,7 +23,9 @@ package com.github.bfour.fpliteraturecollector.application;
 import javax.swing.JOptionPane;
 
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
+import com.github.bfour.fpliteraturecollector.service.Utils;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager.ServiceManagerMode;
+import com.github.bfour.fpliteraturecollector.service.crawlers.EpopScholarCrawler;
 
 // TODO import mit einfacher text-file
 // TODO evtl. request-generator tool (Kombinations-Tool)
@@ -35,8 +37,10 @@ public class Application {
 	public static void main(String[] args) {
 
 		try {
-			ServiceManager servMan = ServiceManager
-					.getInstance(ServiceManagerMode.DEFAULT);
+//			ServiceManager servMan = ServiceManager
+//					.getInstance(ServiceManagerMode.DEFAULT);
+			
+			new EpopScholarCrawler().start("e-health wearable");
 			
 		} catch (Exception e) {
 			e.printStackTrace();

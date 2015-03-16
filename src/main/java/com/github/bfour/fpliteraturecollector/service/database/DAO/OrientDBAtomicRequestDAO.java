@@ -27,7 +27,8 @@ import java.util.List;
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
-import com.github.bfour.fpliteraturecollector.domain.SupportedSearchEngine;
+import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
+import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlerService;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Vertex;
 
@@ -48,11 +49,12 @@ public class OrientDBAtomicRequestDAO extends OrientDBEntityDAO<AtomicRequest>
 		}
 
 		@Override
-		public SupportedSearchEngine getSearchEngine() {
-			if (getSearchEngine() == null)
-				setSearchEngine(SupportedSearchEngine.valueOf((String) vertex
-						.getProperty("searchEngine")));
-			return getSearchEngine();
+		public Crawler getCrawler() {
+			if (super.getCrawler() == null)
+				setCrawler(CrawlerService.getInstance()
+						.getCrawlerForIdentifier(
+								(String) vertex.getProperty("searchEngine")));
+			return super.getCrawler();
 		}
 
 		@Override
@@ -115,11 +117,12 @@ public class OrientDBAtomicRequestDAO extends OrientDBEntityDAO<AtomicRequest>
 
 		Vertex entityVertex = super.entityToVertex(entity, ID, givenVertex);
 
-		entityVertex.setProperty("searchEngine", entity.getSearchEngine().name());
+		entityVertex.setProperty("searchEngine", CrawlerService.getInstance()
+				.getIdentifierForCrawler(entity.getCrawler()));
 		entityVertex.setProperty("searchString", entity.getSearchString());
 		GraphUtils.setCollectionPropertyOnVertex(entityVertex, "results",
 				entity.getResults(), literatureDAO);
-		
+
 		return entityVertex;
 
 	}

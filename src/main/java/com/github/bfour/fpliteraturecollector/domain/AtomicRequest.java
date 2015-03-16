@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.github.bfour.fpjcommons.model.Entity;
+import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
 
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
@@ -27,27 +28,27 @@ import com.github.bfour.fpjcommons.model.Entity;
 
 public class AtomicRequest extends Entity {
 
-	private SupportedSearchEngine searchEngine;
+	private Crawler crawler;
 	private String searchString;
 	private List<Literature> results;
 
-	public AtomicRequest(SupportedSearchEngine searchEngine,
+	public AtomicRequest(Crawler crawler,
 			String searchString, List<Literature> results) {
-		this.searchEngine = searchEngine;
+		this.crawler = crawler;
 		this.searchString = searchString;
 		this.results = results;
 	}
 
-	public AtomicRequest(SupportedSearchEngine searchEngine, String searchString) {
-		this(searchEngine, searchString, new LinkedList<Literature>());
+	public AtomicRequest(Crawler crawler, String searchString) {
+		this(crawler, searchString, new LinkedList<Literature>());
 	}
 
 	public AtomicRequest() {
 		super();
 	}
 
-	public SupportedSearchEngine getSearchEngine() {
-		return searchEngine;
+	public Crawler getCrawler() {
+		return crawler;
 	}
 
 	public String getSearchString() {
@@ -58,8 +59,8 @@ public class AtomicRequest extends Entity {
 		return results;
 	}
 
-	public void setSearchEngine(SupportedSearchEngine searchEngine) {
-		this.searchEngine = searchEngine;
+	public void setCrawler(Crawler crawler) {
+		this.crawler = crawler;
 	}
 
 	public void setSearchString(String searchString) {
