@@ -21,21 +21,27 @@ package com.github.bfour.fpliteraturecollector.domain.builders;
  */
 
 
+import java.nio.file.Path;
 import java.util.List;
 
 import com.github.bfour.fpjcommons.lang.Builder;
 import com.github.bfour.fpjcommons.model.EntityBuilder;
 import com.github.bfour.fpliteraturecollector.domain.ISBN;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
-import com.github.bfour.fpliteraturecollector.domain.Person;
+import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
+import com.github.bfour.fpliteraturecollector.domain.Author;
 
 public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		Builder<Literature> {
 
 	private String title;
-	private List<Person> authors;
+	private LiteratureType type;
+	private List<Author> authors;
 	private String DOI;
 	private ISBN ISBN;
+	private Integer year;
+	private String fulltextURL;
+	private Path fulltextFilePath;
 
 	public LiteratureBuilder() {
 		super();
@@ -49,12 +55,13 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		setAuthors(l.getAuthors());
 		setDOI(l.getDOI());
 		setISBN(l.getISBN());
+		setYear(l.getYear());
 	}
 
 	@Override
 	public Literature getObject() {
 		return new Literature(getID(), getCreationTime(), getLastChangeTime(),
-				getTitle(), getAuthors(), getDOI(), getISBN());
+				getTitle(), getAuthors(), getDOI(), getISBN(), getYear());
 	}
 
 	public String getTitle() {
@@ -65,11 +72,19 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		this.title = title;
 	}
 
-	public List<Person> getAuthors() {
+	public LiteratureType getType() {
+		return type;
+	}
+
+	public void setType(LiteratureType type) {
+		this.type = type;
+	}
+
+	public List<Author> getAuthors() {
 		return authors;
 	}
 
-	public void setAuthors(List<Person> authors) {
+	public void setAuthors(List<Author> authors) {
 		this.authors = authors;
 	}
 
@@ -87,6 +102,30 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 
 	public void setISBN(ISBN iSBN) {
 		ISBN = iSBN;
+	}
+	
+	public Integer getYear() {
+		return year;
+	}
+	
+	public void setYear(Integer year) {
+		this.year = year;
+	}
+
+	public String getFulltextURL() {
+		return fulltextURL;
+	}
+
+	public void setFulltextURL(String fulltextURL) {
+		this.fulltextURL = fulltextURL;
+	}
+
+	public Path getFulltextFile() {
+		return fulltextFilePath;
+	}
+
+	public void setFulltextFile(Path fulltextFilePath) {
+		this.fulltextFilePath = fulltextFilePath;
 	}
 
 }

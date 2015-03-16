@@ -27,8 +27,8 @@ import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphServ
 import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBAtomicRequestDAO;
 
 public class DefaultAtomicRequestService extends
-		EventCreatingEntityCRUDService<AtomicRequest> implements
-		AtomicRequestService {
+		EventCreatingEntityCRUDService<AtomicRequest, OrientDBAtomicRequestDAO>
+		implements AtomicRequestService {
 
 	private static DefaultAtomicRequestService instance;
 

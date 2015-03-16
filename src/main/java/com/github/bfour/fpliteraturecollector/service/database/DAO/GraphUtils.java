@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  * -///////////////////////////////-
  */
 
-
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -74,9 +73,9 @@ public class GraphUtils {
 	}
 
 	public static <T extends Entity> List<T> getCollectionFromVertexProperty(
-			Vertex v, String edgeName, AbstractOrientDBDAO<T> DAO) throws DatalayerException
-			 {
-		
+			Vertex v, String edgeName, AbstractOrientDBDAO<T> DAO)
+			throws DatalayerException {
+
 		List<T> items = new LinkedList<>();
 		Iterable<Edge> edgeIter = v.getEdges(Direction.OUT, edgeName);
 		for (Edge itemEdge : edgeIter) {
@@ -85,7 +84,15 @@ public class GraphUtils {
 			items.add(item);
 		}
 		return items;
-		
+
+	}
+
+	public static <T> void setProperty(Vertex v, String name, T value, boolean canBeNull) {
+		if (value == null && canBeNull)
+			v.removeProperty("year");
+		else
+			v.setProperty("year", value);
+
 	}
 
 }

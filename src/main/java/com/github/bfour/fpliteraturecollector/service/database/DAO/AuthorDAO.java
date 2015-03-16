@@ -1,4 +1,4 @@
-package com.github.bfour.fpliteraturecollector.service;
+package com.github.bfour.fpliteraturecollector.service.database.DAO;
 
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
@@ -23,9 +23,9 @@ package com.github.bfour.fpliteraturecollector.service;
 
 
 
-import com.github.bfour.fpjcommons.services.CRUD.CRUDService;
-import com.github.bfour.fpliteraturecollector.domain.Person;
+import com.github.bfour.fpjcommons.services.CRUD.CRUDDAO;
+import com.github.bfour.fpliteraturecollector.domain.Author;
 
-public interface PersonService extends CRUDService<Person> {
+public interface AuthorDAO extends CRUDDAO<Author> {
 
 }

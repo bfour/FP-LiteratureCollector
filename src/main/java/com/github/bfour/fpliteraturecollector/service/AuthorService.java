@@ -1,4 +1,4 @@
-package com.github.bfour.fpliteraturecollector.service.database.DAO;
+package com.github.bfour.fpliteraturecollector.service;
 
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
@@ -21,11 +21,13 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  */
 
 
+import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpjcommons.services.CRUD.CRUDService;
+import com.github.bfour.fpliteraturecollector.domain.Author;
 
+public interface AuthorService extends CRUDService<Author> {
 
-import com.github.bfour.fpjcommons.services.CRUD.CRUDDAO;
-import com.github.bfour.fpliteraturecollector.domain.Person;
-
-public interface PersonDAO extends CRUDDAO<Person> {
-
+	public Author getByGScholarID(String gScholarID) throws ServiceException;
+	public Author getByMsAcademicID(String msAcademicID) throws ServiceException;
+	
 }

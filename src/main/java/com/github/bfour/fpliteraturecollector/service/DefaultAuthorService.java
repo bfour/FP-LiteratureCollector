@@ -22,49 +22,61 @@ package com.github.bfour.fpliteraturecollector.service;
 
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingEntityCRUDService;
-import com.github.bfour.fpliteraturecollector.domain.Person;
+import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
-import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBPersonDAO;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBAuthorDAO;
 
-public class DefaultPersonService extends
-		EventCreatingEntityCRUDService<Person> implements PersonService {
+public class DefaultAuthorService extends
+		EventCreatingEntityCRUDService<Author, OrientDBAuthorDAO> implements
+		AuthorService {
 
-	private static DefaultPersonService instance;
+	private static DefaultAuthorService instance;
 
-	private DefaultPersonService(OrientDBGraphService graphService,
+	private DefaultAuthorService(OrientDBGraphService graphService,
 			boolean forceCreateNewInstance) {
-		super(OrientDBPersonDAO.getInstance(graphService,
+		super(OrientDBAuthorDAO.getInstance(graphService,
 				forceCreateNewInstance));
 	}
 
-	public static DefaultPersonService getInstance(
+	public static DefaultAuthorService getInstance(
 			OrientDBGraphService graphService, boolean forceCreateNewInstance) {
 		if (instance == null || forceCreateNewInstance)
-			instance = new DefaultPersonService(graphService,
+			instance = new DefaultAuthorService(graphService,
 					forceCreateNewInstance);
 		return instance;
 	}
 
 	@Override
-	public Person create(Person entity) throws ServiceException {
+	public Author create(Author entity) throws ServiceException {
 		checkIntegrity(entity);
 		return super.create(entity);
 	}
 
 	@Override
-	public Person update(Person oldEntity, Person newEntity)
+	public Author update(Author oldEntity, Author newEntity)
 			throws ServiceException {
 		checkIntegrity(newEntity);
 		return super.update(oldEntity, newEntity);
 	}
 
-	private void checkIntegrity(Person entity) throws ServiceException {
+	private void checkIntegrity(Author entity) throws ServiceException {
 		if (entity.getFirstName() == null)
 			throw new ServiceException(
 					"first name of person must be specified (can be empty)");
 		if (entity.getLastName() == null)
 			throw new ServiceException(
 					"last name of person must be specified (can be empty)");
+	}
+
+	@Override
+	public Author getByGScholarID(String gScholarID) throws ServiceException {
+		return getDAO().getByGScholarID(gScholarID);
+	}
+
+	@Override
+	public Author getByMsAcademicID(String msAcademicID)
+			throws ServiceException {
+		return getDAO().getByMsAcademicID(msAcademicID);
 	}
 
 }

@@ -20,7 +20,8 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  * -///////////////////////////////-
  */
 
-import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,20 +29,21 @@ import java.util.List;
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpliteraturecollector.domain.ISBN;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
-import com.github.bfour.fpliteraturecollector.domain.Person;
+import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Vertex;
 
 public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 		implements LiteratureDAO {
 
+	// TODO if values in DB are null -> remember somehow if already accessed
 	private static class LazyLiterature extends Literature {
 
 		private Vertex vertex;
-		private OrientDBPersonDAO personDAO;
+		private OrientDBAuthorDAO personDAO;
 		private LazyGraphEntity entity;
 
-		public LazyLiterature(Vertex vertex, OrientDBPersonDAO personDAO) {
+		public LazyLiterature(Vertex vertex, OrientDBAuthorDAO personDAO) {
 			this.vertex = vertex;
 			this.entity = new LazyGraphEntity(vertex);
 			this.personDAO = personDAO;
@@ -55,13 +57,13 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 		}
 
 		@Override
-		public List<Person> getAuthors() {
+		public List<Author> getAuthors() {
 			if (authors == null) {
 				try {
 					authors = GraphUtils.getCollectionFromVertexProperty(
 							vertex, "authors", personDAO);
 				} catch (DatalayerException e) {
-					authors = new ArrayList<Person>(0);
+					authors = new ArrayList<Author>(0);
 					// TODO (low) improve
 				}
 			}
@@ -83,9 +85,33 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 		}
 
 		@Override
-		public File getFulltext() {
-			// TODO Auto-generated method stub
-			return super.getFulltext();
+		public LiteratureType getType() {
+			if (type == null)
+				type = LiteratureType.valueOf((String) vertex
+						.getProperty("type"));
+			return type;
+		}
+
+		@Override
+		public Integer getYear() {
+			if (year == null)
+				year = (Integer) vertex.getProperty("year");
+			return year;
+		}
+
+		@Override
+		public Path getFulltextFilePath() {
+			if (fulltextFilePath == null)
+				fulltextFilePath = Paths.get((String) vertex
+						.getProperty("fulltextFilePath"));
+			return fulltextFilePath;
+		}
+
+		@Override
+		public String getFulltextURL() {
+			if (fulltextURL == null)
+				fulltextURL = (String) vertex.getProperty("fulltextURL");
+			return fulltextURL;
 		}
 
 		@Override
@@ -106,12 +132,12 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 	}
 
 	private static OrientDBLiteratureDAO instance;
-	private OrientDBPersonDAO personDAO;
+	private OrientDBAuthorDAO personDAO;
 
 	private OrientDBLiteratureDAO(OrientDBGraphService dbs,
 			boolean forceCreateNewInstance) {
 		super(dbs, "literature");
-		this.personDAO = OrientDBPersonDAO.getInstance(dbs,
+		this.personDAO = OrientDBAuthorDAO.getInstance(dbs,
 				forceCreateNewInstance);
 	}
 
@@ -126,26 +152,37 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 	protected Vertex entityToVertex(Literature entity, long ID,
 			Vertex givenVertex) throws DatalayerException {
 
-		Vertex entityVertex = super.entityToVertex(entity, ID, givenVertex);
+		Vertex v = super.entityToVertex(entity, ID, givenVertex);
 
 		// title
-		entityVertex.setProperty("title", entity.getTitle());
+		GraphUtils.setProperty(v, "title", entity.getTitle(), false);
+
+		// type
+		GraphUtils.setProperty(v, "type", (entity.getType() == null ? null
+				: entity.getType().name()), true);
 
 		// authors
-		GraphUtils.setCollectionPropertyOnVertex(entityVertex, "authors",
+		GraphUtils.setCollectionPropertyOnVertex(v, "authors",
 				entity.getAuthors(), personDAO);
 
-		// DOI ISBN
-		if (entity.getDOI() == null)
-			entityVertex.removeProperty("DOI");
-		else
-			entityVertex.setProperty("DOI", entity.getDOI());
-		if (entity.getISBN() == null)
-			entityVertex.removeProperty("ISBN");
-		else
-			entityVertex.setProperty("ISBN", entity.getISBN().getV13String());
+		// DOI
+		GraphUtils.setProperty(v, "DOI", entity.getDOI(), true);
 
-		return entityVertex;
+		// ISBN
+		GraphUtils.setProperty(v, "ISBN", (entity.getISBN() == null ? null
+				: entity.getISBN().getV13String()), true);
+
+		// year
+		GraphUtils.setProperty(v, "year", entity.getYear(), true);
+
+		// fulltext URL
+		GraphUtils.setProperty(v, "fulltextURL", entity.getFulltextURL(), true);
+
+		// fulltext file path
+		GraphUtils.setProperty(v, "fulltextFilePath",
+				entity.getFulltextFilePath(), true);
+
+		return v;
 
 	}
 

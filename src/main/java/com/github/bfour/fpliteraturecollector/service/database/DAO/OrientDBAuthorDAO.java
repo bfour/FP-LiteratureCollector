@@ -43,16 +43,18 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  */
 
 import java.util.Date;
+import java.util.Iterator;
 
 import com.github.bfour.fpjcommons.services.DatalayerException;
-import com.github.bfour.fpliteraturecollector.domain.Person;
+import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Vertex;
 
-public class OrientDBPersonDAO extends OrientDBEntityDAO<Person> implements
-		PersonDAO {
+public class OrientDBAuthorDAO extends OrientDBEntityDAO<Author> implements
+		AuthorDAO {
 
-	private static class LazyPerson extends Person {
+	private static class LazyPerson extends Author {
 
 		private Vertex vertex;
 		private LazyGraphEntity entity;
@@ -77,6 +79,20 @@ public class OrientDBPersonDAO extends OrientDBEntityDAO<Person> implements
 		}
 
 		@Override
+		public String getgScholarID() {
+			if (gScholarID == null)
+				gScholarID = vertex.getProperty("gScholarID");
+			return gScholarID;
+		}
+
+		@Override
+		public String getMsAcademicID() {
+			if (msAcademicID == null)
+				msAcademicID = vertex.getProperty("msAcademicID");
+			return msAcademicID;
+		}
+
+		@Override
 		public Long getID() {
 			return entity.getID();
 		}
@@ -93,42 +109,57 @@ public class OrientDBPersonDAO extends OrientDBEntityDAO<Person> implements
 
 	}
 
-	private static OrientDBPersonDAO instance;
+	private static OrientDBAuthorDAO instance;
 
-	protected OrientDBPersonDAO(OrientDBGraphService dbs) {
+	protected OrientDBAuthorDAO(OrientDBGraphService dbs) {
 		super(dbs, "person");
 	}
 
-	public static OrientDBPersonDAO getInstance(OrientDBGraphService dbs,
+	public static OrientDBAuthorDAO getInstance(OrientDBGraphService dbs,
 			boolean forceCreateNewInstance) {
 		if (instance == null || forceCreateNewInstance)
-			instance = new OrientDBPersonDAO(dbs);
+			instance = new OrientDBAuthorDAO(dbs);
 		return instance;
 	}
 
 	@Override
-	protected Vertex entityToVertex(Person entity, long ID, Vertex givenVertex)
+	protected Vertex entityToVertex(Author entity, long ID, Vertex givenVertex)
 			throws DatalayerException {
 
-		Vertex entityVertex = super.entityToVertex(entity, ID, givenVertex);
+		Vertex v = super.entityToVertex(entity, ID, givenVertex);
 
-		if (entity.getFirstName() == null)
-			entityVertex.removeProperty("firstName");
-		if (entity.getLastName() == null)
-			entityVertex.removeProperty("lastName");
+		GraphUtils.setProperty(v, "firstName", entity.getFirstName(), true);
+		GraphUtils.setProperty(v, "lastName", entity.getLastName(), true);
+		GraphUtils.setProperty(v, "gScholarID", entity.getgScholarID(), true);
+		GraphUtils.setProperty(v, "msAcademicID", entity.getMsAcademicID(),
+				true);
 
-		entityVertex.setProperty("firstName", entity.getFirstName());
-		entityVertex.setProperty("lastName", entity.getLastName());
-
-		return entityVertex;
+		return v;
 
 	}
 
 	@Override
-	public Person vertexToEntity(Vertex vertex) {
+	public Author vertexToEntity(Vertex vertex) {
 		if (vertex == null)
 			return null;
 		return new LazyPerson(vertex);
+	}
+
+	public Author getByGScholarID(String gScholarID) throws ServiceException {
+		Iterator<Vertex> iter = db.getVertices("person", new String[] { "gScholarID" },
+				new Object[] { gScholarID }).iterator();
+		if (!iter.hasNext())
+			return null;
+		return vertexToEntity(iter.next());
+	}
+
+	public Author getByMsAcademicID(String msAcademicID)
+			throws ServiceException {
+		Iterator<Vertex> iter = db.getVertices("person", new String[] { "msAcademicID" },
+				new Object[] { msAcademicID }).iterator();
+		if (!iter.hasNext())
+			return null;
+		return vertexToEntity(iter.next());
 	}
 
 }

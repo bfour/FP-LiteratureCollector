@@ -60,7 +60,7 @@ public class ServiceManager {
 
 	private ServiceManagerMode modeMemory;
 	private OrientDBGraphService graphService;
-	private PersonService personServ;
+	private AuthorService personServ;
 	private TagService tagServ;
 	private LiteratureService litServ;
 	private AtomicRequestService atomReqServ;
@@ -92,7 +92,7 @@ public class ServiceManager {
 			else if (mode == ServiceManagerMode.TEST)
 				graphService.setLocalDatabase("junitTestDatabase");
 
-			this.personServ = DefaultPersonService.getInstance(graphService, true);
+			this.personServ = DefaultAuthorService.getInstance(graphService, true);
 			this.tagServ = DefaultTagService.getInstance(graphService, true);
 			this.litServ = DefaultLiteratureService.getInstance(graphService, true);
 			this.atomReqServ = DefaultAtomicRequestService.getInstance(graphService, true);
@@ -105,7 +105,7 @@ public class ServiceManager {
 		
 	}
 
-	public PersonService getPersonService() {
+	public AuthorService getPersonService() {
 		return personServ;
 	}
 

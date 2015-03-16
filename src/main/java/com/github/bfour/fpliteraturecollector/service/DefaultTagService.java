@@ -20,26 +20,28 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
-
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingEntityCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBTagDAO;
 
-public class DefaultTagService extends EventCreatingEntityCRUDService<Tag> implements
+public class DefaultTagService extends
+		EventCreatingEntityCRUDService<Tag, OrientDBTagDAO> implements
 		TagService {
 
 	private static DefaultTagService instance;
 
-	private DefaultTagService(OrientDBGraphService graphService, boolean forceCreateNewInstance) {
+	private DefaultTagService(OrientDBGraphService graphService,
+			boolean forceCreateNewInstance) {
 		super(OrientDBTagDAO.getInstance(graphService, forceCreateNewInstance));
 	}
 
 	public static DefaultTagService getInstance(
 			OrientDBGraphService graphService, boolean forceCreateNewInstance) {
 		if (instance == null || forceCreateNewInstance)
-			instance = new DefaultTagService(graphService, forceCreateNewInstance);
+			instance = new DefaultTagService(graphService,
+					forceCreateNewInstance);
 		return instance;
 	}
 
@@ -54,7 +56,7 @@ public class DefaultTagService extends EventCreatingEntityCRUDService<Tag> imple
 		checkIntegrity(newEntity);
 		return super.update(oldEntity, newEntity);
 	}
-	
+
 	private void checkIntegrity(Tag tag) throws ServiceException {
 		if (tag.getName() == null)
 			throw new ServiceException("name of tag must be specified");

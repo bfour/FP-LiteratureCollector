@@ -44,19 +44,21 @@ package com.github.bfour.fpliteraturecollector.domain.builders;
 
 import com.github.bfour.fpjcommons.lang.Builder;
 import com.github.bfour.fpjcommons.model.EntityBuilder;
-import com.github.bfour.fpliteraturecollector.domain.Person;
+import com.github.bfour.fpliteraturecollector.domain.Author;
 
-public class PersonBuilder extends EntityBuilder<Person> implements
-		Builder<Person> {
+public class AuthorBuilder extends EntityBuilder<Author> implements
+		Builder<Author> {
 
 	private String firstName;
 	private String lastName;
+	private String gScholarID;
+	private String msAcademicID;
 
-	public PersonBuilder() {
+	public AuthorBuilder() {
 		super();
 	}
 
-	public PersonBuilder(Person person) {
+	public AuthorBuilder(Author person) {
 		setID(person.getID());
 		setCreationTime(person.getCreationTime());
 		setLastChangeTime(person.getLastChangeTime());
@@ -65,9 +67,10 @@ public class PersonBuilder extends EntityBuilder<Person> implements
 	}
 
 	@Override
-	public Person getObject() {
-		return new Person(getID(), getCreationTime(), getLastChangeTime(),
-				getFirstName(), getLastName());
+	public Author getObject() {
+		return new Author(getID(), getCreationTime(), getLastChangeTime(),
+				getFirstName(), getLastName(), getgScholarID(),
+				getMsAcademicID());
 	}
 
 	public String getFirstName() {
@@ -84,6 +87,22 @@ public class PersonBuilder extends EntityBuilder<Person> implements
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public String getgScholarID() {
+		return gScholarID;
+	}
+
+	public void setgScholarID(String gScholarID) {
+		this.gScholarID = gScholarID;
+	}
+
+	public String getMsAcademicID() {
+		return msAcademicID;
+	}
+
+	public void setMsAcademicID(String msAcademicID) {
+		this.msAcademicID = msAcademicID;
 	}
 
 }

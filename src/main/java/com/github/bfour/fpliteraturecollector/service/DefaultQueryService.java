@@ -26,8 +26,9 @@ import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBQueryDAO;
 
-public class DefaultQueryService extends EventCreatingEntityCRUDService<Query>
-		implements QueryService {
+public class DefaultQueryService extends
+		EventCreatingEntityCRUDService<Query, OrientDBQueryDAO> implements
+		QueryService {
 
 	private static DefaultQueryService instance;
 

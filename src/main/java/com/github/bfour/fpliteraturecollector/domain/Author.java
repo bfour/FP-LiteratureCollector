@@ -24,25 +24,30 @@ import java.util.Date;
 
 import com.github.bfour.fpjcommons.model.Entity;
 
-public class Person extends Entity {
+public class Author extends Entity {
 
 	protected String firstName;
 	protected String lastName;
+	protected String gScholarID;
+	protected String msAcademicID;
 
-	public Person(long iD, Date creationTime, Date lastChangeTime,
-			String firstName, String lastName) {
+	public Author(long iD, Date creationTime, Date lastChangeTime,
+			String firstName, String lastName, String gScholarID,
+			String msAcademicID) {
 		super(iD, creationTime, lastChangeTime);
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.gScholarID = gScholarID;
+		this.msAcademicID = msAcademicID;
 	}
 
-	public Person(String firstName, String lastName) {
+	public Author(String firstName, String lastName) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
 
-	public Person() {
+	public Author() {
 		super();
 	}
 
@@ -52,6 +57,14 @@ public class Person extends Entity {
 
 	public String getLastName() {
 		return lastName;
+	}
+
+	public String getgScholarID() {
+		return gScholarID;
+	}
+
+	public String getMsAcademicID() {
+		return msAcademicID;
 	}
 
 	@Override

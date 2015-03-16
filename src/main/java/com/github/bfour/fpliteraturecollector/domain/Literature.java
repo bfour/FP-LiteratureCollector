@@ -20,7 +20,7 @@ package com.github.bfour.fpliteraturecollector.domain;
  * -///////////////////////////////-
  */
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
 
@@ -28,32 +28,40 @@ import com.github.bfour.fpjcommons.model.Entity;
 
 public class Literature extends Entity {
 
+	public static enum LiteratureType {
+		UNKNOWN, BOOK, DISSERTATION, JOURNAL_PAPER, CONFERENCE_PAPER,
+	}
+
 	protected String title;
-	protected List<Person> authors;
+	protected LiteratureType type;
+	protected List<Author> authors;
 	protected String DOI;
 	protected ISBN ISBN;
+	protected Integer year;
+	protected String fulltextURL;
+	protected Path fulltextFilePath;
 
 	// TODO: also important: type of publication (journal, proceeding
 	// (Konferenzband), book chapter), Verlag, Datum (Jahr)
 
-	protected File fulltext;
-
 	public Literature(long iD, Date creationTime, Date lastChangeTime,
-			String title, List<Person> authors, String DOI, ISBN ISBN) {
+			String title, List<Author> authors, String DOI, ISBN ISBN,
+			Integer year) {
 		super(iD, creationTime, lastChangeTime);
 		this.title = title;
 		this.authors = authors;
 		this.DOI = DOI;
 		this.ISBN = ISBN;
+		this.year = year;
 	}
-	
-	public Literature(String title, List<Person> authors, String DOI, ISBN ISBN) {
+
+	public Literature(String title, List<Author> authors, String DOI, ISBN ISBN) {
 		this.title = title;
 		this.authors = authors;
 		this.DOI = DOI;
 		this.ISBN = ISBN;
 	}
-	
+
 	public Literature() {
 		super();
 	}
@@ -62,7 +70,11 @@ public class Literature extends Entity {
 		return title;
 	}
 
-	public List<Person> getAuthors() {
+	public LiteratureType getType() {
+		return type;
+	}
+
+	public List<Author> getAuthors() {
 		return authors;
 	}
 
@@ -73,9 +85,17 @@ public class Literature extends Entity {
 	public ISBN getISBN() {
 		return ISBN;
 	}
+	
+	public Integer getYear() {
+		return year;
+	}
+	
+	public String getFulltextURL() {
+		return fulltextURL;
+	}
 
-	public File getFulltext() {
-		return fulltext;
+	public Path getFulltextFilePath() {
+		return fulltextFilePath;
 	}
 
 }

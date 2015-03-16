@@ -20,12 +20,14 @@ package com.github.bfour.fpliteraturecollector.application;
  * -///////////////////////////////-
  */
 
+import java.net.URLEncoder;
+
 import javax.swing.JOptionPane;
 
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.Utils;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager.ServiceManagerMode;
-import com.github.bfour.fpliteraturecollector.service.crawlers.EpopScholarCrawler;
+import com.github.bfour.fpliteraturecollector.service.crawlers.epop.EpopScholarCrawler;
 
 // TODO import mit einfacher text-file
 // TODO evtl. request-generator tool (Kombinations-Tool)
@@ -40,7 +42,7 @@ public class Application {
 //			ServiceManager servMan = ServiceManager
 //					.getInstance(ServiceManagerMode.DEFAULT);
 			
-			new EpopScholarCrawler().start("e-health wearable");
+			new EpopScholarCrawler().start("q="+URLEncoder.encode("e-health wearable", "UTF-8"));
 			
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -26,7 +26,8 @@ import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphServ
 import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBLiteratureDAO;
 
 public class DefaultLiteratureService extends
-		EventCreatingEntityCRUDService<Literature> implements LiteratureService {
+		EventCreatingEntityCRUDService<Literature, OrientDBLiteratureDAO>
+		implements LiteratureService {
 
 	private static DefaultLiteratureService instance;
 

@@ -11,15 +11,15 @@ import org.junit.Test;
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
-import com.github.bfour.fpliteraturecollector.domain.Person;
-import com.github.bfour.fpliteraturecollector.service.PersonService;
+import com.github.bfour.fpliteraturecollector.domain.Author;
+import com.github.bfour.fpliteraturecollector.service.AuthorService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager.ServiceManagerMode;
 
 public class PersonTest {
 
 	private static ServiceManager servMan;
-	private static PersonService persServ;
+	private static AuthorService persServ;
 
 	@BeforeClass
 	public static void preClass() throws ServiceException {
@@ -51,14 +51,14 @@ public class PersonTest {
 	@Test
 	public void deleteNonExistentPersonExpectNoChange() throws ServiceException {
 		assert(persServ.getAll().isEmpty());
-		persServ.delete(new Person("Nombre", "Inconnu"));
+		persServ.delete(new Author("Nombre", "Inconnu"));
 		assert(persServ.getAll().isEmpty());
 	}
 	
 	@Test (expected = ServiceException.class)
 	public void updateNonExistentPersonExpectFailure() throws ServiceException {
 		assert(persServ.getAll().isEmpty());
-		persServ.update(new Person("Nombre", "Inconnu"), new Person("Persona", "Nueva"));
+		persServ.update(new Author("Nombre", "Inconnu"), new Author("Persona", "Nueva"));
 		assert(persServ.getAll().isEmpty());
 	}
 	
@@ -66,27 +66,27 @@ public class PersonTest {
 	public void createAndRemovePersonsAndTestDatabaseClean()
 			throws ServiceException, DatalayerException {
 
-		List<Person> personList = new LinkedList<Person>();
-		personList.add(new Person("Tapio", "Saari"));
-		personList.add(new Person("T.", "Saari"));
-		personList.add(new Person("", "Saari"));
-		personList.add(new Person("Ilmari", "Sinivuokko"));
-		personList.add(new Person("Friðrik Reetta", "Wuopio"));
-		personList.add(new Person("Áki Brynhildur", "Jokela"));
-		personList.add(new Person("Alan", "Turing"));
-		personList.add(new Person("藤本", "雄大"));
+		List<Author> personList = new LinkedList<Author>();
+		personList.add(new Author("Tapio", "Saari"));
+		personList.add(new Author("T.", "Saari"));
+		personList.add(new Author("", "Saari"));
+		personList.add(new Author("Ilmari", "Sinivuokko"));
+		personList.add(new Author("Friðrik Reetta", "Wuopio"));
+		personList.add(new Author("Áki Brynhildur", "Jokela"));
+		personList.add(new Author("Alan", "Turing"));
+		personList.add(new Author("藤本", "雄大"));
 
-		for (Person person : personList)
+		for (Author person : personList)
 			personList.set(personList.indexOf(person), persServ.create(person));
 
 		// check all created properly
-		DataIterator<Person> dbIterator = persServ.get();
-		for (Person person : personList) {
+		DataIterator<Author> dbIterator = persServ.get();
+		for (Author person : personList) {
 			assert (dbIterator.next().equals(person));
 		}
 
 		// delete all
-		for (Person person : personList)
+		for (Author person : personList)
 			persServ.delete(person);
 		
 		// confirm delete
