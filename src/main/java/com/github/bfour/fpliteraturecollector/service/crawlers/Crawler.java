@@ -60,10 +60,12 @@ public abstract class Crawler {
 	/**
 	 * Start the crawling process.
 	 * 
-	 * @param searchString
+	 * @param htmlParams
 	 *            instructions for the Crawler; syntax specific to Crawler
+	 * @param maximum
+	 *            page turns on website to be crawled
 	 */
-	public abstract void start(String searchString);
+	public abstract void start(String htmlParams, int maxPageTurns);
 
 	// /**
 	// * Pause the crawling process if possible.

@@ -25,7 +25,7 @@ public class PersonTest {
 	public static void preClass() throws ServiceException {
 		servMan = ServiceManager.getInstance(ServiceManagerMode.TEST);
 		servMan.dropAndReinitDatabase();
-		persServ = servMan.getPersonService();
+		persServ = servMan.getAuthorService();
 	}
 	
 	@After

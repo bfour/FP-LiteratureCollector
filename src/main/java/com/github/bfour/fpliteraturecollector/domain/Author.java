@@ -41,10 +41,13 @@ public class Author extends Entity {
 		this.msAcademicID = msAcademicID;
 	}
 
-	public Author(String firstName, String lastName) {
+	public Author(String firstName, String lastName, String gScholarID,
+			String msAcademicID) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.gScholarID = gScholarID;
+		this.msAcademicID = msAcademicID;
 	}
 
 	public Author() {

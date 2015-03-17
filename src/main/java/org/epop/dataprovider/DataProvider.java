@@ -13,7 +13,9 @@ package org.epop.dataprovider;
 import java.io.Reader;
 import java.util.List;
 
+import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
+import com.github.bfour.fpliteraturecollector.service.AuthorService;
 
 /**
  * given a query return the data
@@ -28,18 +30,25 @@ public abstract class DataProvider {
 
 	/**
 	 * run the query and returns the papers
-	 * @param htmlParams the parameters passed (eg. "query=meow%20meow" or "as_q=numbers&as_sauthors=turing")
+	 * 
+	 * @param htmlParams
+	 *            the parameters passed (eg. "query=meow%20meow" or
+	 *            "as_q=numbers&as_sauthors=turing")
 	 * @return the papers, never null
 	 * @throws DataUnavailableException
+	 * @throws DatalayerException
 	 */
-	public final List<Literature> runQuery(String htmlParams, int pageTurnLimit) throws DataUnavailableException {
+	public final List<Literature> runQuery(String htmlParams,
+			int pageTurnLimit, AuthorService authServ)
+			throws DataUnavailableException, DatalayerException {
 		try {
 			Reader r = getHTMLDoc(htmlParams, pageTurnLimit);
 			if (r == null)
 				throw new DataUnavailableException("cannot connect");
-			List<Literature> result = parsePage(r);	
+			List<Literature> result = parsePage(r, authServ);
 			if (result == null)
-				throw new DataUnavailableException("parser failed to parse file");
+				throw new DataUnavailableException(
+						"parser failed to parse file");
 			return result;
 		} catch (DataUnavailableException e) {
 			throw new DataUnavailableException(e.getMessage());
@@ -51,6 +60,7 @@ public abstract class DataProvider {
 	protected abstract Reader getHTMLDoc(String htmlParams, int pageTurnLimit);
 
 	// parse it - return null in case of error
-	protected abstract List<Literature> parsePage(Reader r);
+	protected abstract List<Literature> parsePage(Reader r,
+			AuthorService authServ) throws DatalayerException;
 
 }

@@ -105,7 +105,7 @@ public class ServiceManager {
 		
 	}
 
-	public AuthorService getPersonService() {
+	public AuthorService getAuthorService() {
 		return personServ;
 	}
 

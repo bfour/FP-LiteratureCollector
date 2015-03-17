@@ -31,7 +31,7 @@ public class LiteratureTest {
 		servMan = ServiceManager.getInstance(ServiceManagerMode.TEST);
 		servMan.dropAndReinitDatabase();
 		litServ = servMan.getLiteratureService();
-		persServ = servMan.getPersonService();
+		persServ = servMan.getAuthorService();
 	}
 
 	@After

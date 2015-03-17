@@ -39,10 +39,11 @@ public class Application {
 	public static void main(String[] args) {
 
 		try {
-//			ServiceManager servMan = ServiceManager
-//					.getInstance(ServiceManagerMode.DEFAULT);
 			
-			new EpopScholarCrawler().start("q="+URLEncoder.encode("e-health wearable", "UTF-8"));
+			ServiceManager servMan = ServiceManager
+					.getInstance(ServiceManagerMode.DEFAULT);
+			
+			new EpopScholarCrawler(servMan).start("q="+URLEncoder.encode("e-health wearable", "UTF-8"), 1);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

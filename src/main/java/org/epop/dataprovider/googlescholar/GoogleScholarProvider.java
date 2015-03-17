@@ -18,6 +18,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,13 +34,16 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import com.github.bfour.fpjcommons.lang.Tuple;
+import com.github.bfour.fpjcommons.services.DatalayerException;
+import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
+import com.github.bfour.fpliteraturecollector.service.AuthorService;
 
 public class GoogleScholarProvider extends DataProvider {
 	// Try the regex here: http://regex101.com/r/xR1aS1/3
-	private static final Pattern datapattern = Pattern
-			.compile("^(.*?)[\\s…]+-[\\s…]+(\\D.*?)?[\\s…]*,?\\s*(\\d+)?(?:[\\s…]+-[\\s…]+|$)");
 	private static final Pattern citespattern = Pattern.compile("(\\d+)");
 
 	private static final List<String> malformed = new LinkedList<String>();
@@ -87,8 +91,8 @@ public class GoogleScholarProvider extends DataProvider {
 						.contains("<b style=\"display:block;margin-left:50px\">Next</b>")) {
 					Thread.sleep(DELAY);
 					URI newUri = URIUtils.createURI("http", SCHOLAR_GOOGLE_COM,
-							-1, "/scholar", htmlParams + "&start=" + (counter+1)
-									* 10, null);
+							-1, "/scholar", htmlParams + "&start="
+									+ (counter + 1) * 10, null);
 					System.out.println(newUri);
 					Document e = Jsoup.connect(newUri.toURL().toString())
 							.userAgent("Mozilla").get();
@@ -125,25 +129,26 @@ public class GoogleScholarProvider extends DataProvider {
 		return new StringReader(responseBody);
 	}
 
-//	private List<NameValuePair> getParameters(Query q, int counter) {
-//		List<NameValuePair> qparams;
-//		qparams = new ArrayList<NameValuePair>();
-//		qparams.add(new BasicNameValuePair("start", String.valueOf(counter
-//				* MAX_NUM_PAPERS)));
-//		qparams.add(new BasicNameValuePair("as_sauthors", "\""
-//				+ q.getCompleteAuthorName('+') + "\""));
-//		qparams.add(new BasicNameValuePair("as_q", ""));
-//		// qparams.add(new BasicNameValuePair("as_sauthors",
-//		// q.getCompleteAuthorName()));
-//		// qparams.add(new BasicNameValuePair("btnG", "Search"));
-//		qparams.add(new BasicNameValuePair("num", MAX_NUM_PAPERS + ""));
-//		// qparams.add(new BasicNameValuePair("as_vis", "1"));
-//		// qparams.add(new BasicNameValuePair("as_sdt", "1,5"));
-//		return qparams;
-//	}
+	// private List<NameValuePair> getParameters(Query q, int counter) {
+	// List<NameValuePair> qparams;
+	// qparams = new ArrayList<NameValuePair>();
+	// qparams.add(new BasicNameValuePair("start", String.valueOf(counter
+	// * MAX_NUM_PAPERS)));
+	// qparams.add(new BasicNameValuePair("as_sauthors", "\""
+	// + q.getCompleteAuthorName('+') + "\""));
+	// qparams.add(new BasicNameValuePair("as_q", ""));
+	// // qparams.add(new BasicNameValuePair("as_sauthors",
+	// // q.getCompleteAuthorName()));
+	// // qparams.add(new BasicNameValuePair("btnG", "Search"));
+	// qparams.add(new BasicNameValuePair("num", MAX_NUM_PAPERS + ""));
+	// // qparams.add(new BasicNameValuePair("as_vis", "1"));
+	// // qparams.add(new BasicNameValuePair("as_sdt", "1,5"));
+	// return qparams;
+	// }
 
 	@Override
-	protected List<Literature> parsePage(Reader page) {
+	protected List<Literature> parsePage(Reader page, AuthorService authServ)
+			throws DatalayerException {
 		List<Literature> papers = new ArrayList<Literature>();
 		Document doc = null;
 		try {
@@ -164,34 +169,61 @@ public class GoogleScholarProvider extends DataProvider {
 
 		for (Element article : doc.select(".gs_ri")) {
 			try {
-				
+
 				LiteratureBuilder litBuilder = new LiteratureBuilder();
-				
+
 				String title = article.select(".gs_rt").text();
 				title = title.replaceAll("\\[PDF\\]\\[PDF\\] ", "");
+				if (title.isEmpty())
+					throw new DatalayerException(
+							"title retrieved by parsing is empty");
 				litBuilder.setTitle(title);
-				// if (title.isEmpty())
-				// throw new IllegalStateException("title empty");
 
-				String data = article.select(".gs_a").text();
-				Matcher dm = datapattern.matcher(data);
-				if (!dm.find())
-					throw new IllegalStateException("data malformed: " + data);
+				String rawHTML = article.select(".gs_a").html();
 
-				String authors = dm.group(1);
-				
-				
-				String place = (dm.group(2) != null ? dm.group(2) : "");
-				int year = (dm.group(3) != null ? Integer.parseInt(dm.group(3))
-						: -1);
+				// split by " - " (authors - publication, year - publisher)
+				StringTokenizer dashTokenizer = new StringTokenizer(rawHTML,
+						" - ");
+				if (dashTokenizer.countTokens() != 3)
+					throw new DatalayerException(
+							"dashTokenizer should have three sections (authors - publication, year - publisher), found "
+									+ dashTokenizer.countTokens()
+									+ "; maybe Google Scholar layout has changed");
+				String namesHTML = dashTokenizer.nextToken();
+				String publicationHTML = dashTokenizer.nextToken();
+				String publisherHTML = dashTokenizer.nextToken();
+
+				// authors
+				List<Author> authors = getAuthorsFromHTMLSection(namesHTML,
+						authServ);
+				litBuilder.setAuthors(authors);
+
+				// publication
+				StringTokenizer commaTokenizer = new StringTokenizer(
+						publicationHTML, ", ");
+				if (commaTokenizer.countTokens() == 2) {
+					String publication = commaTokenizer.nextToken();
+					try {
+						Integer year = Integer.parseInt(commaTokenizer.nextToken());
+					} catch (NumberFormatException e) {
+						// throw new ServiceException(
+						// "publicationHTML subsection has invalid format: failed to parse publication year");
+						// TODO (low) logging
+						
+					}
+				} else {
+					// TODO logging/notify user
+				}
+
+				// publisher
 
 				String citedby = article.select(".gs_fl a[href*=cites]").text();
 				Matcher cm = citespattern.matcher(citedby);
 				int cites = cm.find() ? Integer.parseInt(cm.group(1)) : 0;
 
-//				Paper paper = new Paper(authors, title, place.replaceAll(
-//						"(\u0097|…)", ""), year, cites);
-	
+				// Paper paper = new Paper(authors, title, place.replaceAll(
+				// "(\u0097|…)", ""), year, cites);
+
 				papers.add(litBuilder.getObject());
 
 			} catch (Exception e) {
@@ -213,6 +245,74 @@ public class GoogleScholarProvider extends DataProvider {
 		System.err.println(malformed + " " + malformed.size());
 
 		return papers;
+	}
+
+	private List<Author> getAuthorsFromHTMLSection(String htmlSection,
+			AuthorService authServ) throws ServiceException {
+
+		htmlSection = htmlSection.replace("…", "");
+
+		List<Author> authors = new ArrayList<>();
+
+		StringTokenizer commaTokenizer = new StringTokenizer(htmlSection, ", ");
+
+		// only one author
+		if (commaTokenizer.countTokens() == 0) {
+			authors.add(getAuthorFromHTMLSubSection(htmlSection, authServ));
+			return authors;
+		}
+
+		// more than one author
+		while (commaTokenizer.hasMoreTokens()) {
+			authors.add(getAuthorFromHTMLSubSection(commaTokenizer.nextToken(),
+					authServ));
+		}
+		return authors;
+
+	}
+
+	private Author getAuthorFromHTMLSubSection(String subsection,
+			AuthorService authServ) throws ServiceException {
+
+		Pattern authorWithIDPattern = Pattern
+				.compile("citations\\?user=(.*?)&.*?>(.*?)<");
+
+		Matcher matcher = authorWithIDPattern.matcher(subsection);
+		if (matcher.find()) {
+			String gScholarID = matcher.group(1);
+			String name = matcher.group(2);
+			// check if author already in DB
+			Author authInDB = authServ.getByGScholarID(gScholarID);
+			if (authInDB != null) {
+				return authInDB;
+			} else {
+				// otherwise create new one
+				Tuple<String, String> tuple = getFirstAndLastNameFromNameString(name);
+				return new Author(tuple.getA(), tuple.getB(), gScholarID, null);
+			}
+		} else {
+			// no ID for this author
+			Tuple<String, String> tuple = getFirstAndLastNameFromNameString(subsection);
+			return new Author(tuple.getA(), tuple.getB(), null, null);
+		}
+
+	}
+
+	public Tuple<String, String> getFirstAndLastNameFromNameString(String name)
+			throws ServiceException {
+		name = name.trim();
+		// first token is first name, others are last name
+		StringTokenizer spaceTokenizer = new StringTokenizer(name, " ");
+		if (!spaceTokenizer.hasMoreTokens())
+			throw new ServiceException(
+					"getFirstAndLastNameFromNameString failed: no tokens found");
+		String first = spaceTokenizer.nextToken();
+		StringBuilder last = new StringBuilder();
+		while (spaceTokenizer.hasMoreTokens()) {
+			last.append("-");
+			last.append(spaceTokenizer.nextToken());
+		}
+		return new Tuple<String, String>(first, last.toString());
 	}
 
 	// TODO substitute system.out with logger

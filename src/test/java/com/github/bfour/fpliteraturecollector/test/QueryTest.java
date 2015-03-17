@@ -39,7 +39,7 @@ public class QueryTest {
 		servMan = ServiceManager.getInstance(ServiceManagerMode.TEST);
 		servMan.dropAndReinitDatabase();
 		litServ = servMan.getLiteratureService();
-		persServ = servMan.getPersonService();
+		persServ = servMan.getAuthorService();
 		atomReqServ = servMan.getAtomicRequestService();
 		queryServ = servMan.getQueryService();
 		crawlServ = servMan.getCrawlerService();

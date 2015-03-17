@@ -38,6 +38,10 @@ public class Literature extends Entity {
 	protected String DOI;
 	protected ISBN ISBN;
 	protected Integer year;
+	/**
+	 * eg. name of journal, name of conference ...
+	 */
+	protected String publicationContext;
 	protected String fulltextURL;
 	protected Path fulltextFilePath;
 
@@ -56,6 +60,7 @@ public class Literature extends Entity {
 	}
 
 	public Literature(String title, List<Author> authors, String DOI, ISBN ISBN) {
+		super();
 		this.title = title;
 		this.authors = authors;
 		this.DOI = DOI;
