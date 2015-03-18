@@ -20,6 +20,7 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  * -///////////////////////////////-
  */
 
+import java.security.InvalidParameterException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -87,12 +88,15 @@ public class GraphUtils {
 
 	}
 
-	public static <T> void setProperty(Vertex v, String name, T value, boolean canBeNull) {
+	public static <T> void setProperty(Vertex v, String name, T value,
+			boolean canBeNull) {
 		if (value == null && canBeNull)
-			v.removeProperty("year");
+			v.removeProperty(name);
+		else if (value != null)
+			v.setProperty(name, value);
 		else
-			v.setProperty("year", value);
-
+			throw new InvalidParameterException("value \"" + name
+					+ "\" is null but declared as cannot be null");
 	}
 
 }

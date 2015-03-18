@@ -18,7 +18,7 @@ public class ScholarPyCrawler extends Crawler {
 
 		private PythonInterpreter interpreter;
 		private String scriptname;
-		
+
 		public ScholarPyWorker() {
 			interpreter = new PythonInterpreter();
 			PythonInterpreter.initialize(System.getProperties(),
@@ -32,7 +32,7 @@ public class ScholarPyCrawler extends Crawler {
 		protected List<Literature> doInBackground() throws Exception {
 			List<Literature> list = new LinkedList<Literature>();
 			interpreter.execfile(scriptname);
-//			interpreter.setOut(new );
+			// interpreter.setOut(new );
 			return list;
 		}
 
@@ -46,7 +46,7 @@ public class ScholarPyCrawler extends Crawler {
 	}
 
 	@Override
-	public synchronized void start(String searchString) {
+	public synchronized void start(String searchString, int maxPageTurns) {
 
 	}
 

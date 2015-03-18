@@ -42,16 +42,20 @@ public class Literature extends Entity {
 	 * eg. name of journal, name of conference ...
 	 */
 	protected String publicationContext;
+	protected String publisher;
+	protected String websiteURL;
 	protected String fulltextURL;
 	protected Path fulltextFilePath;
+	
+	protected Integer gScholarNumCitations;
 
 	// TODO: also important: type of publication (journal, proceeding
 	// (Konferenzband), book chapter), Verlag, Datum (Jahr)
 
-	public Literature(long iD, Date creationTime, Date lastChangeTime,
+	public Literature(Long iD, Date creationTime, Date lastChangeTime,
 			String title, LiteratureType type, List<Author> authors,
-			String DOI, ISBN ISBN, Integer year, String publicationContext,
-			String fulltextURL, Path fulltextFilePath) {
+			String DOI, ISBN ISBN, Integer year, String publicationContext, String publisher, String websiteURL, 
+			String fulltextURL, Path fulltextFilePath, Integer gScholarNumCitations) {
 		super(iD, creationTime, lastChangeTime);
 		this.title = title;
 		this.type = type;
@@ -60,13 +64,16 @@ public class Literature extends Entity {
 		this.ISBN = ISBN;
 		this.year = year;
 		this.publicationContext = publicationContext;
+		this.publisher = publisher;
+		this.websiteURL = websiteURL;
 		this.fulltextURL = fulltextURL;
 		this.fulltextFilePath = fulltextFilePath;
+		this.gScholarNumCitations = gScholarNumCitations;
 	}
 
 	public Literature(String title, LiteratureType type, List<Author> authors,
-			String DOI, ISBN ISBN, Integer year, String publicationContext,
-			String fulltextURL, Path fulltextFilePath) {
+			String DOI, ISBN ISBN, Integer year, String publicationContext, String publisher, String websiteURL, 
+			String fulltextURL, Path fulltextFilePath, Integer gScholarNumCitations) {
 		super();
 		this.title = title;
 		this.type = type;
@@ -75,8 +82,11 @@ public class Literature extends Entity {
 		this.ISBN = ISBN;
 		this.year = year;
 		this.publicationContext = publicationContext;
+		this.publisher = publisher;
+		this.websiteURL = websiteURL;
 		this.fulltextURL = fulltextURL;
 		this.fulltextFilePath = fulltextFilePath;
+		this.gScholarNumCitations = gScholarNumCitations;
 	}
 
 	public Literature() {
@@ -111,12 +121,24 @@ public class Literature extends Entity {
 		return publicationContext;
 	}
 
+	public String getPublisher() {
+		return publisher;
+	}
+
+	public String getWebsiteURL() {
+		return websiteURL;
+	}
+
 	public String getFulltextURL() {
 		return fulltextURL;
 	}
 
 	public Path getFulltextFilePath() {
 		return fulltextFilePath;
+	}
+
+	public Integer getgScholarNumCitations() {
+		return gScholarNumCitations;
 	}
 
 }

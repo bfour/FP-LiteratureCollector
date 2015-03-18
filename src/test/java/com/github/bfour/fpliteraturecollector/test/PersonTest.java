@@ -1,6 +1,5 @@
 package com.github.bfour.fpliteraturecollector.test;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.After;
@@ -27,55 +26,49 @@ public class PersonTest {
 		servMan.dropAndReinitDatabase();
 		persServ = servMan.getAuthorService();
 	}
-	
+
 	@After
 	public void post() throws ServiceException {
 		servMan.resetAllData();
 	}
-	
+
 	@AfterClass
 	public static void postClass() throws ServiceException {
-		servMan.close();	
+		servMan.close();
 	}
-	
+
 	@Test
 	public void returnEmptyListOnEmptyDB() throws ServiceException {
-		assert(persServ.getAll().isEmpty());
+		assert (persServ.getAll().isEmpty());
 	}
-	
+
 	@Test
-	public void iteratorDoesNotHaveNextOnEmptyDB() throws ServiceException, DatalayerException {
-		assert(persServ.get().hasNext());
+	public void iteratorDoesNotHaveNextOnEmptyDB() throws ServiceException,
+			DatalayerException {
+		assert (persServ.get().hasNext());
 	}
-	
+
 	@Test
 	public void deleteNonExistentPersonExpectNoChange() throws ServiceException {
-		assert(persServ.getAll().isEmpty());
-		persServ.delete(new Author("Nombre", "Inconnu"));
-		assert(persServ.getAll().isEmpty());
+		assert (persServ.getAll().isEmpty());
+		persServ.delete(new Author("Nombre", "Inconnu", null, null));
+		assert (persServ.getAll().isEmpty());
 	}
-	
-	@Test (expected = ServiceException.class)
+
+	@Test(expected = ServiceException.class)
 	public void updateNonExistentPersonExpectFailure() throws ServiceException {
-		assert(persServ.getAll().isEmpty());
-		persServ.update(new Author("Nombre", "Inconnu"), new Author("Persona", "Nueva"));
-		assert(persServ.getAll().isEmpty());
+		assert (persServ.getAll().isEmpty());
+		persServ.update(new Author("Nombre", "Inconnu", null, null),
+				new Author("Persona", "Nueva", null, null));
+		assert (persServ.getAll().isEmpty());
 	}
-	
+
 	@Test
 	public void createAndRemovePersonsAndTestDatabaseClean()
 			throws ServiceException, DatalayerException {
 
-		List<Author> personList = new LinkedList<Author>();
-		personList.add(new Author("Tapio", "Saari"));
-		personList.add(new Author("T.", "Saari"));
-		personList.add(new Author("", "Saari"));
-		personList.add(new Author("Ilmari", "Sinivuokko"));
-		personList.add(new Author("Friðrik Reetta", "Wuopio"));
-		personList.add(new Author("Áki Brynhildur", "Jokela"));
-		personList.add(new Author("Alan", "Turing"));
-		personList.add(new Author("藤本", "雄大"));
-
+		List<Author> personList = TestDataCreator.createAuthorList1();
+		
 		for (Author person : personList)
 			personList.set(personList.indexOf(person), persServ.create(person));
 
@@ -88,9 +81,9 @@ public class PersonTest {
 		// delete all
 		for (Author person : personList)
 			persServ.delete(person);
-		
+
 		// confirm delete
-		assert(persServ.getAll().isEmpty());
+		assert (persServ.getAll().isEmpty());
 
 	}
 

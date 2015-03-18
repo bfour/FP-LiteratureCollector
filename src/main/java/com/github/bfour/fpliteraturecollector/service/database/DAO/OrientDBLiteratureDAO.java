@@ -100,6 +100,27 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 		}
 
 		@Override
+		public String getPublicationContext() {
+			if (publicationContext == null)
+				publicationContext = vertex.getProperty("publicationContext");
+			return publicationContext;
+		}
+
+		@Override
+		public String getPublisher() {
+			if (publisher == null)
+				publisher = vertex.getProperty("publisher");
+			return publisher;
+		}
+
+		@Override
+		public String getWebsiteURL() {
+			if (websiteURL == null)
+				websiteURL = vertex.getProperty("websiteURL");
+			return websiteURL;
+		}
+
+		@Override
 		public Path getFulltextFilePath() {
 			if (fulltextFilePath == null)
 				fulltextFilePath = Paths.get((String) vertex
@@ -112,6 +133,14 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 			if (fulltextURL == null)
 				fulltextURL = (String) vertex.getProperty("fulltextURL");
 			return fulltextURL;
+		}
+
+		@Override
+		public Integer getgScholarNumCitations() {
+			if (gScholarNumCitations == null)
+				gScholarNumCitations = (Integer) vertex
+						.getProperty("gScholarNumCitations");
+			return gScholarNumCitations;
 		}
 
 		@Override
@@ -175,12 +204,26 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 		// year
 		GraphUtils.setProperty(v, "year", entity.getYear(), true);
 
+		// publicationContext
+		GraphUtils.setProperty(v, "publicationContext",
+				entity.getPublicationContext(), true);
+
+		// publisher
+		GraphUtils.setProperty(v, "publisher", entity.getPublisher(), true);
+
+		// website URL
+		GraphUtils.setProperty(v, "websiteURL", entity.getWebsiteURL(), true);
+
 		// fulltext URL
 		GraphUtils.setProperty(v, "fulltextURL", entity.getFulltextURL(), true);
 
 		// fulltext file path
 		GraphUtils.setProperty(v, "fulltextFilePath",
 				entity.getFulltextFilePath(), true);
+
+		// gScholarNumCitations
+		GraphUtils.setProperty(v, "gScholarNumCitations",
+				entity.getgScholarNumCitations(), true);
 
 		return v;
 

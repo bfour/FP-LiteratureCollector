@@ -167,13 +167,15 @@ public class GoogleScholarProvider extends DataProvider {
 			e.printStackTrace();
 		} // for (Document doc : docs) {
 
-		for (Element article : doc.select(".gs_ri")) {
+		for (Element article : doc.select(".gs_r")) {
 			try {
 
 				LiteratureBuilder litBuilder = new LiteratureBuilder();
 
 				String title = article.select(".gs_rt").text();
 				title = title.replaceAll("\\[PDF\\]\\[PDF\\] ", "");
+				title = title.replaceAll("\u0097", "-");
+				title = title.replaceAll("…", "...");
 				if (title.isEmpty())
 					throw new DatalayerException(
 							"title retrieved by parsing is empty");
@@ -182,16 +184,15 @@ public class GoogleScholarProvider extends DataProvider {
 				String rawHTML = article.select(".gs_a").html();
 
 				// split by " - " (authors - publication, year - publisher)
-				StringTokenizer dashTokenizer = new StringTokenizer(rawHTML,
-						" - ");
-				if (dashTokenizer.countTokens() != 3)
+				String[] splits = rawHTML.split(" - ");
+				if (splits.length != 3)
 					throw new DatalayerException(
 							"dashTokenizer should have three sections (authors - publication, year - publisher), found "
-									+ dashTokenizer.countTokens()
+									+ splits.length
 									+ "; maybe Google Scholar layout has changed");
-				String namesHTML = dashTokenizer.nextToken();
-				String publicationHTML = dashTokenizer.nextToken();
-				String publisherHTML = dashTokenizer.nextToken();
+				String namesHTML = splits[0];
+				String publicationHTML = splits[1];
+				String publisherHTML = splits[2];
 
 				// authors
 				List<Author> authors = getAuthorsFromHTMLSection(namesHTML,
@@ -199,32 +200,45 @@ public class GoogleScholarProvider extends DataProvider {
 				litBuilder.setAuthors(authors);
 
 				// publication
-				StringTokenizer commaTokenizer = new StringTokenizer(
-						publicationHTML, ", ");
-				if (commaTokenizer.countTokens() == 2) {
-					String publication = commaTokenizer.nextToken();
-					litBuilder.set
+				String[] commaSplit = publicationHTML.split(", ");
+				if (commaSplit.length == 2) {
+					String publication = commaSplit[0];
+					publication = publication.replaceAll("\u0097", "-");
+					publication = publication.replaceAll("…", "...");
+					litBuilder.setPublicationContext(publication);
 					try {
-						Integer year = Integer.parseInt(commaTokenizer.nextToken());
+						Integer year = Integer.parseInt(commaSplit[1]);
 						litBuilder.setYear(year);
 					} catch (NumberFormatException e) {
 						// throw new ServiceException(
 						// "publicationHTML subsection has invalid format: failed to parse publication year");
 						// TODO (low) logging
-						
+
 					}
 				} else {
 					// TODO logging/notify user
 				}
 
 				// publisher
+				litBuilder.setPublisher(publisherHTML);
 
+				// citations
 				String citedby = article.select(".gs_fl a[href*=cites]").text();
 				Matcher cm = citespattern.matcher(citedby);
-				int cites = cm.find() ? Integer.parseInt(cm.group(1)) : 0;
+				try {
+					int cites = cm.find() ? Integer.parseInt(cm.group(1)) : 0;
+					litBuilder.setgScholarNumCitations(cites);
+				} catch (NumberFormatException e) {
+				}
 
-				// Paper paper = new Paper(authors, title, place.replaceAll(
-				// "(\u0097|…)", ""), year, cites);
+				// website URL
+				String websiteURL = article.select(".gs_rt a").attr("href");
+				litBuilder.setWebsiteURL(websiteURL);
+
+				// fulltext
+				String fulltextURL = article.select("div.gs_md_wp.gs_ttss a")
+						.attr("href");
+				litBuilder.setFulltextURL(fulltextURL);
 
 				papers.add(litBuilder.getObject());
 
@@ -256,18 +270,17 @@ public class GoogleScholarProvider extends DataProvider {
 
 		List<Author> authors = new ArrayList<>();
 
-		StringTokenizer commaTokenizer = new StringTokenizer(htmlSection, ", ");
+		String[] commaSplit = htmlSection.split(", ");
 
 		// only one author
-		if (commaTokenizer.countTokens() == 0) {
+		if (commaSplit.length == 0) {
 			authors.add(getAuthorFromHTMLSubSection(htmlSection, authServ));
 			return authors;
 		}
 
 		// more than one author
-		while (commaTokenizer.hasMoreTokens()) {
-			authors.add(getAuthorFromHTMLSubSection(commaTokenizer.nextToken(),
-					authServ));
+		for (String part : commaSplit) {
+			authors.add(getAuthorFromHTMLSubSection(part, authServ));
 		}
 		return authors;
 
@@ -314,7 +327,8 @@ public class GoogleScholarProvider extends DataProvider {
 			last.append("-");
 			last.append(spaceTokenizer.nextToken());
 		}
-		return new Tuple<String, String>(first, last.toString());
+		return new Tuple<String, String>(first, last.subSequence(1,
+				last.length()).toString());
 	}
 
 	// TODO substitute system.out with logger
