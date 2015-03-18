@@ -49,22 +49,34 @@ public class Literature extends Entity {
 	// (Konferenzband), book chapter), Verlag, Datum (Jahr)
 
 	public Literature(long iD, Date creationTime, Date lastChangeTime,
-			String title, List<Author> authors, String DOI, ISBN ISBN,
-			Integer year) {
+			String title, LiteratureType type, List<Author> authors,
+			String DOI, ISBN ISBN, Integer year, String publicationContext,
+			String fulltextURL, Path fulltextFilePath) {
 		super(iD, creationTime, lastChangeTime);
 		this.title = title;
+		this.type = type;
 		this.authors = authors;
 		this.DOI = DOI;
 		this.ISBN = ISBN;
 		this.year = year;
+		this.publicationContext = publicationContext;
+		this.fulltextURL = fulltextURL;
+		this.fulltextFilePath = fulltextFilePath;
 	}
 
-	public Literature(String title, List<Author> authors, String DOI, ISBN ISBN) {
+	public Literature(String title, LiteratureType type, List<Author> authors,
+			String DOI, ISBN ISBN, Integer year, String publicationContext,
+			String fulltextURL, Path fulltextFilePath) {
 		super();
 		this.title = title;
+		this.type = type;
 		this.authors = authors;
 		this.DOI = DOI;
 		this.ISBN = ISBN;
+		this.year = year;
+		this.publicationContext = publicationContext;
+		this.fulltextURL = fulltextURL;
+		this.fulltextFilePath = fulltextFilePath;
 	}
 
 	public Literature() {
@@ -90,11 +102,15 @@ public class Literature extends Entity {
 	public ISBN getISBN() {
 		return ISBN;
 	}
-	
+
 	public Integer getYear() {
 		return year;
 	}
-	
+
+	public String getPublicationContext() {
+		return publicationContext;
+	}
+
 	public String getFulltextURL() {
 		return fulltextURL;
 	}

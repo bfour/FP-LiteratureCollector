@@ -203,8 +203,10 @@ public class GoogleScholarProvider extends DataProvider {
 						publicationHTML, ", ");
 				if (commaTokenizer.countTokens() == 2) {
 					String publication = commaTokenizer.nextToken();
+					litBuilder.set
 					try {
 						Integer year = Integer.parseInt(commaTokenizer.nextToken());
+						litBuilder.setYear(year);
 					} catch (NumberFormatException e) {
 						// throw new ServiceException(
 						// "publicationHTML subsection has invalid format: failed to parse publication year");

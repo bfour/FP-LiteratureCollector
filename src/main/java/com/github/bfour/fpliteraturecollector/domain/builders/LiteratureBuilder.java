@@ -40,6 +40,7 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 	private String DOI;
 	private ISBN ISBN;
 	private Integer year;
+	private String publicationContext;
 	private String fulltextURL;
 	private Path fulltextFilePath;
 
@@ -110,6 +111,15 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 	
 	public void setYear(Integer year) {
 		this.year = year;
+	}
+	
+
+	public String getPublicationContext() {
+		return publicationContext;
+	}
+
+	public void setPublicationContext(String publicationContext) {
+		this.publicationContext = publicationContext;
 	}
 
 	public String getFulltextURL() {
