@@ -167,6 +167,11 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 		return getNewEntityID();
 	}
 
+	@Override
+	public boolean exists(T obj) {
+		return getVertexForEntity(obj) == null;
+	}
+
 	/**
 	 * Converts the given vertex to a corresponding entity.
 	 * 
