@@ -34,7 +34,7 @@ public class DefaultLiteratureService extends
 	private static DefaultLiteratureService instance;
 	private AuthorService authServ;
 
-	private DefaultLiteratureService(OrientDBGraphService graphService, 
+	private DefaultLiteratureService(OrientDBGraphService graphService,
 			boolean forceCreateNewInstance, AuthorService authServ) {
 		super(OrientDBLiteratureDAO.getInstance(graphService,
 				forceCreateNewInstance));
@@ -42,29 +42,32 @@ public class DefaultLiteratureService extends
 	}
 
 	public static DefaultLiteratureService getInstance(
-			OrientDBGraphService graphService, boolean forceCreateNewInstance, AuthorService authServ) {
+			OrientDBGraphService graphService, boolean forceCreateNewInstance,
+			AuthorService authServ) {
 		if (instance == null || forceCreateNewInstance)
 			instance = new DefaultLiteratureService(graphService,
 					forceCreateNewInstance, authServ);
 		return instance;
 	}
-	
+
 	@Override
 	public Literature create(Literature entity) throws ServiceException {
-		for (Author auth : entity.getAuthors()) {
-			if (!authServ.exists(auth))
-				authServ.create(auth);
-		}
+		if (entity.getAuthors() != null)
+			for (Author auth : entity.getAuthors()) {
+				if (!authServ.exists(auth))
+					authServ.create(auth);
+			}
 		return super.create(entity);
 	}
 
 	@Override
 	public Literature update(Literature oldEntity, Literature newEntity)
 			throws ServiceException {
-		for (Author auth : newEntity.getAuthors()) {
-			if (!authServ.exists(auth))
-				authServ.create(auth);
-		}
+		if (newEntity.getAuthors() != null)
+			for (Author auth : newEntity.getAuthors()) {
+				if (!authServ.exists(auth))
+					authServ.create(auth);
+			}
 		return super.update(oldEntity, newEntity);
 	}
 

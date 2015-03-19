@@ -169,7 +169,7 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 
 	@Override
 	public boolean exists(T obj) {
-		return getVertexForEntity(obj) == null;
+		return getVertexForEntity(obj) != null;
 	}
 
 	/**

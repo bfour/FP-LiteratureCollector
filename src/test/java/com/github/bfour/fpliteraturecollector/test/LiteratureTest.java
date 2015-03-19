@@ -74,9 +74,9 @@ public class LiteratureTest {
 		List<Literature> literatureList = TestDataCreator
 				.createLiteratureList1(authServ);
 
-		for (Literature tag : literatureList)
+		for (Literature lit : literatureList)
 			literatureList
-					.set(literatureList.indexOf(tag), litServ.create(tag));
+					.set(literatureList.indexOf(lit), litServ.create(lit));
 
 		// check all created properly
 		DataIterator<Literature> dbIterator = litServ.get();
