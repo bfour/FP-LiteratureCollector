@@ -66,9 +66,9 @@ public class DefaultAtomicRequestService extends
 			throw new ServiceException("search string must not be null");
 		if (entity.getSearchString().isEmpty())
 			throw new ServiceException("search string must not be empty");
-		if (entity.getResults() == null)
-			throw new ServiceException(
-					"results list must not be null (may be empty)");
+		// if (entity.getResults() == null)
+		// throw new ServiceException(
+		// "results list must not be null (may be empty)");
 	}
 
 }

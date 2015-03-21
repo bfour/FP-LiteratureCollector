@@ -128,7 +128,7 @@ public class ServiceManager {
 	public CrawlerService getCrawlerService() {
 		return crawlServ;
 	}
-	
+
 	/**
 	 * Deletes all user data and re-initializes.
 	 */

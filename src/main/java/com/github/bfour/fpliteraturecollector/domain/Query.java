@@ -27,29 +27,40 @@ import com.github.bfour.fpjcommons.model.Entity;
 
 public class Query extends Entity {
 
-	private List<AtomicRequest> atomicRequests;
+	protected String name;
+	protected List<AtomicRequest> atomicRequests;
+	protected Integer queuePosition;
 
-	public Query(long iD, Date creationTime, Date lastChangeTime,
-			List<AtomicRequest> atomicRequests) {
+	public Query(long iD, Date creationTime, Date lastChangeTime, String name,
+			List<AtomicRequest> atomicRequests, Integer queuePosition) {
 		super(iD, creationTime, lastChangeTime);
+		this.name = name;
 		this.atomicRequests = atomicRequests;
+		this.queuePosition = queuePosition;
 	}
-	
-	public Query(List<AtomicRequest> atomicRequests) {
+
+	public Query(String name, List<AtomicRequest> atomicRequests,
+			Integer queuePosition) {
 		super();
+		this.name = name;
 		this.atomicRequests = atomicRequests;
+		this.queuePosition = queuePosition;
 	}
 
 	public Query() {
 		super();
 	}
-	
+
+	public String getName() {
+		return name;
+	}
+
 	public List<AtomicRequest> getAtomicRequests() {
 		return atomicRequests;
 	}
 
-	public void setAtomicRequests(List<AtomicRequest> atomicRequests) {
-		this.atomicRequests = atomicRequests;
+	public Integer getQueuePosition() {
+		return queuePosition;
 	}
 
 }

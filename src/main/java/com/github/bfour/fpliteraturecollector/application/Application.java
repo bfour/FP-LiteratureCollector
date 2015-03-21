@@ -20,14 +20,12 @@ package com.github.bfour.fpliteraturecollector.application;
  * -///////////////////////////////-
  */
 
-import java.net.URLEncoder;
-
 import javax.swing.JOptionPane;
 
+import com.github.bfour.fpjgui.FPJGUIManager;
+import com.github.bfour.fpliteraturecollector.gui.MainWindow;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
-import com.github.bfour.fpliteraturecollector.service.Utils;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager.ServiceManagerMode;
-import com.github.bfour.fpliteraturecollector.service.crawlers.epop.EpopScholarCrawler;
 
 // TODO import mit einfacher text-file
 // TODO evtl. request-generator tool (Kombinations-Tool)
@@ -39,12 +37,18 @@ public class Application {
 	public static void main(String[] args) {
 
 		try {
-			
+
 			ServiceManager servMan = ServiceManager
 					.getInstance(ServiceManagerMode.DEFAULT);
-			
-			new EpopScholarCrawler(servMan).start("q="+URLEncoder.encode("e-health wearable", "UTF-8"), 1);
-			
+
+			FPJGUIManager.getInstance().initialize();
+
+			MainWindow.getInstance(servMan).setVisible(true);
+
+			// new
+			// EpopScholarCrawler(servMan).start("q="+URLEncoder.encode("e-health wearable",
+			// "UTF-8"), 1);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane
@@ -53,8 +57,10 @@ public class Application {
 							"Sorry, the application cannot continue and will terminate.\n\n"
 									+ "This might be because the application is not configured properly or the database is unavailable.\n"
 									+ "Reinstalling the application might solve this problem.\n"
-									+ "Please report this to the developer at https://github.com/bfour/FP-LiteratureCollector/issues.\n"
-									+ "Details: " + e.getMessage(), "Error",
+									+ "Please report this to the developer at https://github.com/bfour/FP-LiteratureCollector/issues.\n\n"
+									+ "Details: "
+									+ (e.getMessage() == null ? e : e
+											.getMessage()), "Error",
 							JOptionPane.ERROR_MESSAGE);
 		}
 

@@ -1,5 +1,6 @@
 package com.github.bfour.fpliteraturecollector.domain;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,12 +29,20 @@ import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
 
 public class AtomicRequest extends Entity {
 
-	private Crawler crawler;
-	private String searchString;
-	private List<Literature> results;
+	protected Crawler crawler;
+	protected String searchString;
+	protected List<Literature> results;
 
-	public AtomicRequest(Crawler crawler,
-			String searchString, List<Literature> results) {
+	public AtomicRequest(Long iD, Date creationTime, Date lastChangeTime,
+			Crawler crawler, String searchString, List<Literature> results) {
+		super(iD, creationTime, lastChangeTime);
+		this.crawler = crawler;
+		this.searchString = searchString;
+		this.results = results;
+	}
+
+	public AtomicRequest(Crawler crawler, String searchString,
+			List<Literature> results) {
 		this.crawler = crawler;
 		this.searchString = searchString;
 		this.results = results;
@@ -57,18 +66,6 @@ public class AtomicRequest extends Entity {
 
 	public List<Literature> getResults() {
 		return results;
-	}
-
-	public void setCrawler(Crawler crawler) {
-		this.crawler = crawler;
-	}
-
-	public void setSearchString(String searchString) {
-		this.searchString = searchString;
-	}
-
-	public void setResults(List<Literature> results) {
-		this.results = results;
 	}
 
 }

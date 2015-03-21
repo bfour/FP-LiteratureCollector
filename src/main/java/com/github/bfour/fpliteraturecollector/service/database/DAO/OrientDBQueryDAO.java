@@ -69,17 +69,31 @@ public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements
 		}
 
 		@Override
+		public String getName() {
+			if (name == null)
+				name = vertex.getProperty("name");
+			return name;
+		}
+
+		@Override
 		public List<AtomicRequest> getAtomicRequests() {
 			try {
-				if (getAtomicRequests() == null)
-					setAtomicRequests(GraphUtils
+				if (atomicRequests == null)
+					atomicRequests = GraphUtils
 							.getCollectionFromVertexProperty(vertex,
-									"atomicRequests", atomicRequestDAO));
+									"atomicRequests", atomicRequestDAO);
 			} catch (DatalayerException e) {
 				// TODO (low) improve
-				setAtomicRequests(new ArrayList<AtomicRequest>(0));
+				atomicRequests = new ArrayList<AtomicRequest>(0);
 			}
 			return getAtomicRequests();
+		}
+
+		@Override
+		public Integer getQueuePosition() {
+			if (queuePosition == null)
+				queuePosition = vertex.getProperty("queuePosition");
+			return queuePosition;
 		}
 
 		@Override
@@ -119,11 +133,18 @@ public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements
 	@Override
 	protected Vertex entityToVertex(Query entity, long ID, Vertex givenVertex)
 			throws DatalayerException {
-		Vertex entityVertex = super.entityToVertex(entity, ID, givenVertex);
-		entityVertex.setProperty("atomicRequests", GraphUtils
-				.getCollectionFromVertexProperty(entityVertex,
-						"atomicRequests", atomicRequestDAO));
-		return entityVertex;
+
+		Vertex v = super.entityToVertex(entity, ID, givenVertex);
+
+		GraphUtils.setProperty(v, "name", entity.getName(), false);
+		v.setProperty("atomicRequests", GraphUtils
+				.getCollectionFromVertexProperty(v, "atomicRequests",
+						atomicRequestDAO));
+		GraphUtils.setProperty(v, "queuePosition", entity.getQueuePosition(),
+				true);
+
+		return v;
+
 	}
 
 	@Override

@@ -20,9 +20,12 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
+import java.util.List;
+
 import com.github.bfour.fpjcommons.services.CRUD.CRUDService;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
+import com.github.bfour.fpliteraturecollector.domain.Query;
 
 public interface AtomicRequestService extends CRUDService<AtomicRequest> {
-
+	
 }

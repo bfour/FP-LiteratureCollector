@@ -123,6 +123,11 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.github.bfour.fp-jcommons</groupId>
+			<artifactId>fp-jcommons</artifactId>
+			<version>0.0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>com.github.bfour.fp-jgui</groupId>
 			<artifactId>fp-jgui</artifactId>
 			<version>0.0.3-SNAPSHOT</version>

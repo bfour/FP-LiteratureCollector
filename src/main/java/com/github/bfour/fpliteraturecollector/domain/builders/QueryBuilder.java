@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.domain.builders;
  * -///////////////////////////////-
  */
 
-
 import java.util.List;
 
 import com.github.bfour.fpjcommons.lang.Builder;
@@ -31,22 +30,38 @@ import com.github.bfour.fpliteraturecollector.domain.Query;
 public class QueryBuilder extends EntityBuilder<Query> implements
 		Builder<Query> {
 
+	private String name;
 	private List<AtomicRequest> atomicRequests;
-	
+	private Integer queuePosition;
+
 	public QueryBuilder() {
 		super();
 	}
-	
+
 	public QueryBuilder(Query q) {
+
 		setID(q.getID());
 		setCreationTime(q.getCreationTime());
 		setLastChangeTime(q.getLastChangeTime());
+
+		setName(q.getName());
 		setAtomicRequests(q.getAtomicRequests());
+		setQueuePosition(q.getQueuePosition());
+
 	}
-	
+
 	@Override
 	public Query getObject() {
-		return new Query(getID(), getCreationTime(), getLastChangeTime(), getAtomicRequests());
+		return new Query(getID(), getCreationTime(), getLastChangeTime(),
+				getName(), getAtomicRequests(), getQueuePosition());
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public List<AtomicRequest> getAtomicRequests() {
@@ -55,6 +70,14 @@ public class QueryBuilder extends EntityBuilder<Query> implements
 
 	public void setAtomicRequests(List<AtomicRequest> atomicRequests) {
 		this.atomicRequests = atomicRequests;
+	}
+
+	public Integer getQueuePosition() {
+		return queuePosition;
+	}
+
+	public void setQueuePosition(Integer queuePosition) {
+		this.queuePosition = queuePosition;
 	}
 
 }

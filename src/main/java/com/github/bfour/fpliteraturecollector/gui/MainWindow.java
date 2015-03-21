@@ -5,6 +5,7 @@ import javax.swing.JFrame;
 import net.miginfocom.swing.MigLayout;
 
 import com.github.bfour.fpjcommons.services.localization.LocalizationService;
+import com.github.bfour.fpjgui.FPJGUIManager;
 import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
 import com.github.bfour.fpjgui.abstraction.feedback.StaticLocationFeedbackNotificationSpawner;
@@ -65,7 +66,7 @@ public class MainWindow extends JFrame implements SearchActionListener,
 		mainPanel = new MainPanel(serviceManager);
 
 		// add components
-		String width = new Integer((int) (886 * GUIService.getInstance()
+		String width = new Integer((int) (886 * FPJGUIManager.getInstance()
 				.getScalingFactor())).toString();
 		this.setLayout(new MigLayout("insets 10, width 500:" + width + ":",
 				"[grow,fill]", "[grow,fill]"));

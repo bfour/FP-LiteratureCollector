@@ -14,7 +14,7 @@ import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
 import com.github.bfour.fpjgui.components.PlainToolbar;
-import com.github.bfour.fpjgui.design.Icons;
+import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
 public class MainPanel extends JPanel implements FeedbackProvider,
@@ -37,88 +37,38 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		// toolbar
 		PlainToolbar toolbar = new PlainToolbar(true);
 
-		JButton availBookButton = new JButton("Availability & Booking",
-				Icons.CALENDAR_32.getIcon());
-		availBookButton.setIconTextGap(6);
-		availBookButton.setMargin(new Insets(4, 16, 4, 16));
-		// availBookButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-		// availBookButton.setHorizontalTextPosition(SwingConstants.CENTER);
-		toolbar.add(availBookButton);
-
-		JButton customersButton = new JButton("Customers",
-				Icons.USER_32.getIcon());
-		customersButton.setIconTextGap(6);
-		customersButton.setMargin(new Insets(4, 16, 4, 16));
-		// customersButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-		// customersButton.setHorizontalTextPosition(SwingConstants.CENTER);
-		toolbar.add(customersButton);
-
-		JButton roomsButton = new JButton("Rooms", Icons.DOOR_32.getIcon());
-		roomsButton.setIconTextGap(6);
-		roomsButton.setMargin(new Insets(4, 16, 4, 16));
-		// roomsButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-		// roomsButton.setHorizontalTextPosition(SwingConstants.CENTER);
-		toolbar.add(roomsButton);
-
-		JButton roomCategoriesButton = new JButton("Room Categories",
-				Icons.THREE_TAGS_32.getIcon());
-		roomCategoriesButton.setIconTextGap(6);
-		roomCategoriesButton.setMargin(new Insets(4, 16, 4, 16));
-		// roomsButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-		// roomsButton.setHorizontalTextPosition(SwingConstants.CENTER);
-		toolbar.add(roomCategoriesButton);
-
-		JButton receiptsButton = new JButton("Receipts",
-				Icons.TABLEMONEY_32.getIcon());
-		receiptsButton.setIconTextGap(6);
-		receiptsButton.setMargin(new Insets(4, 16, 4, 16));
-		// receiptsButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-		// receiptsButton.setHorizontalTextPosition(SwingConstants.CENTER);
-		toolbar.add(receiptsButton);
+		JButton browsAuthorsButtonButton = new JButton("Browse all authors",
+				Icons.PERSON_GROUP.getIcon());
+		browsAuthorsButtonButton.setIconTextGap(6);
+		browsAuthorsButtonButton.setMargin(new Insets(4, 16, 4, 16));
+		toolbar.add(browsAuthorsButtonButton);
+		
+		JButton browseLiteratureButtonButton = new JButton("Browse all literature",
+				Icons.BOOKS.getIcon());
+		browseLiteratureButtonButton.setIconTextGap(6);
+		browseLiteratureButtonButton.setMargin(new Insets(4, 16, 4, 16));
+		toolbar.add(browseLiteratureButtonButton);		
 
 		add(toolbar, "cell 0 0, grow");
 
 		// content
-		ReservationsOverviewPanel currentReservationsPanel = new ReservationsOverviewPanel(
+		QueryOverviewPanel queryOverviewPanel = new QueryOverviewPanel(
 				serviceManager);
-		add(currentReservationsPanel, "cell 0 1,grow");
-		currentReservationsPanel.addFeedbackListener(this);
+		add(queryOverviewPanel, "cell 0 1,grow");
+		queryOverviewPanel.addFeedbackListener(this);
 
 		// logic
-		availBookButton.addActionListener(new ActionListener() {
+		browsAuthorsButtonButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AvailabilityAndBookingWindow.getInstance(serviceManager)
-						.setVisible(true);
+				// TODO
 			}
 		});
 
-		customersButton.addActionListener(new ActionListener() {
+		browseLiteratureButtonButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CustomerWindow.getInstance(serviceManager).setVisible(true);
-			}
-		});
-
-		roomsButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				RoomWindow.getInstance(serviceManager).setVisible(true);
-			}
-		});
-
-		roomCategoriesButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				RoomCategoriesWindow.getInstance(serviceManager).setVisible(
-						true);
-			}
-		});
-
-		receiptsButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ReceiptWindow.getInstance(serviceManager).setVisible(true);
+				// TODO
 			}
 		});
 

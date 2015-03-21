@@ -50,31 +50,30 @@ public class OrientDBAtomicRequestDAO extends OrientDBEntityDAO<AtomicRequest>
 
 		@Override
 		public Crawler getCrawler() {
-			if (super.getCrawler() == null)
-				setCrawler(CrawlerService.getInstance()
-						.getCrawlerForIdentifier(
-								(String) vertex.getProperty("searchEngine")));
-			return super.getCrawler();
+			if (crawler == null)
+				crawler = CrawlerService.getInstance().getCrawlerForIdentifier(
+						(String) vertex.getProperty("searchEngine"));
+			return crawler;
 		}
 
 		@Override
 		public String getSearchString() {
-			if (getSearchString() == null)
-				setSearchString((String) vertex.getProperty("searchString"));
-			return getSearchString();
+			if (searchString == null)
+				searchString = (String) vertex.getProperty("searchString");
+			return searchString;
 		}
 
 		@Override
 		public List<Literature> getResults() {
 			try {
-				if (getResults() == null)
-					setResults(GraphUtils.getCollectionFromVertexProperty(
-							vertex, "results", literatureDAO));
+				if (results == null)
+					results = GraphUtils.getCollectionFromVertexProperty(
+							vertex, "results", literatureDAO);
 			} catch (DatalayerException e) {
 				// TODO (low) improve
-				setResults(new ArrayList<Literature>(0));
+				results = new ArrayList<Literature>(0);
 			}
-			return getResults();
+			return results;
 		}
 
 		@Override

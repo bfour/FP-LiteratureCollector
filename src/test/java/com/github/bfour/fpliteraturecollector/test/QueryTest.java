@@ -124,7 +124,7 @@ public class QueryTest {
 
 		// query
 		List<Query> queries = new ArrayList<>();
-		queries.add(new Query(atomReqs));
+		queries.add(new Query("test query", atomReqs, 1));
 		for (Query query : queries)
 			queries.set(queries.indexOf(query), queryServ.create(query));
 
