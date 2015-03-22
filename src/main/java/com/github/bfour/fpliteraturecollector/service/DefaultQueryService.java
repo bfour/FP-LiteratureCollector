@@ -20,9 +20,11 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
+import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingEntityCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Query;
+import com.github.bfour.fpliteraturecollector.domain.builders.QueryBuilder;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBQueryDAO;
 
@@ -47,13 +49,14 @@ public class DefaultQueryService extends
 	}
 
 	@Override
-	public Query create(Query entity) throws ServiceException {
+	public synchronized Query create(Query entity) throws ServiceException {
 		checkIntegrity(entity);
-		return super.create(entity);
+		Query q = super.create(entity);
+		return queue(q);
 	}
 
 	@Override
-	public Query update(Query oldEntity, Query newEntity)
+	public synchronized Query update(Query oldEntity, Query newEntity)
 			throws ServiceException {
 		checkIntegrity(newEntity);
 		return super.update(oldEntity, newEntity);
@@ -63,6 +66,90 @@ public class DefaultQueryService extends
 		if (entity.getAtomicRequests() == null)
 			throw new ServiceException(
 					"atomic request list must not be null (may be empty)");
+	}
+
+	@Override
+	public synchronized Query getByQueuePosition(int position) throws ServiceException {
+		try {
+			return getDAO().getByQueuePosition(position);
+		} catch (DatalayerException e) {
+			throw new ServiceException(e);
+		}
+	}
+
+	@Override
+	public synchronized Query queueUp(Query query) throws ServiceException {
+
+		Query predecessor = getByQueuePosition(query.getQueuePosition() - 1);
+		if (predecessor == null) {
+			// no predecessor, we're already at beginning of queue do nothing
+			return query;
+		}
+
+		// switch this with predecessor
+		QueryBuilder qBuilder = new QueryBuilder(query);
+		QueryBuilder predBuilder = new QueryBuilder(predecessor);
+		qBuilder.setQueuePosition(predecessor.getQueuePosition());
+		predBuilder.setQueuePosition(query.getQueuePosition());
+
+		update(predecessor, predBuilder.getObject());
+		return update(query, qBuilder.getObject());
+
+	}
+
+	@Override
+	public synchronized Query queueDown(Query query) throws ServiceException {
+
+		Query successor = getByQueuePosition(query.getQueuePosition() + 1);
+		if (successor == null) {
+			// no successor, we're already at end of queue do nothing
+			return query;
+		}
+
+		// switch this with successor
+		QueryBuilder qBuilder = new QueryBuilder(query);
+		QueryBuilder sucBuilder = new QueryBuilder(successor);
+		qBuilder.setQueuePosition(successor.getQueuePosition());
+		sucBuilder.setQueuePosition(query.getQueuePosition());
+
+		update(successor, sucBuilder.getObject());
+		return update(query, qBuilder.getObject());
+
+	}
+
+	@Override
+	public synchronized Query queue(Query query) throws ServiceException {
+
+		// TODO (low) improve performance by using direct SQL max() query
+		int max = 0;
+		for (Query q : getAll()) {
+			Integer pos = q.getQueuePosition();
+			if (pos != null && pos > max)
+				max = pos;
+		}
+
+		QueryBuilder qBuilder = new QueryBuilder(query);
+		qBuilder.setQueuePosition(max + 1);
+
+		return update(query, qBuilder.getObject());
+
+	}
+	
+	public synchronized void start() throws ServiceException {
+		Query topQuery = getByQueuePosition(1);
+		topQuery.getAtomicRequests()
+	}
+	
+	public synchronized void stop() {
+		
+	}
+	
+	public synchronized void rerunAll() {
+		
+	}
+	
+	private void runQuery(Query q) {
+		q.getAtomicRequests()
 	}
 
 }

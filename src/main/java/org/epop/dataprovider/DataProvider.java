@@ -15,7 +15,6 @@ import java.util.List;
 
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
-import com.github.bfour.fpliteraturecollector.service.AuthorService;
 
 /**
  * given a query return the data
@@ -38,14 +37,13 @@ public abstract class DataProvider {
 	 * @throws DataUnavailableException
 	 * @throws DatalayerException
 	 */
-	public final List<Literature> runQuery(String htmlParams,
-			int pageTurnLimit, AuthorService authServ)
+	public final List<Literature> runQuery(String htmlParams, int pageTurnLimit)
 			throws DataUnavailableException, DatalayerException {
 		try {
 			Reader r = getHTMLDoc(htmlParams, pageTurnLimit);
 			if (r == null)
 				throw new DataUnavailableException("cannot connect");
-			List<Literature> result = parsePage(r, authServ);
+			List<Literature> result = parsePage(r);
 			if (result == null)
 				throw new DataUnavailableException(
 						"parser failed to parse file");
@@ -60,7 +58,7 @@ public abstract class DataProvider {
 	protected abstract Reader getHTMLDoc(String htmlParams, int pageTurnLimit);
 
 	// parse it - return null in case of error
-	protected abstract List<Literature> parsePage(Reader r,
-			AuthorService authServ) throws DatalayerException;
+	protected abstract List<Literature> parsePage(Reader r)
+			throws DatalayerException;
 
 }

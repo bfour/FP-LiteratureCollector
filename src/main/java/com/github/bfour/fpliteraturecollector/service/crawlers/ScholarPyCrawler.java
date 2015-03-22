@@ -62,7 +62,7 @@ public class ScholarPyCrawler extends Crawler {
 	}
 
 	@Override
-	public Exception getError() {
+	public Exception getErrors() {
 		// TODO Auto-generated method stub
 		return null;
 	}

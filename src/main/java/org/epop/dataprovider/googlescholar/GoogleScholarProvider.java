@@ -40,7 +40,6 @@ import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
-import com.github.bfour.fpliteraturecollector.service.AuthorService;
 
 public class GoogleScholarProvider extends DataProvider {
 	// Try the regex here: http://regex101.com/r/xR1aS1/3
@@ -147,7 +146,7 @@ public class GoogleScholarProvider extends DataProvider {
 	// }
 
 	@Override
-	protected List<Literature> parsePage(Reader page, AuthorService authServ)
+	protected List<Literature> parsePage(Reader page)
 			throws DatalayerException {
 		List<Literature> papers = new ArrayList<Literature>();
 		Document doc = null;
@@ -195,8 +194,7 @@ public class GoogleScholarProvider extends DataProvider {
 				String publisherHTML = splits[2];
 
 				// authors
-				List<Author> authors = getAuthorsFromHTMLSection(namesHTML,
-						authServ);
+				List<Author> authors = getAuthorsFromHTMLSection(namesHTML);
 				litBuilder.setAuthors(authors);
 
 				// publication
@@ -263,8 +261,7 @@ public class GoogleScholarProvider extends DataProvider {
 		return papers;
 	}
 
-	private List<Author> getAuthorsFromHTMLSection(String htmlSection,
-			AuthorService authServ) throws ServiceException {
+	private List<Author> getAuthorsFromHTMLSection(String htmlSection) throws ServiceException {
 
 		htmlSection = htmlSection.replace("…", "");
 
@@ -274,20 +271,20 @@ public class GoogleScholarProvider extends DataProvider {
 
 		// only one author
 		if (commaSplit.length == 0) {
-			authors.add(getAuthorFromHTMLSubSection(htmlSection, authServ));
+			authors.add(getAuthorFromHTMLSubSection(htmlSection));
 			return authors;
 		}
 
 		// more than one author
 		for (String part : commaSplit) {
-			authors.add(getAuthorFromHTMLSubSection(part, authServ));
+			authors.add(getAuthorFromHTMLSubSection(part));
 		}
 		return authors;
 
 	}
 
-	private Author getAuthorFromHTMLSubSection(String subsection,
-			AuthorService authServ) throws ServiceException {
+	private Author getAuthorFromHTMLSubSection(String subsection)
+			throws ServiceException {
 
 		Pattern authorWithIDPattern = Pattern
 				.compile("citations\\?user=(.*?)&.*?>(.*?)<");
@@ -296,15 +293,8 @@ public class GoogleScholarProvider extends DataProvider {
 		if (matcher.find()) {
 			String gScholarID = matcher.group(1);
 			String name = matcher.group(2);
-			// check if author already in DB
-			Author authInDB = authServ.getByGScholarID(gScholarID);
-			if (authInDB != null) {
-				return authInDB;
-			} else {
-				// otherwise create new one
-				Tuple<String, String> tuple = getFirstAndLastNameFromNameString(name);
-				return new Author(tuple.getA(), tuple.getB(), gScholarID, null);
-			}
+			Tuple<String, String> tuple = getFirstAndLastNameFromNameString(name);
+			return new Author(tuple.getA(), tuple.getB(), gScholarID, null);
 		} else {
 			// no ID for this author
 			Tuple<String, String> tuple = getFirstAndLastNameFromNameString(subsection);

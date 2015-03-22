@@ -9,7 +9,7 @@ import com.github.bfour.fpliteraturecollector.domain.SupportedSearchEngine;
 public abstract class Crawler {
 
 	public static interface FinishListener {
-		void receiveFinished();
+		void receiveFinished(List<Literature> results);
 	}
 
 	public static interface ProgressListener {
@@ -52,9 +52,9 @@ public abstract class Crawler {
 
 	}
 
-	private List<ProgressListener> progressListeners = new LinkedList<>();
-	private List<ResultStreamListener> resultListeners = new LinkedList<>();
-	private List<FinishListener> finishListeners = new LinkedList<>();
+	protected List<ProgressListener> progressListeners = new LinkedList<>();
+	protected List<ResultStreamListener> resultListeners = new LinkedList<>();
+	protected List<FinishListener> finishListeners = new LinkedList<>();
 	private CrawlerState state = CrawlerState.NOT_STARTED;
 
 	/**
@@ -79,6 +79,8 @@ public abstract class Crawler {
 	 */
 	public abstract void abort();
 
+	protected abstract void finish();
+	
 	/**
 	 * Get the state in which the Crawler is currently in.
 	 * 
@@ -125,12 +127,12 @@ public abstract class Crawler {
 	}
 
 	/**
-	 * Get error that occurred since the last call to
+	 * Get errors that occurred since the last call to
 	 * {@link Crawler#start(String)} if any.
 	 * 
 	 * @return
 	 */
-	public abstract Exception getError();
+	public abstract List<Exception> getErrors();
 
 	/**
 	 * Get the SupportedSearchEngines used by this Crawler. This information may
@@ -151,6 +153,11 @@ public abstract class Crawler {
 
 	public synchronized void registerProgressListener(ProgressListener listener) {
 		progressListeners.add(listener);
+	}
+	
+	@Override
+	public String toString() {
+		return CrawlerService.getInstance().getIdentifierForCrawler(this);
 	}
 
 }

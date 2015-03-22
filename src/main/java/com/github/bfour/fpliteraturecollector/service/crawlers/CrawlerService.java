@@ -2,6 +2,7 @@ package com.github.bfour.fpliteraturecollector.service.crawlers;
 
 import java.util.Set;
 
+import com.github.bfour.fpliteraturecollector.service.crawlers.epop.EpopScholarCrawler;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
@@ -12,7 +13,7 @@ public class CrawlerService {
 	
 	private CrawlerService() {
 		this.identifierInstanceMap = HashBiMap.create();
-		this.identifierInstanceMap.put("scholar.py", new ScholarPyCrawler());
+		this.identifierInstanceMap.put("epop Google Scholar", new EpopScholarCrawler());
 	}
 	
 	public static CrawlerService getInstance() {

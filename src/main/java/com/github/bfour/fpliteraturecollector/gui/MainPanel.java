@@ -37,17 +37,23 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		// toolbar
 		PlainToolbar toolbar = new PlainToolbar(true);
 
-		JButton browsAuthorsButtonButton = new JButton("Browse all authors",
+		JButton browsAuthorsButton = new JButton("Browse all authors",
 				Icons.PERSON_GROUP.getIcon());
-		browsAuthorsButtonButton.setIconTextGap(6);
-		browsAuthorsButtonButton.setMargin(new Insets(4, 16, 4, 16));
-		toolbar.add(browsAuthorsButtonButton);
+		browsAuthorsButton.setIconTextGap(6);
+		browsAuthorsButton.setMargin(new Insets(4, 16, 4, 16));
+		toolbar.add(browsAuthorsButton);
 		
-		JButton browseLiteratureButtonButton = new JButton("Browse all literature",
+		JButton browseLiteratureButton = new JButton("Browse all literature",
 				Icons.BOOKS.getIcon());
-		browseLiteratureButtonButton.setIconTextGap(6);
-		browseLiteratureButtonButton.setMargin(new Insets(4, 16, 4, 16));
-		toolbar.add(browseLiteratureButtonButton);		
+		browseLiteratureButton.setIconTextGap(6);
+		browseLiteratureButton.setMargin(new Insets(4, 16, 4, 16));
+		toolbar.add(browseLiteratureButton);
+		
+		JButton duplicatesButton = new JButton("Manage duplicates",
+				Icons.DUPLICATE.getIcon());
+		duplicatesButton.setIconTextGap(6);
+		duplicatesButton.setMargin(new Insets(4, 16, 4, 16));
+		toolbar.add(duplicatesButton);
 
 		add(toolbar, "cell 0 0, grow");
 
@@ -58,14 +64,14 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		queryOverviewPanel.addFeedbackListener(this);
 
 		// logic
-		browsAuthorsButtonButton.addActionListener(new ActionListener() {
+		browsAuthorsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO
 			}
 		});
 
-		browseLiteratureButtonButton.addActionListener(new ActionListener() {
+		duplicatesButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO

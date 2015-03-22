@@ -23,28 +23,57 @@ package com.github.bfour.fpliteraturecollector.domain;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.ImageIcon;
+
 import com.github.bfour.fpjcommons.model.Entity;
+import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 
 public class Query extends Entity {
+
+	public static enum QueryStatus {
+		CRAWLING("crawling", com.github.bfour.fpjgui.design.Icons.BUSY_16
+				.getIcon()), FINISHED("finished", Icons.FINISHED_16.getIcon()), QUEUED(
+				"queued", Icons.QUEUED_16.getIcon()), IDLE("idle", Icons.IDLE_16.getIcon());
+
+		private String tellingName;
+		private ImageIcon icon;
+
+		QueryStatus(String tellingName, ImageIcon icon) {
+			this.tellingName = tellingName;
+			this.icon = icon;
+		}
+
+		public String getTellingName() {
+			return tellingName;
+		}
+
+		public ImageIcon getIcon() {
+			return icon;
+		}
+
+	}
 
 	protected String name;
 	protected List<AtomicRequest> atomicRequests;
 	protected Integer queuePosition;
+	protected QueryStatus status;
 
-	public Query(long iD, Date creationTime, Date lastChangeTime, String name,
-			List<AtomicRequest> atomicRequests, Integer queuePosition) {
+	public Query(Long iD, Date creationTime, Date lastChangeTime, String name,
+			List<AtomicRequest> atomicRequests, Integer queuePosition, QueryStatus status) {
 		super(iD, creationTime, lastChangeTime);
 		this.name = name;
 		this.atomicRequests = atomicRequests;
 		this.queuePosition = queuePosition;
+		this.status = status;
 	}
 
 	public Query(String name, List<AtomicRequest> atomicRequests,
-			Integer queuePosition) {
+			Integer queuePosition, QueryStatus status) {
 		super();
 		this.name = name;
 		this.atomicRequests = atomicRequests;
 		this.queuePosition = queuePosition;
+		this.status = status;
 	}
 
 	public Query() {
@@ -61,6 +90,10 @@ public class Query extends Entity {
 
 	public Integer getQueuePosition() {
 		return queuePosition;
+	}
+
+	public QueryStatus getStatus() {
+		return status;
 	}
 
 }

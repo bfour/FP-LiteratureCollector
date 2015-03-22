@@ -23,9 +23,15 @@ package com.github.bfour.fpliteraturecollector.service;
 
 
 
+import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.CRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 
 public interface QueryService extends CRUDService<Query> {
 
+	Query getByQueuePosition(int position) throws ServiceException;
+	Query queueUp(Query q) throws ServiceException;
+	Query queueDown(Query q) throws ServiceException;
+	Query queue(Query q) throws ServiceException;
+	
 }

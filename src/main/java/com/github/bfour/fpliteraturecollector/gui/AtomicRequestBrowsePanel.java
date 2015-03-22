@@ -21,7 +21,7 @@ import com.github.bfour.fpjcommons.events.CreateEvent;
 import com.github.bfour.fpjcommons.events.DeleteEvent;
 import com.github.bfour.fpjcommons.events.UpdateEvent;
 import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjgui.abstraction.DefaultMultiTableChangeListener;
+import com.github.bfour.fpjgui.abstraction.DefaultMultiListLikeChangeListener;
 import com.github.bfour.fpjgui.abstraction.EntityFilterPipeline;
 import com.github.bfour.fpjgui.abstraction.EntityLoader;
 import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
@@ -114,7 +114,7 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 			// no query specified --> this browse panel is for all
 			// AtomicRequests --> no filter, register for all changes in
 			// AtomicRequests
-			DefaultMultiTableChangeListener<AtomicRequest> changeListener = new DefaultMultiTableChangeListener<AtomicRequest>();
+			DefaultMultiListLikeChangeListener<AtomicRequest> changeListener = new DefaultMultiListLikeChangeListener<AtomicRequest>();
 			changeListener.addTable(getTable(),
 					new EntityFilterPipeline<AtomicRequest>());
 			ChangeHandler.getInstance(AtomicRequest.class).addEventListener(
@@ -154,8 +154,9 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 
 				@Override
 				public void handle(UpdateEvent<Query> arg0) {
-					if (arg0.getOldObject().equals(query)) 
-						getTable().setEntries(arg0.getNewObject().getAtomicRequests());					
+					if (arg0.getOldObject().equals(query))
+						getTable().setEntries(
+								arg0.getNewObject().getAtomicRequests());
 				}
 			};
 			ChangeHandler.getInstance(Query.class).addEventListener(
@@ -196,4 +197,18 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 		addDeleteAction(deleteListener);
 
 	}
+
+	@Override
+	public List<AtomicRequest> getValue() {
+		return getTable().getEntries();
+	}
+
+	@Override
+	public void setValue(List<AtomicRequest> value) {
+		if (value == null)
+			getTable().setEntries(new ArrayList<AtomicRequest>(0));
+		else
+			getTable().setEntries(value);
+	}
+
 }

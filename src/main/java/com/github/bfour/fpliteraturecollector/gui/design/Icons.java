@@ -17,8 +17,24 @@ public enum Icons {
 			"classpath:icons/app/icon_16.png"),	
 	
 	PERSON_GROUP("classpath:icons/group.png"),
+	BOOKS("classpath:icons/books.png"),
+	DUPLICATE("classpath:icons/column_double.png"),
 	
-	BOOKS("classpath:icons/books.png")
+	ADD("classpath:icons/add.png"),
+	ADD_24("classpath:icons/add_24.png"),
+	
+	PLAY("classpath:icons/control_play_blue.png"),
+	PLAY_24("classpath:icons/control_play_blue_24.png"),
+	STOP("classpath:icons/control_stop_blue.png"),
+	STOP_24("classpath:icons/control_stop_blue_24.png"),
+	PAUSE("classpath:icons/control_pause_blue.png"),
+	PAUSE_24("classpath:icons/control_pause_blue_24.png"),
+	RERUN("classpath:icons/control_repeat_blue.png"),
+	RERUN_24("classpath:icons/control_repeat_blue_24.png"),
+	
+	FINISHED_16("classpath:icons/tick_16.png"),
+	QUEUED_16("classpath:icons/time_16.png"),
+	IDLE_16("classpath:icons/traffic_lights_red_16.png")
 	
 	;
 	

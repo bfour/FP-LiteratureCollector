@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.bfour.fpjcommons.events.ChangeHandler;
-import com.github.bfour.fpjgui.abstraction.DefaultMultiTableChangeListener;
+import com.github.bfour.fpjgui.abstraction.DefaultMultiListLikeChangeListener;
 import com.github.bfour.fpjgui.abstraction.EntityFilterPipeline;
 import com.github.bfour.fpjgui.abstraction.EntityLoader;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
@@ -53,7 +53,7 @@ public class CrawlerBrowsePanel extends EntityBrowsePanel<Crawler> implements
 		};
 
 		// hook up table with change event system
-		DefaultMultiTableChangeListener<Crawler> changeListener = new DefaultMultiTableChangeListener<>();
+		DefaultMultiListLikeChangeListener<Crawler> changeListener = new DefaultMultiListLikeChangeListener<>();
 		changeListener
 				.addTable(getTable(), new EntityFilterPipeline<Crawler>());
 		ChangeHandler.getInstance(Crawler.class).addEventListener(

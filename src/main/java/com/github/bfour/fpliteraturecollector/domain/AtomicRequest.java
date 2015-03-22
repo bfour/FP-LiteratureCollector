@@ -68,4 +68,13 @@ public class AtomicRequest extends Entity {
 		return results;
 	}
 
+	@Override
+	public String toString() {
+		if (getID() == null)
+			return getCrawler() + ": " + getSearchString();
+		else
+			return "#" + getID() + " (" + getCrawler() + ": "
+					+ getSearchString() + ")";
+	}
+
 }

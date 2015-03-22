@@ -2,20 +2,28 @@ package com.github.bfour.fpliteraturecollector.gui;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JLabel;
 
 import net.miginfocom.swing.MigLayout;
 
 import com.github.bfour.fpjcommons.lang.BuilderFactory;
+import com.github.bfour.fpjcommons.services.DatalayerException;
+import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpjcommons.services.CRUD.CRUDService;
+import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
 import com.github.bfour.fpjcommons.utils.Getter;
 import com.github.bfour.fpjgui.abstraction.EntityEditPanel;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
 import com.github.bfour.fpjgui.components.FPJGUILabel;
+import com.github.bfour.fpjgui.components.FPJGUIMultilineLabel;
 import com.github.bfour.fpjgui.components.FPJGUITextPane;
 import com.github.bfour.fpjgui.components.SearchComboBox;
 import com.github.bfour.fpjgui.components.ToggleEditFormComponent;
 import com.github.bfour.fpjgui.components.composite.EntityBrowsePanel;
+import com.github.bfour.fpjgui.components.table.FPJGUITable;
 import com.github.bfour.fpjgui.design.Colors;
 import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
@@ -31,7 +39,8 @@ public class AtomicRequestPanel extends
 	/**
 	 * Create the panel.
 	 */
-	public AtomicRequestPanel(final ServiceManager servMan) {
+	public AtomicRequestPanel(final ServiceManager servMan,
+			final FPJGUITable<AtomicRequest> table) {
 
 		super(new BuilderFactory<AtomicRequest, AtomicRequestBuilder>() {
 			@Override
@@ -44,12 +53,63 @@ public class AtomicRequestPanel extends
 				return new AtomicRequestBuilder(entity);
 			}
 
-		}, servMan.getAtomicRequestService());
+		}, new CRUDService<AtomicRequest>() {
 
-		getContentPane()
-				.setLayout(
-						new MigLayout("insets 0, w 60:80:100", "[grow]",
-								"[]0[]8[]0[]"));
+			@Override
+			public AtomicRequest create(AtomicRequest a) {
+				table.addEntry(a);
+				return a;
+			}
+
+			@Override
+			public void delete(AtomicRequest a) throws ServiceException {
+				table.deleteEntry(a);
+			}
+
+			@Override
+			public boolean exists(AtomicRequest a) throws ServiceException {
+				return table.containsEntry(a);
+			}
+
+			@Override
+			public DataIterator<AtomicRequest> get() throws ServiceException {
+				final Iterator<AtomicRequest> iter = table.getEntries()
+						.iterator();
+				return new DataIterator<AtomicRequest>() {
+					@Override
+					public boolean hasNext() throws DatalayerException {
+						return iter.hasNext();
+					}
+
+					@Override
+					public AtomicRequest next() throws DatalayerException {
+						return iter.next();
+					}
+
+					@Override
+					public void remove() throws DatalayerException {
+						iter.remove();
+					}
+				};
+			}
+
+			@Override
+			public List<AtomicRequest> getAll() throws ServiceException {
+				return table.getEntries();
+			}
+
+			@Override
+			public AtomicRequest update(AtomicRequest oldEntry,
+					AtomicRequest newEntry) throws ServiceException {
+				table.updateEntry(newEntry);
+				return newEntry;
+			}
+		});
+
+		setCRUDButtonsVisible(false);
+		
+		getContentPane().setLayout(
+				new MigLayout("insets 0", "[grow]", "[]8[]0[]8[]0[]"));
 
 		JLabel dummy = new JLabel();
 		Font labelFont = dummy.getFont().deriveFont(
@@ -59,7 +119,7 @@ public class AtomicRequestPanel extends
 		JLabel lblCrawler = new JLabel("Crawler");
 		lblCrawler.setFont(labelFont);
 		lblCrawler.setForeground(Colors.VERY_STRONG_GRAY.getColor());
-		getContentPane().add(lblCrawler, "cell 0 0,growx");
+		getContentPane().add(lblCrawler, "cell 0 1,growx");
 
 		EntityBrowsePanel<Crawler> crawlerBrowsePanel = new CrawlerBrowsePanel(
 				servMan);
@@ -95,20 +155,30 @@ public class AtomicRequestPanel extends
 		ToggleEditFormComponent<Crawler> crawlerToggle = new ToggleEditFormComponent<Crawler>(
 				categoryLabel, crawlerBox);
 		registerToggleComponent(crawlerToggle);
-		getContentPane().add(crawlerToggle, "cell 0 1,growx");
+		getContentPane().add(crawlerToggle, "cell 0 2,growx");
 
 		// request
-		JLabel lblRequestString = new JLabel("RequestString");
+		JLabel lblRequestString = new JLabel("Request String");
 		lblRequestString.setFont(labelFont);
 		lblRequestString.setForeground(Colors.VERY_STRONG_GRAY.getColor());
-		getContentPane().add(lblRequestString, "cell 0 2,growx");
+		getContentPane().add(lblRequestString, "cell 0 3,growx");
 
 		FPJGUITextPane requestStringField = new FPJGUITextPane();
-		FPJGUILabel<String> requestStringLabel = new FPJGUILabel<String>();
+		requestStringField.setValidationRule(new ValidationRule<String>() {
+			@Override
+			public ValidationRuleResult evaluate(String arg0) {
+				if (arg0 == null || arg0.isEmpty())
+					return new ValidationRuleResult(false,
+							"Please specify a request string (eg. q=\"e-health\").");
+				else
+					return ValidationRuleResult.getSimpleTrueInstance();
+			}
+		});
+		FPJGUIMultilineLabel requestStringLabel = new FPJGUIMultilineLabel();
 		ToggleEditFormComponent<String> requestStringToggle = new ToggleEditFormComponent<String>(
 				requestStringLabel, requestStringField);
 		registerToggleComponent(requestStringToggle);
-		getContentPane().add(requestStringToggle, "cell 0 3,growx");
+		getContentPane().add(requestStringToggle, "cell 0 4,grow");
 
 		// mappings
 		ObjectGraphicalValueContainerMapper<AtomicRequestBuilder, Crawler> crawlerMapper = new ObjectGraphicalValueContainerMapper<AtomicRequestBuilder, Crawler>(

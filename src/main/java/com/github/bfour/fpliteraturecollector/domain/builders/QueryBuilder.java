@@ -26,6 +26,7 @@ import com.github.bfour.fpjcommons.lang.Builder;
 import com.github.bfour.fpjcommons.model.EntityBuilder;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Query;
+import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 
 public class QueryBuilder extends EntityBuilder<Query> implements
 		Builder<Query> {
@@ -33,6 +34,7 @@ public class QueryBuilder extends EntityBuilder<Query> implements
 	private String name;
 	private List<AtomicRequest> atomicRequests;
 	private Integer queuePosition;
+	private QueryStatus status;
 
 	public QueryBuilder() {
 		super();
@@ -47,13 +49,14 @@ public class QueryBuilder extends EntityBuilder<Query> implements
 		setName(q.getName());
 		setAtomicRequests(q.getAtomicRequests());
 		setQueuePosition(q.getQueuePosition());
+		setStatus(q.getStatus());
 
 	}
 
 	@Override
 	public Query getObject() {
 		return new Query(getID(), getCreationTime(), getLastChangeTime(),
-				getName(), getAtomicRequests(), getQueuePosition());
+				getName(), getAtomicRequests(), getQueuePosition(), getStatus());
 	}
 
 	public String getName() {
@@ -78,6 +81,14 @@ public class QueryBuilder extends EntityBuilder<Query> implements
 
 	public void setQueuePosition(Integer queuePosition) {
 		this.queuePosition = queuePosition;
+	}
+
+	public QueryStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(QueryStatus status) {
+		this.status = status;
 	}
 
 }

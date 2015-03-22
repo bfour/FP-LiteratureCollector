@@ -44,6 +44,7 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import com.github.bfour.fpjcommons.services.DatalayerException;
@@ -86,7 +87,7 @@ public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements
 				// TODO (low) improve
 				atomicRequests = new ArrayList<AtomicRequest>(0);
 			}
-			return getAtomicRequests();
+			return atomicRequests;
 		}
 
 		@Override
@@ -151,4 +152,14 @@ public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements
 	public Query vertexToEntity(Vertex vertex) throws DatalayerException {
 		return new LazyQuery(vertex, atomicRequestDAO);
 	}
+
+	@Override
+	public Query getByQueuePosition(int position) throws DatalayerException {
+		Iterator<Vertex> iter = db.getVertices(dbClassName + ".queuePosition",
+				position).iterator();
+		if (!iter.hasNext())
+			return null;
+		return vertexToEntity(iter.next());
+	}
+
 }
