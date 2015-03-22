@@ -1,163 +1,104 @@
 package com.github.bfour.fpliteraturecollector.service.crawlers;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import javax.swing.SwingWorker;
+
+import org.epop.dataprovider.DataProvider;
 
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.SupportedSearchEngine;
+import com.github.bfour.fpliteraturecollector.service.abstraction.BackgroundWorker;
 
-public abstract class Crawler {
+public class Crawler extends BackgroundWorker {
 
-	public static interface FinishListener {
-		void receiveFinished(List<Literature> results);
-	}
+	private class CrawlerWorker extends
+			SwingWorker<List<Literature>, Literature> {
 
-	public static interface ProgressListener {
-		void receiveProgress(String progress);
-	}
+		private String htmlParams;
+		private int maxPageTurns;
+		private DataProvider provider;
 
-	public static interface ResultStreamListener {
-		void receiveResult(Literature literature);
-	}
+		public CrawlerWorker(String htmlParams, int maxPageTurns,
+				DataProvider provider) {
+			this.htmlParams = htmlParams;
+			this.maxPageTurns = maxPageTurns;
+			this.provider = provider;
+		}
 
-	public static enum CrawlerState {
+		@Override
+		protected List<Literature> doInBackground() throws Exception {
+			List<Literature> literature = provider.runQuery(htmlParams,
+					maxPageTurns);
+			return literature;
+		}
 
-		/**
-		 * Crawler has not yet been started (before first
-		 * {@link Crawler#start()} call)
-		 */
-		NOT_STARTED,
-
-		/**
-		 * Crawler is currently crawling ({@link Crawler#start()} has been
-		 * called)
-		 */
-		RUNNING,
-
-		// /**
-		// * Crawler has been suspended by calling {@link Crawler#suspend()}
-		// */
-		// SUSPENDED,
-
-		/**
-		 * crawling process has been aborted by calling {@link Crawler#abort()};
-		 * results may be incomplete
-		 */
-		ABORTED,
-
-		/**
-		 * crawling process has been finished
-		 */
-		FINISHED;
+		@Override
+		protected void done() {
+			super.done();
+			finish();
+		}
 
 	}
 
-	protected List<ProgressListener> progressListeners = new LinkedList<>();
-	protected List<ResultStreamListener> resultListeners = new LinkedList<>();
-	protected List<FinishListener> finishListeners = new LinkedList<>();
-	private CrawlerState state = CrawlerState.NOT_STARTED;
+	private CrawlerWorker worker;
+	private List<Literature> results;
+	private DataProvider provider;
+	private List<SupportedSearchEngine> engines;
 
-	/**
-	 * Start the crawling process.
-	 * 
-	 * @param htmlParams
-	 *            instructions for the Crawler; syntax specific to Crawler
-	 * @param maximum
-	 *            page turns on website to be crawled
-	 */
-	public abstract void start(String htmlParams, int maxPageTurns);
+	public Crawler(DataProvider provider, SupportedSearchEngine... engines) {
+		this.provider = provider;
+		this.engines = Arrays.asList(engines);
+		setState(BackgroundWorkerState.NOT_STARTED);
+	}
 
-	// /**
-	// * Pause the crawling process if possible.
-	// * @throws OperationNotSupportedException
-	// */
-	// public abstract void suspend() throws OperationNotSupportedException;
+	public synchronized void start(String htmlParams, int maxPageTurns) {
+		setState(BackgroundWorkerState.RUNNING);
+		worker = new CrawlerWorker(htmlParams, maxPageTurns, provider);
+		worker.execute();
+	}
 
-	/**
-	 * Abort the crawling process. Won't do anything if the crawler hasn't been
-	 * started yet or is finished.
-	 */
-	public abstract void abort();
+	@Override
+	public synchronized void abort() {
+		setState(BackgroundWorkerState.ABORTED);
+		worker.cancel(true);
+	}
 
-	protected abstract void finish();
+	@Override
+	protected synchronized void finish() {
+		try {
+			results = worker.get();
+			setState(BackgroundWorkerState.FINISHED);
+			for (FinishListener listener : finishListeners)
+				listener.receiveFinished(results);
+		} catch (InterruptedException | ExecutionException e) {
+			setState(BackgroundWorkerState.ABORTED);
+		}
+	}
+
+	@Override
+	public synchronized List<Exception> getErrors() {
+		// TODO Auto-generated method stub
+		return new ArrayList<Exception>(0);
+	}
+
+	@Override
+	public String toString() {
+		return CrawlerService.getInstance().getIdentifierForCrawler(this);
+	}
 	
-	/**
-	 * Get the state in which the Crawler is currently in.
-	 * 
-	 * @return current state of the Crawler
-	 * @see {@link CrawlerState}
-	 */
-	public final synchronized CrawlerState getState() {
-		return state;
-	}
-
-	/**
-	 * Sets the state in which the Crawler is currently in.
-	 * 
-	 * @param state
-	 *            state to be set
-	 */
-	protected final synchronized void setState(CrawlerState state) {
-
-		// check if valid state transition
-		if (this.state == CrawlerState.NOT_STARTED
-				&& (state == CrawlerState.ABORTED || state == CrawlerState.FINISHED))
-			throw new InvalidStateTransitionException(
-					"cannot have transition from NOT_STARTED to ABORTED or FINISHED");
-
-		if ((this.state == CrawlerState.RUNNING
-				|| this.state == CrawlerState.ABORTED || this.state == CrawlerState.FINISHED)
-				&& state == CrawlerState.NOT_STARTED)
-			throw new InvalidStateTransitionException(
-					"cannot have transition from either RUNNING, ABORTED or FINISHED to NOT_STARTED");
-
-		if (this.state == CrawlerState.ABORTED
-				&& state == CrawlerState.FINISHED)
-			throw new InvalidStateTransitionException(
-					"cannot have transition from ABORTED to FINISHED");
-
-		if (this.state == CrawlerState.FINISHED
-				&& state == CrawlerState.ABORTED)
-			throw new InvalidStateTransitionException(
-					"cannot have transition from FINISHED to ABORTED");
-
-		// set state
-		this.state = state;
-
-	}
-
-	/**
-	 * Get errors that occurred since the last call to
-	 * {@link Crawler#start(String)} if any.
-	 * 
-	 * @return
-	 */
-	public abstract List<Exception> getErrors();
-
 	/**
 	 * Get the SupportedSearchEngines used by this Crawler. This information may
 	 * be used by a scheduler to run crawlers in parallel.
 	 * 
 	 * @return SupportedSearchEngines used by this Crawler
 	 */
-	public abstract List<SupportedSearchEngine> getSearchEnginesBeingAccessed();
-
-	public synchronized void registerResultStreamListener(
-			ResultStreamListener listener) {
-		resultListeners.add(listener);
-	}
-
-	public synchronized void registerFinishListener(FinishListener listener) {
-		finishListeners.add(listener);
-	}
-
-	public synchronized void registerProgressListener(ProgressListener listener) {
-		progressListeners.add(listener);
-	}
-	
 	@Override
-	public String toString() {
-		return CrawlerService.getInstance().getIdentifierForCrawler(this);
+	public List<SupportedSearchEngine> getSearchEnginesBeingAccessed() {
+		return engines;
 	}
 
 }

@@ -134,22 +134,5 @@ public class DefaultQueryService extends
 		return update(query, qBuilder.getObject());
 
 	}
-	
-	public synchronized void start() throws ServiceException {
-		Query topQuery = getByQueuePosition(1);
-		topQuery.getAtomicRequests()
-	}
-	
-	public synchronized void stop() {
-		
-	}
-	
-	public synchronized void rerunAll() {
-		
-	}
-	
-	private void runQuery(Query q) {
-		q.getAtomicRequests()
-	}
 
 }

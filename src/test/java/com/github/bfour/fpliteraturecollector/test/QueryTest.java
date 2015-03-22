@@ -113,18 +113,18 @@ public class QueryTest {
 		// create AtomicRequests
 		List<AtomicRequest> atomReqs = new ArrayList<AtomicRequest>(3);
 		atomReqs.add(new AtomicRequest(crawlServ.getAvailableCrawlers()
-				.iterator().next(), "LDL", literatureList));
+				.iterator().next(), "LDL", 2, literatureList));
 		atomReqs.add(new AtomicRequest(crawlServ.getAvailableCrawlers()
 				.iterator().next(), "another test &%$$ öäüß ß é Á _:_::___' ",
-				literatureList));
+				1, literatureList));
 		atomReqs.add(new AtomicRequest(crawlServ.getAvailableCrawlers()
-				.iterator().next(), ":-) 1861", new ArrayList<Literature>(0)));
+				.iterator().next(), ":-) 1861", 0, new ArrayList<Literature>(0)));
 		for (AtomicRequest atomReq : atomReqs)
 			atomReqs.set(atomReqs.indexOf(atomReq), atomReqServ.create(atomReq));
 
 		// query
 		List<Query> queries = new ArrayList<>();
-		queries.add(new Query("test query", atomReqs, 1));
+		queries.add(new Query("test query", atomReqs, 1, null));
 		for (Query query : queries)
 			queries.set(queries.indexOf(query), queryServ.create(query));
 

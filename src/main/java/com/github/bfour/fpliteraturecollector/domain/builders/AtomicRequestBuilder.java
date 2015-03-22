@@ -13,15 +13,17 @@ public class AtomicRequestBuilder extends EntityBuilder<AtomicRequest>
 
 	private Crawler crawler;
 	private String searchString;
+	private Integer maxPageTurns;
 	private List<Literature> results;
 
 	public AtomicRequestBuilder() {
 		super();
 	}
-	
+
 	public AtomicRequestBuilder(AtomicRequest a) {
 		setCrawler(a.getCrawler());
 		setSearchString(a.getSearchString());
+		setMaxPageTurns(a.getMaxPageTurns());
 		setResults(a.getResults());
 	}
 
@@ -29,7 +31,7 @@ public class AtomicRequestBuilder extends EntityBuilder<AtomicRequest>
 	public AtomicRequest getObject() {
 		return new AtomicRequest(getID(), getCreationTime(),
 				getLastChangeTime(), getCrawler(), getSearchString(),
-				getResults());
+				getMaxPageTurns(), getResults());
 	}
 
 	public Crawler getCrawler() {
@@ -46,6 +48,14 @@ public class AtomicRequestBuilder extends EntityBuilder<AtomicRequest>
 
 	public void setSearchString(String searchString) {
 		this.searchString = searchString;
+	}
+
+	public Integer getMaxPageTurns() {
+		return maxPageTurns;
+	}
+
+	public void setMaxPageTurns(Integer maxPageTurns) {
+		this.maxPageTurns = maxPageTurns;
 	}
 
 	public List<Literature> getResults() {

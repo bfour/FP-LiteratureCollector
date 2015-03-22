@@ -19,6 +19,7 @@ import com.github.bfour.fpjgui.abstraction.EntityEditPanel;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
 import com.github.bfour.fpjgui.components.FPJGUILabel;
 import com.github.bfour.fpjgui.components.FPJGUIMultilineLabel;
+import com.github.bfour.fpjgui.components.FPJGUITextField;
 import com.github.bfour.fpjgui.components.FPJGUITextPane;
 import com.github.bfour.fpjgui.components.SearchComboBox;
 import com.github.bfour.fpjgui.components.ToggleEditFormComponent;
@@ -107,7 +108,7 @@ public class AtomicRequestPanel extends
 		});
 
 		setCRUDButtonsVisible(false);
-		
+
 		getContentPane().setLayout(
 				new MigLayout("insets 0", "[grow]", "[]8[]0[]8[]0[]"));
 
@@ -157,11 +158,43 @@ public class AtomicRequestPanel extends
 		registerToggleComponent(crawlerToggle);
 		getContentPane().add(crawlerToggle, "cell 0 2,growx");
 
+		// max. page turns
+		JLabel lblMaxPageTurns = new JLabel("Max. page turns");
+		lblMaxPageTurns.setFont(labelFont);
+		lblMaxPageTurns.setForeground(Colors.VERY_STRONG_GRAY.getColor());
+		getContentPane().add(lblMaxPageTurns, "cell 0 3,growx");
+
+		FPJGUITextField maxPageTurnsField = new FPJGUITextField();
+		maxPageTurnsField.setValue("2");
+		maxPageTurnsField.setValidationRule(new ValidationRule<String>() {
+			@Override
+			public ValidationRuleResult evaluate(String arg0) {
+				if (arg0 == null || arg0.isEmpty())
+					return new ValidationRuleResult(false,
+							"Please specify the maximum amount of page turns (page switches on website).");
+				try {
+					int num = Integer.parseInt(arg0);
+					if (num < 0)
+						return new ValidationRuleResult(false,
+								"Please enter a positive number or 0.");
+				} catch (NumberFormatException e) {
+					return new ValidationRuleResult(false,
+							"Please enter a valid number.");
+				}
+				return ValidationRuleResult.getSimpleTrueInstance();
+			}
+		});
+		FPJGUIMultilineLabel maxPageTurnsLabel = new FPJGUIMultilineLabel();
+		ToggleEditFormComponent<String> maxPageTurnsToggle = new ToggleEditFormComponent<String>(
+				maxPageTurnsLabel, maxPageTurnsField);
+		registerToggleComponent(maxPageTurnsToggle);
+		getContentPane().add(maxPageTurnsToggle, "cell 0 4,grow");
+
 		// request
 		JLabel lblRequestString = new JLabel("Request String");
 		lblRequestString.setFont(labelFont);
 		lblRequestString.setForeground(Colors.VERY_STRONG_GRAY.getColor());
-		getContentPane().add(lblRequestString, "cell 0 3,growx");
+		getContentPane().add(lblRequestString, "cell 0 5,growx");
 
 		FPJGUITextPane requestStringField = new FPJGUITextPane();
 		requestStringField.setValidationRule(new ValidationRule<String>() {
@@ -178,7 +211,7 @@ public class AtomicRequestPanel extends
 		ToggleEditFormComponent<String> requestStringToggle = new ToggleEditFormComponent<String>(
 				requestStringLabel, requestStringField);
 		registerToggleComponent(requestStringToggle);
-		getContentPane().add(requestStringToggle, "cell 0 4,grow");
+		getContentPane().add(requestStringToggle, "cell 0 6,grow");
 
 		// mappings
 		ObjectGraphicalValueContainerMapper<AtomicRequestBuilder, Crawler> crawlerMapper = new ObjectGraphicalValueContainerMapper<AtomicRequestBuilder, Crawler>(
@@ -195,6 +228,23 @@ public class AtomicRequestPanel extends
 		};
 		getMappers().add(crawlerMapper);
 
+		ObjectGraphicalValueContainerMapper<AtomicRequestBuilder, String> maxPageTurnsMapper = new ObjectGraphicalValueContainerMapper<AtomicRequestBuilder, String>(
+				maxPageTurnsToggle) {
+			@Override
+			public String getValue(AtomicRequestBuilder object) {
+				return object.getMaxPageTurns() + "";
+			}
+
+			@Override
+			public void setValue(AtomicRequestBuilder object, String value) {
+				try {
+					object.setMaxPageTurns(Integer.parseInt(value));
+				} catch (NumberFormatException e) {
+				}
+			}
+		};
+		getMappers().add(maxPageTurnsMapper);
+
 		ObjectGraphicalValueContainerMapper<AtomicRequestBuilder, String> requestStringMapper = new ObjectGraphicalValueContainerMapper<AtomicRequestBuilder, String>(
 				requestStringToggle) {
 			@Override
@@ -210,5 +260,4 @@ public class AtomicRequestPanel extends
 		getMappers().add(requestStringMapper);
 
 	}
-
 }
