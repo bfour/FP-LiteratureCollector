@@ -20,9 +20,7 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
-import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingEntityCRUDService;
-import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBLiteratureDAO;
@@ -32,13 +30,11 @@ public class DefaultLiteratureService extends
 		implements LiteratureService {
 
 	private static DefaultLiteratureService instance;
-	private AuthorService authServ;
 
 	private DefaultLiteratureService(OrientDBGraphService graphService,
 			boolean forceCreateNewInstance, AuthorService authServ) {
 		super(OrientDBLiteratureDAO.getInstance(graphService,
-				forceCreateNewInstance));
-		this.authServ = authServ;
+				forceCreateNewInstance, authServ));
 	}
 
 	public static DefaultLiteratureService getInstance(
@@ -48,27 +44,6 @@ public class DefaultLiteratureService extends
 			instance = new DefaultLiteratureService(graphService,
 					forceCreateNewInstance, authServ);
 		return instance;
-	}
-
-	@Override
-	public Literature create(Literature entity) throws ServiceException {
-		if (entity.getAuthors() != null)
-			for (Author auth : entity.getAuthors()) {
-				if (!authServ.exists(auth))
-					authServ.create(auth);
-			}
-		return super.create(entity);
-	}
-
-	@Override
-	public Literature update(Literature oldEntity, Literature newEntity)
-			throws ServiceException {
-		if (newEntity.getAuthors() != null)
-			for (Author auth : newEntity.getAuthors()) {
-				if (!authServ.exists(auth))
-					authServ.create(auth);
-			}
-		return super.update(oldEntity, newEntity);
 	}
 
 }

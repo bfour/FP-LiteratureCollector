@@ -6,18 +6,19 @@ import java.util.List;
 
 import javax.swing.SwingWorker;
 
-import org.epop.dataprovider.DataProvider;
+import org.epop.dataprovider.DataUnavailableException;
 
+import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Query;
-import com.github.bfour.fpliteraturecollector.domain.SupportedSearchEngine;
 import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
+import com.github.bfour.fpliteraturecollector.domain.builders.AtomicRequestBuilder;
 import com.github.bfour.fpliteraturecollector.domain.builders.QueryBuilder;
 import com.github.bfour.fpliteraturecollector.service.QueryService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.abstraction.BackgroundWorker;
-import com.github.bfour.fpliteraturecollector.service.abstraction.BackgroundWorker.BackgroundWorkerState;
 
 public class CrawlExecutor extends BackgroundWorker {
 
@@ -26,24 +27,47 @@ public class CrawlExecutor extends BackgroundWorker {
 		private List<Exception> exceptions;
 		private QueryService qServ;
 		private List<Exception> errors;
+		private Crawler crawler;
 
-		public CrawlerWorker(ServiceManager servMan) {
+		public CrawlerWorker(ServiceManager servMan, Crawler crawler) {
 			exceptions = new LinkedList<Exception>();
 			this.qServ = servMan.getQueryService();
 			this.errors = new ArrayList<Exception>();
+			this.crawler = crawler;
 		}
 
 		@Override
 		protected Void doInBackground() {
 			Query topQuery;
 			try {
-				while ((topQuery = qServ.getByQueuePosition(1)) != null) {
-					QueryBuilder builder = new QueryBuilder(topQuery);
-					builder.setStatus(QueryStatus.CRAWLING);
-					topQuery = qServ.update(topQuery, builder.getObject());
-					// TODO
+				while ((topQuery = qServ.getFirstInQueueForCrawler(crawler)) != null) {
+
+					// set query status to crawling
+					QueryBuilder qBuilder = new QueryBuilder(topQuery);
+					qBuilder.setStatus(QueryStatus.CRAWLING);
+					topQuery = qServ.update(topQuery, qBuilder.getObject());
+
+					// fill atomic request with results
+					AtomicRequest undoneReq = qServ
+							.getFirstUnprocessedRequestForCrawler(topQuery,
+									crawler);
+					List<Literature> results = crawler.process(undoneReq);
+					AtomicRequestBuilder atomReqBuilder = new AtomicRequestBuilder(
+							undoneReq);
+					atomReqBuilder.setResults(results);
+
+					// update query with finished atomic request
+					qBuilder = new QueryBuilder(topQuery);
+					List<AtomicRequest> atomReqList = topQuery
+							.getAtomicRequests();
+					atomReqList.set(atomReqList.indexOf(undoneReq),
+							atomReqBuilder.getObject());
+					qBuilder.setAtomicRequests(atomReqList);
+					qServ.update(topQuery, qBuilder.getObject());
+
 				}
-			} catch (ServiceException e) {
+			} catch (ServiceException | DataUnavailableException
+					| DatalayerException e) {
 				exceptions.add(e);
 			}
 			return null;
@@ -63,9 +87,11 @@ public class CrawlExecutor extends BackgroundWorker {
 
 	private static CrawlExecutor instance;
 	private ServiceManager servMan;
+	private List<CrawlerWorker> workers;
 
 	private CrawlExecutor(ServiceManager servMan) {
 		this.servMan = servMan;
+		this.workers = new ArrayList<CrawlerWorker>();
 	}
 
 	public static CrawlExecutor getInstance(ServiceManager servMan) {
@@ -76,33 +102,36 @@ public class CrawlExecutor extends BackgroundWorker {
 
 	public synchronized void start() {
 		setState(BackgroundWorkerState.RUNNING);
-		new CrawlerWorker(servMan);
+		// for each crawler, create a worker
+		// all workers - each standing for a crawler - will then run in parallel
+		for (Crawler crawler : CrawlerService.getInstance()
+				.getAvailableCrawlers()) {
+			CrawlerWorker worker = new CrawlerWorker(servMan, crawler);
+			worker.execute();
+			workers.add(worker);
+		}
 	}
 
 	public synchronized void rerunAll() {
-
+		// TODO
 	}
 
 	@Override
 	public synchronized void abort() {
-		// TODO Auto-generated method stub
-
+		setState(BackgroundWorkerState.ABORTED);
+		for (CrawlerWorker worker : workers)
+			worker.cancel(true);
 	}
 
 	@Override
 	protected synchronized void finish() {
-		// TODO Auto-generated method stub
-
+		setState(BackgroundWorkerState.FINISHED);
+		for (FinishListener listener : finishListeners)
+			listener.receiveFinished();
 	}
 
 	@Override
 	public List<Exception> getErrors() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<SupportedSearchEngine> getSearchEnginesBeingAccessed() {
 		// TODO Auto-generated method stub
 		return null;
 	}

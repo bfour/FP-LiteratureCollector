@@ -37,13 +37,13 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		// toolbar
 		PlainToolbar toolbar = new PlainToolbar(true);
 
-		JButton browsAuthorsButton = new JButton("Browse all authors",
+		JButton browsAuthorsButton = new JButton("Browse authors",
 				Icons.PERSON_GROUP.getIcon());
 		browsAuthorsButton.setIconTextGap(6);
 		browsAuthorsButton.setMargin(new Insets(4, 16, 4, 16));
 		toolbar.add(browsAuthorsButton);
 		
-		JButton browseLiteratureButton = new JButton("Browse all literature",
+		JButton browseLiteratureButton = new JButton("Browse literature",
 				Icons.BOOKS.getIcon());
 		browseLiteratureButton.setIconTextGap(6);
 		browseLiteratureButton.setMargin(new Insets(4, 16, 4, 16));
@@ -54,6 +54,12 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		duplicatesButton.setIconTextGap(6);
 		duplicatesButton.setMargin(new Insets(4, 16, 4, 16));
 		toolbar.add(duplicatesButton);
+		
+		JButton settingsButton = new JButton("Edit settings",
+				Icons.CONFIG.getIcon());
+		settingsButton.setIconTextGap(6);
+		settingsButton.setMargin(new Insets(4, 16, 4, 16));
+		toolbar.add(settingsButton);
 
 		add(toolbar, "cell 0 0, grow");
 
@@ -71,7 +77,7 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 			}
 		});
 
-		duplicatesButton.addActionListener(new ActionListener() {
+		settingsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO

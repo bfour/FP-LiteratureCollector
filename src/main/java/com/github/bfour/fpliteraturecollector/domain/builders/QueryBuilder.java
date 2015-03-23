@@ -63,32 +63,36 @@ public class QueryBuilder extends EntityBuilder<Query> implements
 		return name;
 	}
 
-	public void setName(String name) {
+	public QueryBuilder setName(String name) {
 		this.name = name;
+		return this;
 	}
 
 	public List<AtomicRequest> getAtomicRequests() {
 		return atomicRequests;
 	}
 
-	public void setAtomicRequests(List<AtomicRequest> atomicRequests) {
+	public QueryBuilder setAtomicRequests(List<AtomicRequest> atomicRequests) {
 		this.atomicRequests = atomicRequests;
+		return this;
 	}
 
 	public Integer getQueuePosition() {
 		return queuePosition;
 	}
 
-	public void setQueuePosition(Integer queuePosition) {
+	public QueryBuilder setQueuePosition(Integer queuePosition) {
 		this.queuePosition = queuePosition;
+		return this;
 	}
 
 	public QueryStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(QueryStatus status) {
+	public QueryBuilder setStatus(QueryStatus status) {
 		this.status = status;
+		return this;
 	}
 
 }

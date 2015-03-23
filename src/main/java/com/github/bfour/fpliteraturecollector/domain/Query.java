@@ -32,8 +32,8 @@ public class Query extends Entity {
 
 	public static enum QueryStatus {
 		CRAWLING("crawling", com.github.bfour.fpjgui.design.Icons.BUSY_16
-				.getIcon()), FINISHED("finished", Icons.FINISHED_16.getIcon()), QUEUED(
-				"queued", Icons.QUEUED_16.getIcon()), IDLE("idle", Icons.IDLE_16.getIcon());
+				.getIcon()), FINISHED("finished", Icons.FINISHED_20.getIcon()), QUEUED(
+				"queued", Icons.QUEUED_20.getIcon()), IDLE("idle", Icons.IDLE_20.getIcon());
 
 		private String tellingName;
 		private ImageIcon icon;
@@ -94,6 +94,11 @@ public class Query extends Entity {
 
 	public QueryStatus getStatus() {
 		return status;
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 
 }

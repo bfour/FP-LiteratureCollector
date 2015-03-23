@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  * -///////////////////////////////-
  */
 
-
 import java.util.Date;
 
 import com.github.bfour.fpjcommons.model.Entity;
@@ -28,10 +27,10 @@ import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Vertex;
 
-public abstract class OrientDBEntityDAO<T extends Entity> extends AbstractOrientDBDAO<T> {
+public abstract class OrientDBEntityDAO<T extends Entity> extends
+		AbstractOrientDBDAO<T> {
 
-	protected OrientDBEntityDAO(OrientDBGraphService dbs,
-			String dbClassName) {
+	protected OrientDBEntityDAO(OrientDBGraphService dbs, String dbClassName) {
 		super(dbs, dbClassName);
 	}
 
@@ -41,16 +40,16 @@ public abstract class OrientDBEntityDAO<T extends Entity> extends AbstractOrient
 		Date lastChangeTime = vertex.getProperty("lastChangeTime");
 		return new Entity(ID, creationTime, lastChangeTime);
 	}
-	
+
 	@Override
 	public abstract T vertexToEntity(Vertex vertex) throws DatalayerException;
 
 	@Override
 	protected Vertex entityToVertex(T entity, long ID, Vertex givenVertex)
 			throws DatalayerException {
-		
+
 		if (givenVertex == null) {
-			givenVertex = db.addVertex("class:"+this.dbClassName);
+			givenVertex = db.addVertex("class:" + this.dbClassName);
 		} else {
 			if (entity.getCreationTime() == null)
 				givenVertex.removeProperty("creationTime");
@@ -63,7 +62,7 @@ public abstract class OrientDBEntityDAO<T extends Entity> extends AbstractOrient
 		givenVertex.setProperty("lastChangeTime", entity.getLastChangeTime());
 
 		return givenVertex;
-		
+
 	}
 
 }

@@ -3,14 +3,12 @@ package com.github.bfour.fpliteraturecollector.service.abstraction;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.github.bfour.fpliteraturecollector.domain.Literature;
-import com.github.bfour.fpliteraturecollector.domain.SupportedSearchEngine;
 import com.github.bfour.fpliteraturecollector.service.crawlers.InvalidStateTransitionException;
 
 public abstract class BackgroundWorker {
 
 	public static interface FinishListener {
-		void receiveFinished(List<Literature> results);
+		void receiveFinished();
 	}
 
 	public static interface ProgressListener {
@@ -18,7 +16,7 @@ public abstract class BackgroundWorker {
 	}
 
 	public static interface ResultStreamListener {
-		void receiveResult(Literature literature);
+		void receiveResult();
 	}
 
 	public static enum BackgroundWorkerState {
@@ -124,14 +122,6 @@ public abstract class BackgroundWorker {
 	 * @return
 	 */
 	public abstract List<Exception> getErrors();
-
-	/**
-	 * Get the SupportedSearchEngines used by this Crawler. This information may
-	 * be used by a scheduler to run crawlers in parallel.
-	 * 
-	 * @return SupportedSearchEngines used by this Crawler
-	 */
-	public abstract List<SupportedSearchEngine> getSearchEnginesBeingAccessed();
 
 	public synchronized void registerResultStreamListener(
 			ResultStreamListener listener) {

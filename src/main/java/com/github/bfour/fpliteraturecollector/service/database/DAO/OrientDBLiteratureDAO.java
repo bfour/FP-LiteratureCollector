@@ -30,6 +30,7 @@ import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpliteraturecollector.domain.ISBN;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Author;
+import com.github.bfour.fpliteraturecollector.service.AuthorService;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Vertex;
 
@@ -161,19 +162,22 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 	}
 
 	private static OrientDBLiteratureDAO instance;
-	private OrientDBAuthorDAO personDAO;
+	private OrientDBAuthorDAO authorDAO;
+	private AuthorService authServ;
 
 	private OrientDBLiteratureDAO(OrientDBGraphService dbs,
-			boolean forceCreateNewInstance) {
+			boolean forceCreateNewInstance, AuthorService authServ) {
 		super(dbs, "literature");
-		this.personDAO = OrientDBAuthorDAO.getInstance(dbs,
+		this.authorDAO = OrientDBAuthorDAO.getInstance(dbs,
 				forceCreateNewInstance);
+		this.authServ = authServ;
 	}
 
 	public static OrientDBLiteratureDAO getInstance(OrientDBGraphService dbs,
-			boolean forceCreateNewInstance) {
+			boolean forceCreateNewInstance, AuthorService authServ) {
 		if (instance == null || forceCreateNewInstance)
-			instance = new OrientDBLiteratureDAO(dbs, forceCreateNewInstance);
+			instance = new OrientDBLiteratureDAO(dbs, forceCreateNewInstance,
+					authServ);
 		return instance;
 	}
 
@@ -192,7 +196,7 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 
 		// authors
 		GraphUtils.setCollectionPropertyOnVertex(v, "authors",
-				entity.getAuthors(), personDAO);
+				entity.getAuthors(), authorDAO, authServ, true);
 
 		// DOI
 		GraphUtils.setProperty(v, "DOI", entity.getDOI(), true);
@@ -231,7 +235,7 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 
 	@Override
 	public Literature vertexToEntity(Vertex vertex) {
-		return new LazyLiterature(vertex, personDAO);
+		return new LazyLiterature(vertex, authorDAO);
 	}
 
 }

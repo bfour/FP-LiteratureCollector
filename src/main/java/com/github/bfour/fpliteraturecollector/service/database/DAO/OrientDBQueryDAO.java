@@ -50,6 +50,9 @@ import java.util.List;
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Query;
+import com.github.bfour.fpliteraturecollector.service.AtomicRequestService;
+import com.github.bfour.fpliteraturecollector.service.AuthorService;
+import com.github.bfour.fpliteraturecollector.service.LiteratureService;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Vertex;
 
@@ -98,6 +101,13 @@ public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements
 		}
 
 		@Override
+		public QueryStatus getStatus() {
+			if (status == null)
+				status = QueryStatus.IDLE;
+			return status;
+		}
+
+		@Override
 		public Long getID() {
 			return entity.getID();
 		}
@@ -116,18 +126,23 @@ public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements
 
 	private static OrientDBQueryDAO instance;
 	private OrientDBAtomicRequestDAO atomicRequestDAO;
+	private AtomicRequestService atomReqServ;
 
 	protected OrientDBQueryDAO(OrientDBGraphService dbs,
-			boolean forceCreateNewInstance) {
+			boolean forceCreateNewInstance, AtomicRequestService atomReqServ,
+			LiteratureService litServ, AuthorService authServ) {
 		super(dbs, "query");
 		this.atomicRequestDAO = OrientDBAtomicRequestDAO.getInstance(dbs,
-				forceCreateNewInstance);
+				forceCreateNewInstance, litServ, authServ);
+		this.atomReqServ = atomReqServ;
 	}
 
 	public static OrientDBQueryDAO getInstance(OrientDBGraphService dbs,
-			boolean forceCreateNewInstance) {
+			boolean forceCreateNewInstance, AtomicRequestService atomReqServ,
+			LiteratureService litServ, AuthorService authServ) {
 		if (instance == null || forceCreateNewInstance)
-			instance = new OrientDBQueryDAO(dbs, forceCreateNewInstance);
+			instance = new OrientDBQueryDAO(dbs, forceCreateNewInstance,
+					atomReqServ, litServ, authServ);
 		return instance;
 	}
 
@@ -138,9 +153,10 @@ public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements
 		Vertex v = super.entityToVertex(entity, ID, givenVertex);
 
 		GraphUtils.setProperty(v, "name", entity.getName(), false);
-		v.setProperty("atomicRequests", GraphUtils
-				.getCollectionFromVertexProperty(v, "atomicRequests",
-						atomicRequestDAO));
+		GraphUtils
+				.setCollectionPropertyOnVertex(v, "atomicRequests",
+						entity.getAtomicRequests(), atomicRequestDAO,
+						atomReqServ, true);
 		GraphUtils.setProperty(v, "queuePosition", entity.getQueuePosition(),
 				true);
 

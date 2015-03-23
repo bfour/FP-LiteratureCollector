@@ -19,6 +19,7 @@ public enum Icons {
 	PERSON_GROUP("classpath:icons/group.png"),
 	BOOKS("classpath:icons/books.png"),
 	DUPLICATE("classpath:icons/column_double.png"),
+	CONFIG("classpath:icons/config_32.png"),
 	
 	ADD("classpath:icons/add.png"),
 	ADD_24("classpath:icons/add_24.png"),
@@ -33,8 +34,17 @@ public enum Icons {
 	RERUN_24("classpath:icons/control_repeat_blue_24.png"),
 	
 	FINISHED_16("classpath:icons/tick_16.png"),
+	FINISHED_20("classpath:icons/tick_20.png"),
 	QUEUED_16("classpath:icons/time_16.png"),
-	IDLE_16("classpath:icons/traffic_lights_red_16.png")
+	QUEUED_20("classpath:icons/time_20.png"),
+	IDLE_16("classpath:icons/traffic_lights_red_16.png"),
+	IDLE_20("classpath:icons/traffic_lights_red_20.png"),
+	
+	QUEUE_UP_20("classpath:icons/abstract/flatArrowUp_20.png"),
+	QUEUE_DOWN_20("classpath:icons/abstract/flatArrowDown_20.png"),
+	EDIT_20("classpath:icons/pencil_20.png"),
+	DELETE_20("classpath:icons/bin_20.png"),
+	STOP_20("classpath:icons/stop_20.png"),
 	
 	;
 	

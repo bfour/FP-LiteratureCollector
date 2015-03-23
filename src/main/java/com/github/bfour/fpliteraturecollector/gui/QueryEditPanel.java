@@ -2,6 +2,7 @@ package com.github.bfour.fpliteraturecollector.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -100,7 +101,7 @@ public class QueryEditPanel extends EntityEditPanel<Query, QueryBuilder> {
 				atomReqPanel.edit();
 			}
 		});
-
+		
 		// automatically set AtomicRequest in edit/view panel on selection
 		// change
 		atomReqBrowsePanel
@@ -125,6 +126,8 @@ public class QueryEditPanel extends EntityEditPanel<Query, QueryBuilder> {
 				atomReqBrowsePanel) {
 			@Override
 			public List<AtomicRequest> getValue(QueryBuilder object) {
+				if (object.getAtomicRequests() == null)
+					return new ArrayList<AtomicRequest>(0);
 				return object.getAtomicRequests();
 			}
 

@@ -161,19 +161,19 @@
         <text>Manage%20Duplicates</text>
       </controlProperties>
     </control>
-    <control controlID="44" controlTypeID="com.balsamiq.mockups::Button" x="779" y="701" w="108" h="42" measuredW="102" measuredH="27" zOrder="32" locked="false" isInGroup="-1">
+    <control controlID="44" controlTypeID="com.balsamiq.mockups::Button" x="787" y="695" w="108" h="42" measuredW="102" measuredH="27" zOrder="32" locked="false" isInGroup="-1">
       <controlProperties>
         <icon>GtCircledIcon%7Csmall</icon>
         <text>Continue</text>
       </controlProperties>
     </control>
-    <control controlID="45" controlTypeID="com.balsamiq.mockups::Button" x="682" y="701" w="90" h="42" measuredW="85" measuredH="27" zOrder="33" locked="false" isInGroup="-1">
+    <control controlID="45" controlTypeID="com.balsamiq.mockups::Button" x="690" y="695" w="90" h="42" measuredW="77" measuredH="27" zOrder="33" locked="false" isInGroup="-1">
       <controlProperties>
-        <icon>PauseIcon%7Csmall</icon>
-        <text>Pause</text>
+        <icon>StopIcon%7Csmall</icon>
+        <text>Stop</text>
       </controlProperties>
     </control>
-    <control controlID="46" controlTypeID="com.balsamiq.mockups::Button" x="892" y="701" w="108" h="42" measuredW="102" measuredH="27" zOrder="34" locked="false" isInGroup="-1">
+    <control controlID="46" controlTypeID="com.balsamiq.mockups::Button" x="900" y="695" w="108" h="42" measuredW="102" measuredH="27" zOrder="34" locked="false" isInGroup="-1">
       <controlProperties>
         <icon>ReloadIcon%7Csmall</icon>
         <text>Rerun%20all</text>
@@ -231,6 +231,12 @@
     <control controlID="56" controlTypeID="com.balsamiq.mockups::Label" x="1062" y="659" w="-1" h="-1" measuredW="48" measuredH="21" zOrder="44" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Queued</text>
+      </controlProperties>
+    </control>
+    <control controlID="61" controlTypeID="com.balsamiq.mockups::Button" x="548" y="695" w="133" h="42" measuredW="119" measuredH="27" zOrder="45" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>AddPageIcon%7Csmall</icon>
+        <text>Create%20New</text>
       </controlProperties>
     </control>
   </controls>

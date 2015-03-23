@@ -31,9 +31,11 @@ import com.github.bfour.fpjgui.abstraction.valueContainer.ListLikeValueContainer
 import com.github.bfour.fpjgui.components.PlainToolbar;
 import com.github.bfour.fpjgui.design.PanelDecorator;
 import com.github.bfour.fpliteraturecollector.domain.Query;
+import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 import com.github.bfour.fpliteraturecollector.gui.components.ScrollableJPanel;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
+import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlExecutor;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
@@ -50,6 +52,8 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 	private JPanel createPanel;
 	private JPanel crawlingPanel;
 	private JPanel queuePanel;
+	private JPanel finishedPanel;
+	private JPanel idlePanel;
 
 	public QueryOverviewPanel(final ServiceManager servMan) {
 
@@ -77,6 +81,14 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		queuePanel.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
 		container.add(queuePanel, "growx, wrap");
 
+		finishedPanel = new JPanel();
+		finishedPanel.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
+		container.add(finishedPanel, "growx, wrap");
+
+		idlePanel = new JPanel();
+		idlePanel.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
+		container.add(idlePanel, "growx, wrap");
+
 		// bottom toolbar
 		PlainToolbar toolbar = new PlainToolbar(true);
 		add(toolbar, "cell 0 1, growx");
@@ -102,10 +114,34 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		rerunButton.setMargin(new Insets(4, 8, 4, 8));
 		toolbar.add(rerunButton);
 
+		// ==== logic ====
+		final CrawlExecutor exec = CrawlExecutor.getInstance(servMan);
+
 		createButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				createNew();
+			}
+		});
+
+		stopButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				exec.abort();
+			}
+		});
+
+		playButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				exec.start();
+			}
+		});
+
+		rerunButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				exec.rerunAll();
 			}
 		});
 
@@ -137,9 +173,19 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 	}
 
 	private synchronized void createNew() {
-		QueryEditPanel editPanel = new QueryEditPanel(servMan, null);
+		final QueryEditPanel editPanel = new QueryEditPanel(servMan, null);
 		PanelDecorator.decorateWithDropShadow(editPanel);
 		createPanel.add(editPanel, "growx, wrap");
+		ActionListener closeProxy = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				createPanel.remove(editPanel);
+				revalidate();
+				repaint();
+			}
+		};
+		editPanel.addPostDiscardChangesListener(closeProxy);
+		editPanel.addPostSaveListener(closeProxy);
 		revalidate();
 		repaint();
 	}
@@ -164,8 +210,18 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 	public synchronized void addEntry(Query query) {
 		QueryPanel queryPanel = new QueryPanel(query);
 		PanelDecorator.decorateWithDropShadow(queryPanel);
-		queuePanel.add(queryPanel, "cell 0 " + query.getQueuePosition()
-				+ ", wrap, growx");
+		int position = (query.getQueuePosition() == null ? 0 : query
+				.getQueuePosition());
+		if (query.getStatus() == QueryStatus.CRAWLING) {
+			queuePanel.add(queryPanel, "cell 0 " + position + ", wrap, growx");
+		} else if (query.getStatus() == QueryStatus.QUEUED) {
+			queuePanel.add(queryPanel, "cell 0 " + position + ", wrap, growx");
+		} else if (query.getStatus() == QueryStatus.FINISHED) {
+			finishedPanel.add(queryPanel, "cell 0 " + position
+					+ ", wrap, growx");
+		} else if (query.getStatus() == QueryStatus.IDLE) {
+			idlePanel.add(queryPanel, "cell 0 " + position + ", wrap, growx");
+		}
 		componentQueryMap.put(queryPanel, query);
 		revalidate();
 		repaint();
@@ -207,9 +263,19 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 	}
 
 	@Override
-	public synchronized void updateEntry(Query arg0) {
+	public synchronized void updateEntry(Query query) {
 		// TODO
 		// check if queue position has changed
+		Integer currentPos = componentQueryMap.get(
+				componentQueryMap.inverse().get(query)).getQueuePosition();
+		Integer newPos = query.getQueuePosition();
+		if ((currentPos == null && newPos != null)
+				|| !currentPos.equals(newPos)) {
+			deleteEntry(query);
+			addEntry(query);
+			return;
+		}
+		// pos has not changed, update panel information
+		componentQueryMap.inverse().get(query).setEntity(query);
 	}
-
 }

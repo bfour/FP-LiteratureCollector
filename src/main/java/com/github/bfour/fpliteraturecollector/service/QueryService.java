@@ -20,18 +20,25 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
-
-
-
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.CRUDService;
+import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Query;
+import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
 
 public interface QueryService extends CRUDService<Query> {
 
 	Query getByQueuePosition(int position) throws ServiceException;
+
+	Query getFirstInQueueForCrawler(Crawler crawler) throws ServiceException;
+
+	AtomicRequest getFirstUnprocessedRequestForCrawler(Query query,
+			Crawler crawler) throws ServiceException;
+
 	Query queueUp(Query q) throws ServiceException;
+
 	Query queueDown(Query q) throws ServiceException;
+
 	Query queue(Query q) throws ServiceException;
-	
+
 }

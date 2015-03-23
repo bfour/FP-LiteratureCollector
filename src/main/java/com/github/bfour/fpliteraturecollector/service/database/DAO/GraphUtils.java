@@ -27,6 +27,8 @@ import java.util.List;
 
 import com.github.bfour.fpjcommons.model.Entity;
 import com.github.bfour.fpjcommons.services.DatalayerException;
+import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpjcommons.services.CRUD.CRUDService;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
@@ -35,7 +37,9 @@ public class GraphUtils {
 
 	public static <T extends Entity> void setCollectionPropertyOnVertex(
 			Vertex vertex, String edgeName, Collection<T> collectionToBeSet,
-			AbstractOrientDBDAO<T> collectionItemDAO) throws DatalayerException {
+			AbstractOrientDBDAO<T> collectionItemDAO,
+			CRUDService<T> collectionItemService, boolean cascadeDelete)
+			throws DatalayerException {
 
 		// get current items of collection in vertex
 		List<T> vertexItems = new LinkedList<T>();
@@ -49,25 +53,49 @@ public class GraphUtils {
 		// determine items to remove and add in vertex
 		List<T> itemsToRemove = new LinkedList<>();
 		for (T vertexItem : vertexItems) {
-			if (!collectionToBeSet.contains(vertexItem))
+			if (collectionToBeSet == null
+					|| !collectionToBeSet.contains(vertexItem))
 				itemsToRemove.add(vertexItem);
 		}
 		List<T> itemsToAdd = new LinkedList<>();
-		for (T collectionToBeSetItem : collectionToBeSet) {
-			if (!vertexItems.contains(collectionToBeSetItem))
-				itemsToAdd.add(collectionToBeSetItem);
+		if (collectionToBeSet != null) {
+			for (T collectionToBeSetItem : collectionToBeSet) {
+				if (!vertexItems.contains(collectionToBeSetItem))
+					itemsToAdd.add(collectionToBeSetItem);
+			}
 		}
 
-		// remove and add edges adjacent to vertex
+		// go through existing edges and remove if necessary
 		vertexItemEdges = vertex.getEdges(Direction.OUT, edgeName);
 		for (Edge vertexItemEdge : vertexItemEdges) {
 			T p = collectionItemDAO.vertexToEntity(vertexItemEdge
 					.getVertex(Direction.IN));
-			if (itemsToRemove.contains(p))
+			if (itemsToRemove.contains(p)) {
 				vertexItemEdge.remove();
+				boolean referencedVertexHasMoreEdges = vertexItemEdge
+						.getVertex(Direction.IN)
+						.getEdges(Direction.IN, edgeName).iterator().hasNext();
+				if (cascadeDelete && !referencedVertexHasMoreEdges) {
+					try {
+						collectionItemService.delete(p);
+					} catch (ServiceException e) {
+						throw new DatalayerException(e);
+					}
+				}
+			}
 		}
+
+		// add items to be added
 		for (T itemToAdd : itemsToAdd) {
 			Vertex itemVertex = collectionItemDAO.getVertexForEntity(itemToAdd);
+			if (itemVertex == null) {
+				try {
+					itemToAdd = collectionItemService.create(itemToAdd);
+				} catch (ServiceException e) {
+					throw new DatalayerException(e);
+				}
+				itemVertex = collectionItemDAO.getVertexForEntity(itemToAdd);
+			}
 			vertex.addEdge(edgeName, itemVertex);
 		}
 

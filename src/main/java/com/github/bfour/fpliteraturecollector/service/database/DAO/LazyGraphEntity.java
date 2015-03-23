@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  * -///////////////////////////////-
  */
 
-
 import java.util.Date;
 
 import com.github.bfour.fpjcommons.model.Entity;
@@ -36,23 +35,23 @@ public class LazyGraphEntity extends Entity {
 
 	@Override
 	public Long getID() {
-		if (super.getID() == null)
-			setID((Long) vertex.getProperty("ID"));
-		return super.getID();
+		if (ID == null)
+			ID = (Long) vertex.getProperty("ID");
+		return ID;
 	}
 
 	@Override
 	public Date getCreationTime() {
-		if (super.getCreationTime() == null)
-			setCreationTime((Date) vertex.getProperty("creationTime"));
-		return super.getCreationTime();
+		if (creationTime == null)
+			creationTime = (Date) vertex.getProperty("creationTime");
+		return creationTime;
 	}
 
 	@Override
 	public Date getLastChangeTime() {
-		if (super.getLastChangeTime() == null)
-			setLastChangeTime((Date) vertex.getProperty("lastChangeTime"));
-		return super.getLastChangeTime();
+		if (lastChangeTime == null)
+			lastChangeTime = (Date) vertex.getProperty("lastChangeTime");
+		return lastChangeTime;
 	}
 
 }
