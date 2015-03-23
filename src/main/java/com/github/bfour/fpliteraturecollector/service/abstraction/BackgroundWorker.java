@@ -28,19 +28,20 @@ public abstract class BackgroundWorker {
 		NOT_STARTED,
 
 		/**
-		 * BackgroundWorker is currently crawling ({@link BackgroundWorker#start()} has been
-		 * called)
+		 * BackgroundWorker is currently crawling (
+		 * {@link BackgroundWorker#start()} has been called)
 		 */
 		RUNNING,
 
 		// /**
-		// * BackgroundWorker has been suspended by calling {@link BackgroundWorker#suspend()}
+		// * BackgroundWorker has been suspended by calling {@link
+		// BackgroundWorker#suspend()}
 		// */
 		// SUSPENDED,
 
 		/**
-		 * crawling process has been aborted by calling {@link BackgroundWorker#abort()};
-		 * results may be incomplete
+		 * crawling process has been aborted by calling
+		 * {@link BackgroundWorker#abort()}; results may be incomplete
 		 */
 		ABORTED,
 
@@ -69,7 +70,7 @@ public abstract class BackgroundWorker {
 	public abstract void abort();
 
 	protected abstract void finish();
-	
+
 	/**
 	 * Get the state in which the Crawler is currently in.
 	 * 
@@ -85,8 +86,10 @@ public abstract class BackgroundWorker {
 	 * 
 	 * @param state
 	 *            state to be set
+	 * @throws InvalidStateTransitionException
 	 */
-	protected final synchronized void setState(BackgroundWorkerState state) {
+	protected final synchronized void setState(BackgroundWorkerState state)
+			throws InvalidStateTransitionException {
 
 		// check if valid state transition
 		if (this.state == BackgroundWorkerState.NOT_STARTED

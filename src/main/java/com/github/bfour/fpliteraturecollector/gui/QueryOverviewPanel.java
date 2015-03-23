@@ -208,7 +208,7 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 
 	@Override
 	public synchronized void addEntry(Query query) {
-		QueryPanel queryPanel = new QueryPanel(query);
+		QueryPanel queryPanel = new QueryPanel(servMan, query);
 		PanelDecorator.decorateWithDropShadow(queryPanel);
 		int position = (query.getQueuePosition() == null ? 0 : query
 				.getQueuePosition());
@@ -234,8 +234,12 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 
 	@Override
 	public synchronized void deleteEntry(Query arg0) {
-		Component panel = componentQueryMap.inverse().get(arg0);
-		remove(panel);
+		QueryPanel panel = componentQueryMap.inverse().get(arg0);
+		createPanel.remove(panel);
+		crawlingPanel.remove(panel);
+		queuePanel.remove(panel);
+		finishedPanel.remove(panel);
+		idlePanel.remove(panel);
 		componentQueryMap.remove(panel);
 		revalidate();
 		repaint();
@@ -263,19 +267,19 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 	}
 
 	@Override
-	public synchronized void updateEntry(Query query) {
+	public synchronized void updateEntry(Query oldQuery, Query newQuery) {
 		// TODO
 		// check if queue position has changed
 		Integer currentPos = componentQueryMap.get(
-				componentQueryMap.inverse().get(query)).getQueuePosition();
-		Integer newPos = query.getQueuePosition();
+				componentQueryMap.inverse().get(newQuery)).getQueuePosition();
+		Integer newPos = newQuery.getQueuePosition();
 		if ((currentPos == null && newPos != null)
 				|| !currentPos.equals(newPos)) {
-			deleteEntry(query);
-			addEntry(query);
+			deleteEntry(oldQuery);
+			addEntry(newQuery);
 			return;
 		}
 		// pos has not changed, update panel information
-		componentQueryMap.inverse().get(query).setEntity(query);
+		componentQueryMap.inverse().get(oldQuery).setEntity(newQuery);
 	}
 }

@@ -20,8 +20,12 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingEntityCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Query;
@@ -55,12 +59,40 @@ public class DefaultQueryService extends
 	}
 
 	@Override
+	public DataIterator<Query> get() throws ServiceException {
+		final DataIterator<Query> iter = super.get();
+		return new DataIterator<Query>() {
+			@Override
+			public boolean hasNext() throws DatalayerException {
+				return iter.hasNext();
+			}
+
+			@Override
+			public Query next() throws DatalayerException {
+				return setStatus(iter.next());
+			}
+
+			@Override
+			public void remove() throws DatalayerException {
+				iter.remove();
+			}
+		};
+	}
+
+	@Override
+	public List<Query> getAll() throws ServiceException {
+		List<Query> queries = super.getAll();
+		for (Query query : queries) {
+			queries.set(queries.indexOf(query), setStatus(query));
+		}
+		return queries;
+	}
+
+	@Override
 	public synchronized Query create(Query entity) throws ServiceException {
-		entity = new QueryBuilder(entity).setStatus(QueryStatus.IDLE)
-				.getObject();
+		entity = setStatus(entity);
 		checkIntegrity(entity);
-		Query q = super.create(entity);
-		return queue(q);
+		return super.create(entity);
 	}
 
 	@Override
@@ -82,7 +114,10 @@ public class DefaultQueryService extends
 	public synchronized Query getByQueuePosition(int position)
 			throws ServiceException {
 		try {
-			return getDAO().getByQueuePosition(position);
+			Query q = getDAO().getByQueuePosition(position);
+			if (q == null)
+				return null;
+			return setStatus(q);
 		} catch (DatalayerException e) {
 			throw new ServiceException(e);
 		}
@@ -137,6 +172,13 @@ public class DefaultQueryService extends
 	}
 
 	@Override
+	public synchronized void queueAll() throws ServiceException {
+		for (Query q : getAll()) {
+			queue(q);
+		}
+	}
+
+	@Override
 	public synchronized Query getFirstInQueueForCrawler(Crawler crawler)
 			throws ServiceException {
 		// TODO (low) improve performance by using direct SQL max() query
@@ -157,12 +199,21 @@ public class DefaultQueryService extends
 		for (AtomicRequest atomReq : query.getAtomicRequests()) {
 			if (!atomReq.getCrawler().equals(crawler))
 				continue;
-			if (atomReq.getResults() == null)
+			if (atomReq.getResults() == null || atomReq.getResults().isEmpty())
 				return atomReq;
 		}
 
 		return null;
 
+	}
+
+	private List<AtomicRequest> getUnprocessedAtomicRequests(Query query) {
+		List<AtomicRequest> list = new LinkedList<AtomicRequest>();
+		for (AtomicRequest atomReq : query.getAtomicRequests()) {
+			if (atomReq.getResults() == null || atomReq.getResults().isEmpty())
+				list.add(atomReq);
+		}
+		return list;
 	}
 
 	private int getMaxQueuePosition() throws ServiceException {
@@ -174,6 +225,26 @@ public class DefaultQueryService extends
 				max = pos;
 		}
 		return max;
+	}
+
+	private Query setStatus(Query q) {
+		if (q.getStatus() != null)
+			return q;
+		if (!q.getAtomicRequests().isEmpty()
+				&& getUnprocessedAtomicRequests(q).isEmpty())
+			return new QueryBuilder(q).setStatus(QueryStatus.FINISHED)
+					.getObject();
+		return new QueryBuilder(q).setStatus(QueryStatus.IDLE).getObject();
+	}
+
+	@Override
+	protected Query modifyBeforeCreateBroadcast(Query entity) {
+		return setStatus(entity);
+	}
+
+	@Override
+	protected Query modifyBeforeUpdateBroadcast(Query entity) {
+		return setStatus(entity);
 	}
 
 }

@@ -67,7 +67,7 @@ public class OrientDBAtomicRequestDAO extends OrientDBEntityDAO<AtomicRequest>
 
 		@Override
 		public Integer getMaxPageTurns() {
-			if (maxPageTurns == null)
+			if (maxPageTurns == null) 
 				maxPageTurns = (Integer) vertex.getProperty("maxPageTurns");
 			return maxPageTurns;
 		}
@@ -133,7 +133,7 @@ public class OrientDBAtomicRequestDAO extends OrientDBEntityDAO<AtomicRequest>
 		entityVertex.setProperty("searchEngine", CrawlerService.getInstance()
 				.getIdentifierForCrawler(entity.getCrawler()));
 		entityVertex.setProperty("searchString", entity.getSearchString());
-		entityVertex.setProperty("maxPageTurns", entity.getSearchString());
+		entityVertex.setProperty("maxPageTurns", entity.getMaxPageTurns());
 		GraphUtils.setCollectionPropertyOnVertex(entityVertex, "results",
 				entity.getResults(), literatureDAO, litServ, true);
 

@@ -41,4 +41,6 @@ public interface QueryService extends CRUDService<Query> {
 
 	Query queue(Query q) throws ServiceException;
 
+	void queueAll() throws ServiceException;
+
 }

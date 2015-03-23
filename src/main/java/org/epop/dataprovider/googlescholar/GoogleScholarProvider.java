@@ -39,6 +39,7 @@ import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
+import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 
 public class GoogleScholarProvider extends DataProvider {
@@ -146,8 +147,7 @@ public class GoogleScholarProvider extends DataProvider {
 	// }
 
 	@Override
-	protected List<Literature> parsePage(Reader page)
-			throws DatalayerException {
+	protected List<Literature> parsePage(Reader page) throws DatalayerException {
 		List<Literature> papers = new ArrayList<Literature>();
 		Document doc = null;
 		try {
@@ -171,8 +171,14 @@ public class GoogleScholarProvider extends DataProvider {
 
 				LiteratureBuilder litBuilder = new LiteratureBuilder();
 
-				String title = article.select(".gs_rt").text();
-				title = title.replaceAll("\\[PDF\\]\\[PDF\\] ", "");
+				String typeString = article.select(".gs_ct2").text();
+				if (typeString == null)
+					typeString = "";
+				if (typeString.equals("[C]"))
+					continue; // skip citations
+				litBuilder.setType(getLiteratureType(typeString));
+
+				String title = article.select(".gs_rt a").text();
 				title = title.replaceAll("\u0097", "-");
 				title = title.replaceAll("…", "...");
 				if (title.isEmpty())
@@ -261,7 +267,22 @@ public class GoogleScholarProvider extends DataProvider {
 		return papers;
 	}
 
-	private List<Author> getAuthorsFromHTMLSection(String htmlSection) throws ServiceException {
+	private LiteratureType getLiteratureType(String gScholarString) {
+		switch (gScholarString) {
+		case "[PDF]":
+			break;
+		case "[B]":
+			return LiteratureType.BOOK;
+		case "[HTML]":
+			break;
+		case "":
+			break;
+		}
+		return LiteratureType.UNKNOWN;
+	}
+
+	private List<Author> getAuthorsFromHTMLSection(String htmlSection)
+			throws ServiceException {
 
 		htmlSection = htmlSection.replace("…", "");
 

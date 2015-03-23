@@ -1,28 +1,28 @@
 package com.github.bfour.fpliteraturecollector.gui;
 
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+
+import net.miginfocom.swing.MigLayout;
+
 import org.jdesktop.swingx.JXPanel;
 
+import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjgui.components.FPJGUILabel;
 import com.github.bfour.fpjgui.components.PlainToolbar;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
-
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.JLabel;
-
-import java.awt.Component;
-import java.awt.Insets;
-
-import javax.swing.Box;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
+import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
 public class QueryPanel extends JXPanel {
 
 	private static final long serialVersionUID = -4594624554195026146L;
 
+	private Query query;
 	private FPJGUILabel<String> nameLabel;
 	private FPJGUILabel<ImageIcon> statusIconLabel;
 	private FPJGUILabel<String> statusLabel;
@@ -30,19 +30,19 @@ public class QueryPanel extends JXPanel {
 	/**
 	 * Create the panel.
 	 */
-	public QueryPanel(Query q) {
+	public QueryPanel(final ServiceManager servMan, Query q) {
 		setLayout(new MigLayout("insets 0", "[][grow][]", "[]"));
 
 		statusIconLabel = new FPJGUILabel<ImageIcon>();
 		add(statusIconLabel, "cell 0 0");
 		statusLabel = new FPJGUILabel<String>();
 		add(statusLabel, "cell 0 0");
-		
+
 		nameLabel = new FPJGUILabel<String>();
 		add(nameLabel, "cell 1 0, center");
 
-//		Component horizontalGlue = Box.createHorizontalGlue();
-//		add(horizontalGlue, "cell 2 0");
+		// Component horizontalGlue = Box.createHorizontalGlue();
+		// add(horizontalGlue, "cell 2 0");
 
 		// toolbar
 		PlainToolbar toolbar = new PlainToolbar(true);
@@ -58,6 +58,11 @@ public class QueryPanel extends JXPanel {
 		editButton.setMargin(new Insets(1, 4, 2, 4));
 		toolbar.add(editButton);
 
+		JButton deleteButton = new JButton("Delete", Icons.DELETE_20.getIcon());
+		deleteButton.setIconTextGap(4);
+		deleteButton.setMargin(new Insets(1, 4, 2, 4));
+		toolbar.add(deleteButton);
+
 		JButton queueUpButton = new JButton("Queue up",
 				Icons.QUEUE_UP_20.getIcon());
 		queueUpButton.setIconTextGap(4);
@@ -70,14 +75,51 @@ public class QueryPanel extends JXPanel {
 		queueDownButton.setMargin(new Insets(1, 4, 2, 4));
 		toolbar.add(queueDownButton);
 
+		// logic
+		deleteButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					servMan.getQueryService().delete(query);
+				} catch (ServiceException e1) {
+					// TODO Auto-generated catch block
+				}
+			}
+		});
+		
+		queueUpButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					servMan.getQueryService().queueUp(query);
+				} catch (ServiceException e1) {
+					// TODO Auto-generated catch block
+				}
+			}
+		});
+		
+		queueDownButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					servMan.getQueryService().queueDown(query);
+				} catch (ServiceException e1) {
+					// TODO Auto-generated catch block
+				}
+			}
+		});		
+		
+		// set entity
 		setEntity(q);
 
 	}
 
 	public void setEntity(Query q) {
+		this.query = q;
 		nameLabel.setValue(q.getName());
 		statusLabel.setValue(q.getStatus().getTellingName());
 		statusIconLabel.setValue(q.getStatus().getIcon());
+		repaint();
 	}
 
 }

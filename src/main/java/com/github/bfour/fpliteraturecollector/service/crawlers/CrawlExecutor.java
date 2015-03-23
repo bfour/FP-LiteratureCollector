@@ -6,9 +6,6 @@ import java.util.List;
 
 import javax.swing.SwingWorker;
 
-import org.epop.dataprovider.DataUnavailableException;
-
-import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
@@ -66,8 +63,7 @@ public class CrawlExecutor extends BackgroundWorker {
 					qServ.update(topQuery, qBuilder.getObject());
 
 				}
-			} catch (ServiceException | DataUnavailableException
-					| DatalayerException e) {
+			} catch (Exception e) {
 				exceptions.add(e);
 			}
 			return null;
@@ -101,7 +97,19 @@ public class CrawlExecutor extends BackgroundWorker {
 	}
 
 	public synchronized void start() {
-		setState(BackgroundWorkerState.RUNNING);
+		try {
+			setState(BackgroundWorkerState.RUNNING);
+		} catch (InvalidStateTransitionException e) {
+			// TODO Auto-generated catch block
+			return;
+		}
+		// queue all queries
+		try {
+			servMan.getQueryService().queueAll();
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			return;
+		}
 		// for each crawler, create a worker
 		// all workers - each standing for a crawler - will then run in parallel
 		for (Crawler crawler : CrawlerService.getInstance()
@@ -118,14 +126,24 @@ public class CrawlExecutor extends BackgroundWorker {
 
 	@Override
 	public synchronized void abort() {
-		setState(BackgroundWorkerState.ABORTED);
+		try {
+			setState(BackgroundWorkerState.ABORTED);
+		} catch (InvalidStateTransitionException e) {
+			// TODO Auto-generated catch block
+			return;
+		}
 		for (CrawlerWorker worker : workers)
 			worker.cancel(true);
 	}
 
 	@Override
 	protected synchronized void finish() {
-		setState(BackgroundWorkerState.FINISHED);
+		try {
+			setState(BackgroundWorkerState.FINISHED);
+		} catch (InvalidStateTransitionException e) {
+			// TODO Auto-generated catch block
+			return;
+		}
 		for (FinishListener listener : finishListeners)
 			listener.receiveFinished();
 	}

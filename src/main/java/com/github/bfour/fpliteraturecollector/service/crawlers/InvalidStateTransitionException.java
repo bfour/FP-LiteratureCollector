@@ -7,7 +7,7 @@ package com.github.bfour.fpliteraturecollector.service.crawlers;
  * @author FP
  *
  */
-public class InvalidStateTransitionException extends RuntimeException {
+public class InvalidStateTransitionException extends Exception {
 
 	private static final long serialVersionUID = -8987118614354748953L;
 

@@ -15,6 +15,7 @@ import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
 import com.github.bfour.fpjgui.components.PlainToolbar;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
+import com.github.bfour.fpliteraturecollector.gui.literature.LiteratureWindow;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
 public class MainPanel extends JPanel implements FeedbackProvider,
@@ -37,24 +38,24 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		// toolbar
 		PlainToolbar toolbar = new PlainToolbar(true);
 
-		JButton browsAuthorsButton = new JButton("Browse authors",
+		JButton browseAuthorsButton = new JButton("Browse authors",
 				Icons.PERSON_GROUP.getIcon());
-		browsAuthorsButton.setIconTextGap(6);
-		browsAuthorsButton.setMargin(new Insets(4, 16, 4, 16));
-		toolbar.add(browsAuthorsButton);
-		
+		browseAuthorsButton.setIconTextGap(6);
+		browseAuthorsButton.setMargin(new Insets(4, 16, 4, 16));
+		toolbar.add(browseAuthorsButton);
+
 		JButton browseLiteratureButton = new JButton("Browse literature",
 				Icons.BOOKS.getIcon());
 		browseLiteratureButton.setIconTextGap(6);
 		browseLiteratureButton.setMargin(new Insets(4, 16, 4, 16));
 		toolbar.add(browseLiteratureButton);
-		
+
 		JButton duplicatesButton = new JButton("Manage duplicates",
 				Icons.DUPLICATE.getIcon());
 		duplicatesButton.setIconTextGap(6);
 		duplicatesButton.setMargin(new Insets(4, 16, 4, 16));
 		toolbar.add(duplicatesButton);
-		
+
 		JButton settingsButton = new JButton("Edit settings",
 				Icons.CONFIG.getIcon());
 		settingsButton.setIconTextGap(6);
@@ -70,10 +71,17 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		queryOverviewPanel.addFeedbackListener(this);
 
 		// logic
-		browsAuthorsButton.addActionListener(new ActionListener() {
+		browseAuthorsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO
+			}
+		});
+
+		browseLiteratureButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				LiteratureWindow.getInstance(serviceManager).setVisible(true);
 			}
 		});
 

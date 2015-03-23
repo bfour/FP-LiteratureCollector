@@ -50,6 +50,7 @@ import java.util.List;
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Query;
+import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 import com.github.bfour.fpliteraturecollector.service.AtomicRequestService;
 import com.github.bfour.fpliteraturecollector.service.AuthorService;
 import com.github.bfour.fpliteraturecollector.service.LiteratureService;
@@ -103,7 +104,8 @@ public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements
 		@Override
 		public QueryStatus getStatus() {
 			if (status == null)
-				status = QueryStatus.IDLE;
+				status = QueryStatus.valueOf((String) vertex
+						.getProperty("status"));
 			return status;
 		}
 
@@ -159,6 +161,11 @@ public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements
 						atomReqServ, true);
 		GraphUtils.setProperty(v, "queuePosition", entity.getQueuePosition(),
 				true);
+		GraphUtils.setProperty(
+				v,
+				"status",
+				(entity.getStatus() == null ? QueryStatus.IDLE : entity
+						.getStatus()).name(), false);
 
 		return v;
 

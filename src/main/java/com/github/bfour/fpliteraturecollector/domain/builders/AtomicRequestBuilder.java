@@ -38,32 +38,36 @@ public class AtomicRequestBuilder extends EntityBuilder<AtomicRequest>
 		return crawler;
 	}
 
-	public void setCrawler(Crawler crawler) {
+	public AtomicRequestBuilder setCrawler(Crawler crawler) {
 		this.crawler = crawler;
+		return this;
 	}
 
 	public String getSearchString() {
 		return searchString;
 	}
 
-	public void setSearchString(String searchString) {
+	public AtomicRequestBuilder setSearchString(String searchString) {
 		this.searchString = searchString;
+		return this;
 	}
 
 	public Integer getMaxPageTurns() {
 		return maxPageTurns;
 	}
 
-	public void setMaxPageTurns(Integer maxPageTurns) {
+	public AtomicRequestBuilder setMaxPageTurns(Integer maxPageTurns) {
 		this.maxPageTurns = maxPageTurns;
+		return this;
 	}
 
 	public List<Literature> getResults() {
 		return results;
 	}
 
-	public void setResults(List<Literature> results) {
+	public AtomicRequestBuilder setResults(List<Literature> results) {
 		this.results = results;
+		return this;
 	}
 
 }

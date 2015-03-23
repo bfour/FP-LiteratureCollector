@@ -102,7 +102,7 @@ public class AtomicRequestPanel extends
 			@Override
 			public AtomicRequest update(AtomicRequest oldEntry,
 					AtomicRequest newEntry) throws ServiceException {
-				table.updateEntry(newEntry);
+				table.updateEntry(oldEntry, newEntry);
 				return newEntry;
 			}
 		});
