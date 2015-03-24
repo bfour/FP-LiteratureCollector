@@ -87,8 +87,9 @@ public class GoogleScholarProvider extends DataProvider {
 			int counter = 0;
 			String newResponseBody = responseBody;
 			try {
-				while (newResponseBody
-						.contains("<b style=\"display:block;margin-left:50px\">Next</b>")) {
+				while (counter < pageTurnLimit
+						&& newResponseBody
+								.contains("<b style=\"display:block;margin-left:50px\">Next</b>")) {
 					Thread.sleep(DELAY);
 					URI newUri = URIUtils.createURI("http", SCHOLAR_GOOGLE_COM,
 							-1, "/scholar", htmlParams + "&start="
@@ -96,17 +97,15 @@ public class GoogleScholarProvider extends DataProvider {
 					System.out.println(newUri);
 					Document e = Jsoup.connect(newUri.toURL().toString())
 							.userAgent("Mozilla").get();
+					counter++;
 					if (e != null) {
 						// docs.add(e);
 						newResponseBody = e.html();
 						// System.out.println(newResponseBody);
 						responseBody = responseBody + newResponseBody;
-						counter++;
 					} else {
 						break;
 					}
-					if (counter >= pageTurnLimit) // TODO make param
-						break;
 				}
 			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
@@ -292,13 +291,17 @@ public class GoogleScholarProvider extends DataProvider {
 
 		// only one author
 		if (commaSplit.length == 0) {
-			authors.add(getAuthorFromHTMLSubSection(htmlSection));
+			Author auth = getAuthorFromHTMLSubSection(htmlSection);
+			if (auth != null)
+				authors.add(auth);
 			return authors;
 		}
 
 		// more than one author
 		for (String part : commaSplit) {
-			authors.add(getAuthorFromHTMLSubSection(part));
+			Author auth = getAuthorFromHTMLSubSection(part);
+			if (auth != null)
+				authors.add(auth);
 		}
 		return authors;
 
@@ -315,10 +318,14 @@ public class GoogleScholarProvider extends DataProvider {
 			String gScholarID = matcher.group(1);
 			String name = matcher.group(2);
 			Tuple<String, String> tuple = getFirstAndLastNameFromNameString(name);
+			if (tuple == null)
+				return null;
 			return new Author(tuple.getA(), tuple.getB(), gScholarID, null);
 		} else {
 			// no ID for this author
 			Tuple<String, String> tuple = getFirstAndLastNameFromNameString(subsection);
+			if (tuple == null)
+				return null;
 			return new Author(tuple.getA(), tuple.getB(), null, null);
 		}
 
@@ -327,6 +334,8 @@ public class GoogleScholarProvider extends DataProvider {
 	public Tuple<String, String> getFirstAndLastNameFromNameString(String name)
 			throws ServiceException {
 		name = name.trim();
+		if (name.isEmpty())
+			return null;
 		// first token is first name, others are last name
 		StringTokenizer spaceTokenizer = new StringTokenizer(name, " ");
 		if (!spaceTokenizer.hasMoreTokens())
@@ -341,124 +350,5 @@ public class GoogleScholarProvider extends DataProvider {
 		return new Tuple<String, String>(first, last.subSequence(1,
 				last.length()).toString());
 	}
-
-	// TODO substitute system.out with logger
-	// private Paper extractPaper(Segment element) {
-	// // navigate the element
-	// // get the title in the H3 element
-	// List<Element> titles = element.getAllElements(HTMLElementName.H3);
-	// assert titles.size() == 1;
-	// List<Element> childH3 = titles.get(0).getChildElements();
-	// Element title = childH3.get(0);
-	// System.out.println("---");
-	// // sometimes the tag contains a PDF link
-	// // skip "<span class=gs_ctc>[PDF]</span>"
-	// if (title.getStartTag().getName().equals(HTMLElementName.SPAN)) {
-	// // assert childH3.size() > 1: "childH3.size() = " + childH3.size() +
-	// // "\ntitles = " +titles.get(0).getContent().toString();
-	// if (childH3.size() > 1) {
-	// title = childH3.get(1);
-	// }
-	// }
-	// // get the paper title from inside the tag
-	// String paperTitle = StringUtils.formatInLineSingleSpace(title
-	// .getContent().toString());
-	// // sometimes the first entry is the user profiles - to skip
-	// if (paperTitle.startsWith("User profiles for")) {
-	// // get the ID
-	//
-	// return null;
-	// }
-	// // get the URL from the tag
-	// System.out.println("URL: " + title.getStartTag());
-	// System.out.println("title: " + paperTitle);
-	// // get the authors and publication
-	// // search for <span class=gs_a>
-	// Pattern gs_a = Pattern.compile("(.)*gs_a(.)*");
-	// List<Element> authors = element.getAllElements("class", gs_a);
-	// assert (authors.size() == 1);
-	// Element author = authors.get(0).getAllElements().get(0);
-	// String authorVenue = author.getContent().toString()
-	// .replaceAll("&hellip;", "");
-	// // several formats:
-	// // 1. <author> &hellip; - <place> , <year> -
-	// // 2. <author> &hellip; - <place> -
-	// // 3. <author> &hellip; - <year> -
-	// // note that place may contain -
-	// // split author form venue
-	// String[] authorVenues = splitFirst(authorVenue, '-');
-	// // remove HTML links if necessary
-	// Source htmlSource = new Source(authorVenues[0]);
-	// String paperAuthors = StringUtils.formatInLineSingleSpace(htmlSource
-	// .getTextExtractor().toString());
-	// System.out.println("authors: " + paperAuthors);
-	// // get the venue and the year (just before -)
-	// String venueYear = authorVenues[1];
-	// String paperPlace;
-	// // if it contains the venue
-	// // it may not contain the place
-	// // <place>, <year> or just <year> or just <place>
-	// String[] data = splitLast(venueYear, ',');
-	// System.out.println("venue+year:" + Arrays.toString(data));
-	// if (data[1].length() != 0) {
-	// // it contains both
-	// paperPlace = StringUtils.formatInLineSingleSpace(data[0]);
-	// // venue or year
-	// if (data[1].contains("-")) {
-	// venueYear = data[1].substring(0, data[1].indexOf('-')).trim();
-	// if (!Pattern.matches("\\d+", venueYear)) {
-	// paperPlace = paperPlace + ", " + venueYear;
-	// venueYear = "-1";
-	// }
-	// } else {
-	// venueYear = data[1].trim();
-	// }
-	// } else {
-	// int min_pos = data[0].indexOf('-');
-	// if (min_pos < 0) {
-	// paperPlace = venueYear;
-	// venueYear = "-1";
-	// } else {
-	// // only one of the two ..which one?
-	// // if it is a number
-	// venueYear = data[0].substring(0, min_pos).trim();
-	// if (Pattern.matches("\\d+", venueYear)) {
-	// // System.out.println('"'+ venueYear +'"');
-	// paperPlace = "";
-	// } else {
-	// paperPlace = venueYear;
-	// venueYear = "-1";
-	// }
-	// }
-	// }
-	// System.out.println("place: " + paperPlace);
-	// System.out.println("year:" + venueYear);
-	// // assert titles.size() == 1;
-	// // get the number of citations
-	// Pattern gs_fl = Pattern.compile("gs_fl");
-	// List<Element> citedinfos = element.getAllElements("class", gs_fl);
-	// // assert (citedinfos.size() == 1): "citedinfos.size() = " +
-	// // citedinfos.size();
-	// String citedInfo = null;
-	// if (citedinfos.size() == 0) {
-	// citedInfo = "0";
-	// } else {
-	// citedInfo = citedinfos.get(0).toString();
-	// citedInfo = StringUtils.formatInLineSingleSpace(citedInfo);
-	// }
-	// String string = "Cited by";
-	// int indexOfCitedBy = citedInfo.indexOf(string);
-	// if (indexOfCitedBy > 0) {
-	// citedInfo = citedInfo.substring(indexOfCitedBy);
-	// citedInfo = citedInfo.substring(string.length(),
-	// citedInfo.indexOf('<')).trim();
-	// System.out.println("citations:" + citedInfo);
-	// } else {
-	// citedInfo = "0";
-	// }
-	// // build the paper
-	// return new Paper(paperAuthors, paperTitle, paperPlace,
-	// Integer.parseInt(venueYear), Integer.parseInt(citedInfo));
-	// }
 
 }

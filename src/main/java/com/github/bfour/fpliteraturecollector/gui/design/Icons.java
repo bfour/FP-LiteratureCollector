@@ -35,6 +35,8 @@ public enum Icons {
 	
 	FINISHED_16("classpath:icons/tick_16.png"),
 	FINISHED_20("classpath:icons/tick_20.png"),
+	FINISHED_WITH_ERROR_16("classpath:icons/exclamation_16.png"),
+	FINISHED_WITH_ERROR_20("classpath:icons/exclamation_20.png"),
 	QUEUED_16("classpath:icons/time_16.png"),
 	QUEUED_20("classpath:icons/time_20.png"),
 	IDLE_16("classpath:icons/traffic_lights_red_16.png"),

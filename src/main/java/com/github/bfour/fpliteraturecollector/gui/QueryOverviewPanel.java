@@ -35,6 +35,7 @@ import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 import com.github.bfour.fpliteraturecollector.gui.components.ScrollableJPanel;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
+import com.github.bfour.fpliteraturecollector.service.abstraction.BackgroundWorker.FinishListener;
 import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlExecutor;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -99,12 +100,12 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		createButton.setMargin(new Insets(4, 8, 4, 8));
 		toolbar.add(createButton);
 
-		JButton stopButton = new JButton("Stop", Icons.STOP_24.getIcon());
+		final JButton stopButton = new JButton("Stop", Icons.STOP_24.getIcon());
 		stopButton.setIconTextGap(6);
 		stopButton.setMargin(new Insets(4, 8, 4, 8));
 		toolbar.add(stopButton);
 
-		JButton playButton = new JButton("Crawl", Icons.PLAY_24.getIcon());
+		final JButton playButton = new JButton("Crawl", Icons.PLAY_24.getIcon());
 		playButton.setIconTextGap(6);
 		playButton.setMargin(new Insets(4, 8, 4, 8));
 		toolbar.add(playButton);
@@ -134,6 +135,8 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		playButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				playButton.setEnabled(false);
+				stopButton.setEnabled(true);
 				exec.start();
 			}
 		});
@@ -145,6 +148,15 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 			}
 		});
 
+		// listen to crawler executer
+		exec.registerFinishListener(new FinishListener() {
+			@Override
+			public void receiveFinished() {
+				playButton.setEnabled(true);
+				stopButton.setEnabled(false);
+			}
+		});
+		
 		// ==== loader ====
 		EntityLoader<Query> loader = new EntityLoader<Query>() {
 			@Override
@@ -165,7 +177,7 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		DefaultListLikeChangeListener<Query> changeListener = new DefaultListLikeChangeListener<>(
 				this, new EntityFilterPipeline<Query>());
 		ChangeHandler.getInstance(Query.class).addEventListener(changeListener);
-
+		
 		// load initial data
 		for (Query q : loader.get())
 			addEntry(q);

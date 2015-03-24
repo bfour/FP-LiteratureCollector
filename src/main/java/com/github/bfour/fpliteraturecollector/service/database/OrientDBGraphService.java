@@ -21,6 +21,7 @@ package com.github.bfour.fpliteraturecollector.service.database;
  */
 
 import com.github.bfour.fpjcommons.services.ServiceException;
+import com.orientechnologies.orient.core.config.OGlobalConfiguration;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
@@ -66,6 +67,10 @@ public abstract class OrientDBGraphService {
 	private void initializeLocalDatabase(String location)
 			throws ServiceException {
 
+		// OGlobalConfiguration.DB_MVCC.setValue(false);
+		// OGlobalConfiguration.CACHE_LEVEL1_ENABLED.setValue(false);
+		// OGlobalConfiguration.CACHE_LEVEL2_ENABLED.setValue(false);
+
 		if (currentDB != null && !currentDB.isClosed())
 			currentDB.shutdown();
 
@@ -86,6 +91,10 @@ public abstract class OrientDBGraphService {
 
 	private void initializeRemoteDatabase(String host, String dbName,
 			String user, String password) throws ServiceException {
+
+		// OGlobalConfiguration.DB_MVCC.setValue(false);
+		// OGlobalConfiguration.CACHE_LEVEL1_ENABLED.setValue(false);
+		// OGlobalConfiguration.CACHE_LEVEL2_ENABLED.setValue(false);
 
 		if (currentDB != null && !currentDB.isClosed())
 			currentDB.shutdown();
@@ -135,7 +144,7 @@ public abstract class OrientDBGraphService {
 	}
 
 	protected abstract void setupSchema(String URL, String user, String password);
-	
+
 	public void deleteAllDataInCurrentDB() throws ServiceException {
 		OrientGraph db = getCurrentDB();
 		if (db == null)
@@ -144,7 +153,7 @@ public abstract class OrientDBGraphService {
 		for (Vertex v : db.getVertices())
 			db.removeVertex(v);
 	}
-	
+
 	public void dropCurrentDB() throws ServiceException {
 		getCurrentDB().drop();
 		setCurrentDB(null, null, null, null);

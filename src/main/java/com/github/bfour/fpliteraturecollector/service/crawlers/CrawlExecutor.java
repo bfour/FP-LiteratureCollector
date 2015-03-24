@@ -38,30 +38,36 @@ public class CrawlExecutor extends BackgroundWorker {
 			Query topQuery;
 			try {
 				while ((topQuery = qServ.getFirstInQueueForCrawler(crawler)) != null) {
+					try {
+						// set query status to crawling
+						QueryBuilder qBuilder = new QueryBuilder(topQuery);
+						qBuilder.setStatus(QueryStatus.CRAWLING);
+						topQuery = qServ.update(topQuery, qBuilder.getObject());
 
-					// set query status to crawling
-					QueryBuilder qBuilder = new QueryBuilder(topQuery);
-					qBuilder.setStatus(QueryStatus.CRAWLING);
-					topQuery = qServ.update(topQuery, qBuilder.getObject());
+						// fill atomic request with results
+						AtomicRequest undoneReq = qServ
+								.getFirstUnprocessedRequestForCrawler(topQuery,
+										crawler);
+						List<Literature> results = crawler.process(undoneReq);
 
-					// fill atomic request with results
-					AtomicRequest undoneReq = qServ
-							.getFirstUnprocessedRequestForCrawler(topQuery,
-									crawler);
-					List<Literature> results = crawler.process(undoneReq);
-					AtomicRequestBuilder atomReqBuilder = new AtomicRequestBuilder(
-							undoneReq);
-					atomReqBuilder.setResults(results);
+						// update query with finished atomic request
+						List<AtomicRequest> atomReqList = topQuery
+								.getAtomicRequests();
+						atomReqList.set(
+								atomReqList.indexOf(undoneReq),
+								new AtomicRequestBuilder(undoneReq).setResults(
+										results).getObject());
+						qBuilder = new QueryBuilder(topQuery);
+						qBuilder.setAtomicRequests(atomReqList);
+						qBuilder.setStatus(QueryStatus.FINISHED);
+						qServ.update(topQuery, qBuilder.getObject());
 
-					// update query with finished atomic request
-					qBuilder = new QueryBuilder(topQuery);
-					List<AtomicRequest> atomReqList = topQuery
-							.getAtomicRequests();
-					atomReqList.set(atomReqList.indexOf(undoneReq),
-							atomReqBuilder.getObject());
-					qBuilder.setAtomicRequests(atomReqList);
-					qServ.update(topQuery, qBuilder.getObject());
-
+					} catch (Exception e) {
+						exceptions.add(e);
+						qServ.update(topQuery, new QueryBuilder(topQuery)
+								.setStatus(QueryStatus.FINISHED_WITH_ERROR)
+								.getObject());
+					}
 				}
 			} catch (Exception e) {
 				exceptions.add(e);

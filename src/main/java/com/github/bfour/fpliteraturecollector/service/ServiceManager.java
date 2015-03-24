@@ -88,9 +88,11 @@ public class ServiceManager {
 			graphService = FPLCOrientDBGraphService.getInstance();
 
 			if (mode == ServiceManagerMode.DEFAULT) {
-				graphService.setLocalDatabase("devDatabase");
+				graphService.setLocalDatabase("database");
 //				graphService.setRemoteDatabase("localhost", "litcoll", "meow", "meow");
 			} else if (mode == ServiceManagerMode.TEST) {
+				graphService.setLocalDatabase("junitTestDatabase");
+				graphService.dropCurrentDB();
 				graphService.setLocalDatabase("junitTestDatabase");
 			}
 

@@ -20,12 +20,7 @@ import com.github.bfour.fpjcommons.events.ChangeListener;
 import com.github.bfour.fpjcommons.events.CreateEvent;
 import com.github.bfour.fpjcommons.events.DeleteEvent;
 import com.github.bfour.fpjcommons.events.UpdateEvent;
-import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjgui.abstraction.DefaultMultiListLikeChangeListener;
-import com.github.bfour.fpjgui.abstraction.EntityFilterPipeline;
 import com.github.bfour.fpjgui.abstraction.EntityLoader;
-import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
-import com.github.bfour.fpjgui.abstraction.feedback.Feedback.FeedbackType;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
 import com.github.bfour.fpjgui.components.composite.EntityBrowsePanel;
 import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGetter;
@@ -94,31 +89,18 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 			@Override
 			public List<AtomicRequest> get() {
 				List<AtomicRequest> list = new ArrayList<>();
-				try {
-					if (query == null)
-						list = servMan.getAtomicRequestService().getAll();
-					else
-						list = query.getAtomicRequests();
-				} catch (ServiceException e) {
-					feedbackProxy.fireFeedback(new Feedback(
-							AtomicRequestBrowsePanel.this,
-							"Sorry, failed to get atomic requests.",
-							FeedbackType.ERROR));
-				}
+				if (query == null)
+					return new ArrayList<AtomicRequest>(0);
+				else
+					list = query.getAtomicRequests();
 				return list;
 			}
 		};
 
 		// hook up table with change event system
 		if (query == null) {
-			// no query specified --> this browse panel is for all
-			// AtomicRequests --> no filter, register for all changes in
-			// AtomicRequests
-			DefaultMultiListLikeChangeListener<AtomicRequest> changeListener = new DefaultMultiListLikeChangeListener<AtomicRequest>();
-			changeListener.addTable(getTable(),
-					new EntityFilterPipeline<AtomicRequest>());
-			ChangeHandler.getInstance(AtomicRequest.class).addEventListener(
-					changeListener);
+			// no query specified --> this browse panel is for a new query -->
+			// do not register for any changes
 		} else {
 			// query is specified --> this browse panel is only for
 			// AtomicRequests of this Query --> listen for changes to query
@@ -189,9 +171,13 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 				} else {
 					source = deleteButton;
 				}
-				DefaultActionInterfacingHandler.getInstance()
-						.requestDeleteFromList(source, feedbackProxy,
-								table.getSelectedItem(), eServ);
+				if (query == null) {
+					getTable().deleteEntry(table.getSelectedItem());
+				} else {
+					DefaultActionInterfacingHandler.getInstance()
+							.requestDeleteFromList(source, feedbackProxy,
+									table.getSelectedItem(), eServ);
+				}
 			}
 		};
 		addDeleteAction(deleteListener);
