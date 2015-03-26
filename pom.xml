@@ -196,18 +196,7 @@
 			<artifactId>frames</artifactId>
 			<version>2.5.0</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.epop.googlescholar</groupId>
-			<artifactId>org.epop.googlescholar</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.epop.core</groupId>
-			<artifactId>org.epop.core</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
+		
 		<!-- epop -->
 		<dependency>
 			<groupId>org.osgi</groupId>
