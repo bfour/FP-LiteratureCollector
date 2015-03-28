@@ -27,8 +27,6 @@ import java.util.List;
 
 import com.github.bfour.fpjcommons.model.Entity;
 import com.github.bfour.fpjcommons.services.DatalayerException;
-import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.CRUDService;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
@@ -37,8 +35,7 @@ public class GraphUtils {
 
 	public static <T extends Entity> void setCollectionPropertyOnVertex(
 			Vertex vertex, String edgeName, Collection<T> collectionToBeSet,
-			AbstractOrientDBDAO<T> collectionItemDAO,
-			CRUDService<T> collectionItemService, boolean cascadeDelete)
+			AbstractOrientDBDAO<T> collectionItemDAO, boolean cascadeDelete)
 			throws DatalayerException {
 
 		// get current items of collection in vertex
@@ -76,11 +73,7 @@ public class GraphUtils {
 						.getVertex(Direction.IN)
 						.getEdges(Direction.IN, edgeName).iterator().hasNext();
 				if (cascadeDelete && !referencedVertexHasMoreEdges) {
-					try {
-						collectionItemService.delete(p);
-					} catch (ServiceException e) {
-						throw new DatalayerException(e);
-					}
+					collectionItemDAO.delete(p);
 				}
 			}
 		}
@@ -89,12 +82,8 @@ public class GraphUtils {
 		for (T itemToAdd : itemsToAdd) {
 			Vertex itemVertex = collectionItemDAO.getVertexForEntity(itemToAdd);
 			if (itemVertex == null) {
-				try {
-					itemToAdd = collectionItemService.create(itemToAdd);
-				} catch (ServiceException e) {
-					throw new DatalayerException(e);
-				}
-				itemVertex = collectionItemDAO.getVertexForEntity(itemToAdd);
+				T createdItem = collectionItemDAO.create(itemToAdd);
+				itemVertex = collectionItemDAO.getVertexForEntity(createdItem);
 			}
 			vertex.addEdge(edgeName, itemVertex);
 		}

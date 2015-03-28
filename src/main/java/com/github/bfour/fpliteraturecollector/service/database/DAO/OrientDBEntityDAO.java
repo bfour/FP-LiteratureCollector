@@ -45,23 +45,25 @@ public abstract class OrientDBEntityDAO<T extends Entity> extends
 	public abstract T vertexToEntity(Vertex vertex) throws DatalayerException;
 
 	@Override
-	protected Vertex entityToVertex(T entity, long ID, Vertex givenVertex)
+	protected Vertex entityToVertex(T entity, long ID, Vertex v)
 			throws DatalayerException {
 
-		if (givenVertex == null) {
-			givenVertex = db.addVertex("class:" + this.dbClassName);
+		if (v == null) {
+			v = db.addVertex("class:" + this.dbClassName);
 		} else {
 			if (entity.getCreationTime() == null)
-				givenVertex.removeProperty("creationTime");
+				v.removeProperty("creationTime");
 			if (entity.getLastChangeTime() == null)
-				givenVertex.removeProperty("lastChangeTime");
+				v.removeProperty("lastChangeTime");
 		}
 
-		givenVertex.setProperty("ID", ID);
-		givenVertex.setProperty("creationTime", entity.getCreationTime());
-		givenVertex.setProperty("lastChangeTime", entity.getLastChangeTime());
+		GraphUtils.setProperty(v, "ID", ID, false);
+		GraphUtils.setProperty(v, "creationTime", entity.getCreationTime(),
+				false);
+		GraphUtils.setProperty(v, "lastChangeTime", entity.getLastChangeTime(),
+				false);
 
-		return givenVertex;
+		return v;
 
 	}
 

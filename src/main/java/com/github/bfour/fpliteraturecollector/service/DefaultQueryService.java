@@ -42,19 +42,16 @@ public class DefaultQueryService extends
 	private static DefaultQueryService instance;
 
 	private DefaultQueryService(OrientDBGraphService graphService,
-			boolean forceCreateNewInstance, AtomicRequestService atomReqServ,
-			LiteratureService litServ, AuthorService authServ) {
-		super(OrientDBQueryDAO.getInstance(graphService,
-				forceCreateNewInstance, atomReqServ, litServ, authServ));
+			boolean forceCreateNewInstance) {
+		super(OrientDBQueryDAO
+				.getInstance(graphService, forceCreateNewInstance));
 	}
 
 	public static DefaultQueryService getInstance(
-			OrientDBGraphService graphService, boolean forceCreateNewInstance,
-			AtomicRequestService atomReqServ, LiteratureService litServ,
-			AuthorService authServ) {
+			OrientDBGraphService graphService, boolean forceCreateNewInstance) {
 		if (instance == null || forceCreateNewInstance)
 			instance = new DefaultQueryService(graphService,
-					forceCreateNewInstance, atomReqServ, litServ, authServ);
+					forceCreateNewInstance);
 		return instance;
 	}
 

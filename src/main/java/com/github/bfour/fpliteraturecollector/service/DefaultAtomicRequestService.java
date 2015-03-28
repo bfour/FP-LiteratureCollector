@@ -33,18 +33,16 @@ public class DefaultAtomicRequestService extends
 	private static DefaultAtomicRequestService instance;
 
 	private DefaultAtomicRequestService(OrientDBGraphService graphService,
-			boolean forceCreateNewInstance, LiteratureService litServ,
-			AuthorService authServ) {
+			boolean forceCreateNewInstance) {
 		super(OrientDBAtomicRequestDAO.getInstance(graphService,
-				forceCreateNewInstance, litServ, authServ));
+				forceCreateNewInstance));
 	}
 
 	public static DefaultAtomicRequestService getInstance(
-			OrientDBGraphService graphService, boolean forceCreateNewInstance,
-			LiteratureService litServ, AuthorService authServ) {
+			OrientDBGraphService graphService, boolean forceCreateNewInstance) {
 		if (instance == null || forceCreateNewInstance)
 			instance = new DefaultAtomicRequestService(graphService,
-					forceCreateNewInstance, litServ, authServ);
+					forceCreateNewInstance);
 		return instance;
 	}
 

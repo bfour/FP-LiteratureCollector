@@ -27,10 +27,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.github.bfour.fpjcommons.services.DatalayerException;
+import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.ISBN;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
-import com.github.bfour.fpliteraturecollector.domain.Author;
-import com.github.bfour.fpliteraturecollector.service.AuthorService;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Vertex;
 
@@ -163,21 +162,18 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 
 	private static OrientDBLiteratureDAO instance;
 	private OrientDBAuthorDAO authorDAO;
-	private AuthorService authServ;
 
 	private OrientDBLiteratureDAO(OrientDBGraphService dbs,
-			boolean forceCreateNewInstance, AuthorService authServ) {
+			boolean forceCreateNewInstance) {
 		super(dbs, "literature");
 		this.authorDAO = OrientDBAuthorDAO.getInstance(dbs,
 				forceCreateNewInstance);
-		this.authServ = authServ;
 	}
 
 	public static OrientDBLiteratureDAO getInstance(OrientDBGraphService dbs,
-			boolean forceCreateNewInstance, AuthorService authServ) {
+			boolean forceCreateNewInstance) {
 		if (instance == null || forceCreateNewInstance)
-			instance = new OrientDBLiteratureDAO(dbs, forceCreateNewInstance,
-					authServ);
+			instance = new OrientDBLiteratureDAO(dbs, forceCreateNewInstance);
 		return instance;
 	}
 
@@ -196,7 +192,7 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 
 		// authors
 		GraphUtils.setCollectionPropertyOnVertex(v, "authors",
-				entity.getAuthors(), authorDAO, authServ, true);
+				entity.getAuthors(), authorDAO, true);
 
 		// DOI
 		GraphUtils.setProperty(v, "DOI", entity.getDOI(), true);

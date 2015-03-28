@@ -27,8 +27,6 @@ import java.util.List;
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
-import com.github.bfour.fpliteraturecollector.service.AuthorService;
-import com.github.bfour.fpliteraturecollector.service.LiteratureService;
 import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
 import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlerService;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
@@ -67,7 +65,7 @@ public class OrientDBAtomicRequestDAO extends OrientDBEntityDAO<AtomicRequest>
 
 		@Override
 		public Integer getMaxPageTurns() {
-			if (maxPageTurns == null) 
+			if (maxPageTurns == null)
 				maxPageTurns = (Integer) vertex.getProperty("maxPageTurns");
 			return maxPageTurns;
 		}
@@ -104,23 +102,18 @@ public class OrientDBAtomicRequestDAO extends OrientDBEntityDAO<AtomicRequest>
 
 	private static OrientDBAtomicRequestDAO instance;
 	private OrientDBLiteratureDAO literatureDAO;
-	private LiteratureService litServ;
 
 	private OrientDBAtomicRequestDAO(OrientDBGraphService dbs,
-			boolean forceCreateNewInstance, LiteratureService litServ,
-			AuthorService authServ) {
+			boolean forceCreateNewInstance) {
 		super(dbs, "atomicRequest");
 		this.literatureDAO = OrientDBLiteratureDAO.getInstance(dbs,
-				forceCreateNewInstance, authServ);
-		this.litServ = litServ;
+				forceCreateNewInstance);
 	}
 
 	public static OrientDBAtomicRequestDAO getInstance(
-			OrientDBGraphService dbs, boolean forceCreateNewInstance,
-			LiteratureService litServ, AuthorService authServ) {
+			OrientDBGraphService dbs, boolean forceCreateNewInstance) {
 		if (instance == null || forceCreateNewInstance)
-			instance = new OrientDBAtomicRequestDAO(dbs,
-					forceCreateNewInstance, litServ, authServ);
+			instance = new OrientDBAtomicRequestDAO(dbs, forceCreateNewInstance);
 		return instance;
 	}
 
@@ -135,7 +128,7 @@ public class OrientDBAtomicRequestDAO extends OrientDBEntityDAO<AtomicRequest>
 		entityVertex.setProperty("searchString", entity.getSearchString());
 		entityVertex.setProperty("maxPageTurns", entity.getMaxPageTurns());
 		GraphUtils.setCollectionPropertyOnVertex(entityVertex, "results",
-				entity.getResults(), literatureDAO, litServ, true);
+				entity.getResults(), literatureDAO, true);
 
 		return entityVertex;
 
