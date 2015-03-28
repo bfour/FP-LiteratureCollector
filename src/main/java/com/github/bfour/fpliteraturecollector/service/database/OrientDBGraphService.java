@@ -21,7 +21,6 @@ package com.github.bfour.fpliteraturecollector.service.database;
  */
 
 import com.github.bfour.fpjcommons.services.ServiceException;
-import com.orientechnologies.orient.core.config.OGlobalConfiguration;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
