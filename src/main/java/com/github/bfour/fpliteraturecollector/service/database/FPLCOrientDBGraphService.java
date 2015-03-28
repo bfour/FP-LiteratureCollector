@@ -122,6 +122,11 @@ public class FPLCOrientDBGraphService extends OrientDBGraphService {
 						"query"));
 		db.addVertex("class:counters", "name", "query", "value", 0);				
 
+		// setup relations
+		db.createEdgeType("authors");
+		db.createEdgeType("atomicRequests");
+		db.createEdgeType("results");
+		
 		// end
 		db.shutdown();
 
