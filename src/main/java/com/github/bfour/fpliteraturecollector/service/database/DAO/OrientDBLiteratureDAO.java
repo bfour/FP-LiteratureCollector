@@ -80,8 +80,11 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 
 		@Override
 		public ISBN getISBN() {
-			if (ISBN == null)
-				ISBN = new ISBN((String) vertex.getProperty("ISBN"));
+			if (ISBN == null) {
+				String ISBNString = vertex.getProperty("ISBN");
+				if (ISBNString != null)
+					ISBN = new ISBN(ISBNString);
+			}
 			return ISBN;
 		}
 
