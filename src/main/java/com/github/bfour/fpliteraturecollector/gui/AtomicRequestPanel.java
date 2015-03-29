@@ -73,7 +73,8 @@ public class AtomicRequestPanel extends
 			}
 
 			@Override
-			public DataIterator<AtomicRequest> get() throws ServiceException {
+			public DataIterator<AtomicRequest> getAllByStream()
+					throws ServiceException {
 				final Iterator<AtomicRequest> iter = table.getEntries()
 						.iterator();
 				return new DataIterator<AtomicRequest>() {
@@ -97,6 +98,13 @@ public class AtomicRequestPanel extends
 			@Override
 			public List<AtomicRequest> getAll() throws ServiceException {
 				return table.getEntries();
+			}
+
+			@Override
+			public AtomicRequest get(AtomicRequest arg0)
+					throws ServiceException {
+				List<AtomicRequest> list = table.getEntries();
+				return list.get(list.indexOf(arg0));
 			}
 
 			@Override
@@ -165,7 +173,6 @@ public class AtomicRequestPanel extends
 		getContentPane().add(lblMaxPageTurns, "cell 0 3,growx");
 
 		FPJGUITextField maxPageTurnsField = new FPJGUITextField();
-		maxPageTurnsField.setValue("2");
 		maxPageTurnsField.setValidationRule(new ValidationRule<String>() {
 			@Override
 			public ValidationRuleResult evaluate(String arg0) {
@@ -232,6 +239,8 @@ public class AtomicRequestPanel extends
 				maxPageTurnsToggle) {
 			@Override
 			public String getValue(AtomicRequestBuilder object) {
+				if (object.getMaxPageTurns() == null)
+					return "";
 				return object.getMaxPageTurns() + "";
 			}
 

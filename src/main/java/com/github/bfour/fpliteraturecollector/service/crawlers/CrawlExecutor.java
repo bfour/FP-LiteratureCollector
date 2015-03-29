@@ -60,7 +60,7 @@ public class CrawlExecutor extends BackgroundWorker {
 						qBuilder = new QueryBuilder(topQuery);
 						qBuilder.setAtomicRequests(atomReqList);
 						qBuilder.setStatus(QueryStatus.FINISHED);
-						qServ.update(topQuery, qBuilder.getObject());
+						topQuery = qServ.update(topQuery, qBuilder.getObject());
 
 					} catch (Exception e) {
 						exceptions.add(e);

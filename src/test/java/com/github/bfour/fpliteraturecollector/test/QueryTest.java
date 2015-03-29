@@ -66,8 +66,8 @@ public class QueryTest {
 	@Test
 	public void iteratorDoesNotHaveNextOnEmptyDB() throws ServiceException,
 			DatalayerException {
-		assert (atomReqServ.get().hasNext());
-		assert (queryServ.get().hasNext());
+		assert (atomReqServ.getAllByStream().hasNext());
+		assert (queryServ.getAllByStream().hasNext());
 	}
 
 	@Test
@@ -199,7 +199,7 @@ public class QueryTest {
 					.set(literatureList.indexOf(tag), litServ.create(tag));
 
 		// check all literature created properly
-		DataIterator<Literature> dbIterator = litServ.get();
+		DataIterator<Literature> dbIterator = litServ.getAllByStream();
 		for (Literature tag : literatureList) {
 			assert (dbIterator.next().equals(tag));
 		}
@@ -223,7 +223,7 @@ public class QueryTest {
 			queries.set(queries.indexOf(query), queryServ.create(query));
 
 		// check all queries created properly
-		DataIterator<Query> queryIterator = queryServ.get();
+		DataIterator<Query> queryIterator = queryServ.getAllByStream();
 		for (Query query : queries)
 			assert (queryIterator.next().equals(query));
 

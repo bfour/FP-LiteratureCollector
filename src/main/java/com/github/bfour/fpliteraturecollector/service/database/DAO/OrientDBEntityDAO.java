@@ -48,23 +48,22 @@ public abstract class OrientDBEntityDAO<T extends Entity> extends
 	protected Vertex entityToVertex(T entity, long ID, Vertex v)
 			throws DatalayerException {
 
-		if (v == null) {
+		if (v == null)
 			v = db.addVertex("class:" + this.dbClassName);
-		} else {
-			if (entity.getCreationTime() == null)
-				v.removeProperty("creationTime");
-			if (entity.getLastChangeTime() == null)
-				v.removeProperty("lastChangeTime");
-		}
 
 		GraphUtils.setProperty(v, "ID", ID, false);
-		GraphUtils.setProperty(v, "creationTime", entity.getCreationTime(),
-				false);
-		GraphUtils.setProperty(v, "lastChangeTime", entity.getLastChangeTime(),
-				false);
+		GraphUtils.setProperty(
+				v,
+				"creationTime",
+				(entity.getCreationTime() == null ? new Date() : entity
+						.getCreationTime()), false);
+		GraphUtils.setProperty(
+				v,
+				"lastChangeTime",
+				(entity.getLastChangeTime() == null ? new Date() : entity
+						.getLastChangeTime()), false);
 
 		return v;
 
 	}
-
 }

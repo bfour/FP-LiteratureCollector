@@ -27,6 +27,7 @@ import java.util.List;
 
 import com.github.bfour.fpjcommons.model.Entity;
 import com.github.bfour.fpjcommons.services.DatalayerException;
+import com.github.bfour.fpjcommons.services.CRUD.BidirectionalCRUDService;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
@@ -35,8 +36,9 @@ public class GraphUtils {
 
 	public static <T extends Entity> void setCollectionPropertyOnVertex(
 			Vertex vertex, String edgeName, Collection<T> collectionToBeSet,
-			AbstractOrientDBDAO<T> collectionItemDAO, boolean cascadeDelete)
-			throws DatalayerException {
+			AbstractOrientDBDAO<T> collectionItemDAO,
+			BidirectionalCRUDService<T> collectionItemService,
+			boolean cascadeDelete) throws DatalayerException {
 
 		// get current items of collection in vertex
 		List<T> vertexItems = new LinkedList<T>();
@@ -74,6 +76,7 @@ public class GraphUtils {
 						.getEdges(Direction.IN, edgeName).iterator().hasNext();
 				if (cascadeDelete && !referencedVertexHasMoreEdges) {
 					collectionItemDAO.delete(p);
+					collectionItemService.receiveDelete(p);
 				}
 			}
 		}
@@ -83,6 +86,7 @@ public class GraphUtils {
 			Vertex itemVertex = collectionItemDAO.getVertexForEntity(itemToAdd);
 			if (itemVertex == null) {
 				T createdItem = collectionItemDAO.create(itemToAdd);
+				collectionItemService.receiveCreate(createdItem);
 				itemVertex = collectionItemDAO.getVertexForEntity(createdItem);
 			}
 			vertex.addEdge(edgeName, itemVertex);

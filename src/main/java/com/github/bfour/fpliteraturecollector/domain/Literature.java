@@ -140,5 +140,10 @@ public class Literature extends Entity {
 	public Integer getgScholarNumCitations() {
 		return gScholarNumCitations;
 	}
+	
+	@Override
+	public String toString() {
+		return title;
+	}
 
 }

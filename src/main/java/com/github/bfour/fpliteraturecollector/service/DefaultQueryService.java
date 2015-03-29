@@ -42,22 +42,25 @@ public class DefaultQueryService extends
 	private static DefaultQueryService instance;
 
 	private DefaultQueryService(OrientDBGraphService graphService,
-			boolean forceCreateNewInstance) {
-		super(OrientDBQueryDAO
-				.getInstance(graphService, forceCreateNewInstance));
+			boolean forceCreateNewInstance, AtomicRequestService atomReqServ,
+			LiteratureService litServ, AuthorService authServ) {
+		super(OrientDBQueryDAO.getInstance(graphService,
+				forceCreateNewInstance, atomReqServ, litServ, authServ));
 	}
 
 	public static DefaultQueryService getInstance(
-			OrientDBGraphService graphService, boolean forceCreateNewInstance) {
+			OrientDBGraphService graphService, boolean forceCreateNewInstance,
+			AtomicRequestService atomReqServ, LiteratureService litServ,
+			AuthorService authServ) {
 		if (instance == null || forceCreateNewInstance)
 			instance = new DefaultQueryService(graphService,
-					forceCreateNewInstance);
+					forceCreateNewInstance, atomReqServ, litServ, authServ);
 		return instance;
 	}
 
 	@Override
-	public DataIterator<Query> get() throws ServiceException {
-		final DataIterator<Query> iter = super.get();
+	public DataIterator<Query> getAllByStream() throws ServiceException {
+		final DataIterator<Query> iter = super.getAllByStream();
 		return new DataIterator<Query>() {
 			@Override
 			public boolean hasNext() throws DatalayerException {
@@ -232,16 +235,6 @@ public class DefaultQueryService extends
 			return new QueryBuilder(q).setStatus(QueryStatus.FINISHED)
 					.getObject();
 		return new QueryBuilder(q).setStatus(QueryStatus.IDLE).getObject();
-	}
-
-	@Override
-	protected Query modifyBeforeCreateBroadcast(Query entity) {
-		return setStatus(entity);
-	}
-
-	@Override
-	protected Query modifyBeforeUpdateBroadcast(Query entity) {
-		return setStatus(entity);
 	}
 
 }

@@ -37,8 +37,14 @@ public class TagBuilder extends EntityBuilder<Tag> implements Builder<Tag> {
 	}
 
 	public TagBuilder(Tag tag) {
+		
+		setID(tag.getID());
+		setCreationTime(tag.getCreationTime());
+		setLastChangeTime(tag.getLastChangeTime());		
+		
 		setName(tag.getName());
 		setColour(tag.getColour());
+		
 	}
 
 	@Override

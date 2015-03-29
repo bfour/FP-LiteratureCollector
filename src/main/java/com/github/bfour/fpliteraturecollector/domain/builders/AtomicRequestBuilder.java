@@ -21,10 +21,16 @@ public class AtomicRequestBuilder extends EntityBuilder<AtomicRequest>
 	}
 
 	public AtomicRequestBuilder(AtomicRequest a) {
+		
+		setID(a.getID());
+		setCreationTime(a.getCreationTime());
+		setLastChangeTime(a.getLastChangeTime());
+		
 		setCrawler(a.getCrawler());
 		setSearchString(a.getSearchString());
 		setMaxPageTurns(a.getMaxPageTurns());
 		setResults(a.getResults());
+		
 	}
 
 	@Override

@@ -46,7 +46,7 @@ public class TagTest {
 	
 	@Test
 	public void iteratorDoesNotHaveNextOnEmptyDB() throws ServiceException, DatalayerException {
-		assert(tagServ.get().hasNext());
+		assert(tagServ.getAllByStream().hasNext());
 	}
 	
 	@Test
@@ -76,7 +76,7 @@ public class TagTest {
 			tagList.set(tagList.indexOf(tag), tagServ.create(tag));
 		
 		// check all created properly
-		DataIterator<Tag> dbIterator = tagServ.get();
+		DataIterator<Tag> dbIterator = tagServ.getAllByStream();
 		for (Tag tag : tagList) {
 			assert (dbIterator.next().equals(tag));
 		}		
@@ -96,7 +96,7 @@ public class TagTest {
 			tagList.set(tagList.indexOf(tag), tagServ.create(tag));
 
 		// check all created properly
-		DataIterator<Tag> dbIterator = tagServ.get();
+		DataIterator<Tag> dbIterator = tagServ.getAllByStream();
 		for (Tag tag : tagList) {
 			assert (dbIterator.next().equals(tag));
 		}

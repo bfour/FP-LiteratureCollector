@@ -21,9 +21,9 @@ package com.github.bfour.fpliteraturecollector.service;
  */
 
 
-import com.github.bfour.fpjcommons.services.CRUD.CRUDService;
+import com.github.bfour.fpjcommons.services.CRUD.BidirectionalCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
 
-public interface TagService extends CRUDService<Tag> {
+public interface TagService extends BidirectionalCRUDService<Tag> {
 
 }

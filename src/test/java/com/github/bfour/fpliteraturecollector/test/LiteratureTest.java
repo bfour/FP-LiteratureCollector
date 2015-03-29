@@ -48,7 +48,7 @@ public class LiteratureTest {
 	@Test
 	public void iteratorDoesNotHaveNextOnEmptyDB() throws ServiceException,
 			DatalayerException {
-		assert (litServ.get().hasNext());
+		assert (litServ.getAllByStream().hasNext());
 	}
 
 	@Test
@@ -79,7 +79,7 @@ public class LiteratureTest {
 					.set(literatureList.indexOf(lit), litServ.create(lit));
 
 		// check all created properly
-		DataIterator<Literature> dbIterator = litServ.get();
+		DataIterator<Literature> dbIterator = litServ.getAllByStream();
 		for (Literature tag : literatureList) {
 			assert (dbIterator.next().equals(tag));
 		}

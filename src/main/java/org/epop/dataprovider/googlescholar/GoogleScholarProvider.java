@@ -186,6 +186,8 @@ public class GoogleScholarProvider extends DataProvider {
 				litBuilder.setTitle(title);
 
 				String rawHTML = article.select(".gs_a").html();
+				if (rawHTML.isEmpty())
+					continue;
 
 				// split by " - " (authors - publication, year - publisher)
 				String[] splits = rawHTML.split(" - ");

@@ -21,12 +21,12 @@ package com.github.bfour.fpliteraturecollector.service;
  */
 
 import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.CRUDService;
+import com.github.bfour.fpjcommons.services.CRUD.BidirectionalCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
 
-public interface QueryService extends CRUDService<Query> {
+public interface QueryService extends BidirectionalCRUDService<Query> {
 
 	Query getByQueuePosition(int position) throws ServiceException;
 

@@ -98,9 +98,9 @@ public class ServiceManager {
 
 			this.authServ = DefaultAuthorService.getInstance(graphService, true);
 			this.tagServ = DefaultTagService.getInstance(graphService, true);
-			this.litServ = DefaultLiteratureService.getInstance(graphService, true);
-			this.atomReqServ = DefaultAtomicRequestService.getInstance(graphService, true);
-			this.queryServ = DefaultQueryService.getInstance(graphService, true);
+			this.litServ = DefaultLiteratureService.getInstance(graphService, true, this.authServ);
+			this.atomReqServ = DefaultAtomicRequestService.getInstance(graphService, true, this.litServ, this.authServ);
+			this.queryServ = DefaultQueryService.getInstance(graphService, true, this.atomReqServ, this.litServ, this.authServ);
 			this.crawlServ = CrawlerService.getInstance();
 			
 		} else {

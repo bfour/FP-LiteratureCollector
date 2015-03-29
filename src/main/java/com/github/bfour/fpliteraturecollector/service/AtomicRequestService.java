@@ -20,9 +20,9 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
-import com.github.bfour.fpjcommons.services.CRUD.CRUDService;
+import com.github.bfour.fpjcommons.services.CRUD.BidirectionalCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 
-public interface AtomicRequestService extends CRUDService<AtomicRequest> {
+public interface AtomicRequestService extends BidirectionalCRUDService<AtomicRequest> {
 	
 }

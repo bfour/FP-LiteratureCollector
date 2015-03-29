@@ -59,7 +59,7 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 	}
 
 	@Override
-	public DataIterator<T> get() {
+	public DataIterator<T> getAllByStream() {
 
 		class VertexToEntityConvertingIterator implements DataIterator<T> {
 
@@ -93,6 +93,14 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 		return new VertexToEntityConvertingIterator(db.getVerticesOfClass(
 				dbClassName).iterator());
 
+	}
+
+	@Override
+	public T get(T entity) throws DatalayerException {
+		Vertex v = getVertexForEntity(entity);
+		if (v == null)
+			return null;
+		return vertexToEntity(v);
 	}
 
 	@Override
