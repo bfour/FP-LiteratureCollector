@@ -114,6 +114,7 @@ public abstract class OrientDBGraphService {
 		if (currentDB != null)
 			currentDB.shutdown();
 		OrientGraph db = new OrientGraph(URL, user, password);
+		// db.setThreadMode(THREAD_MODE.ALWAYS_AUTOSET);
 		setCurrentDB(db, URL, user, password);
 	}
 

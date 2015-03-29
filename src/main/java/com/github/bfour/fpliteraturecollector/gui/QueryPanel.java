@@ -1,5 +1,6 @@
 package com.github.bfour.fpliteraturecollector.gui;
 
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +16,7 @@ import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjgui.components.FPJGUILabel;
 import com.github.bfour.fpjgui.components.PlainToolbar;
 import com.github.bfour.fpliteraturecollector.domain.Query;
+import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
@@ -26,6 +28,16 @@ public class QueryPanel extends JXPanel {
 	private FPJGUILabel<String> nameLabel;
 	private FPJGUILabel<ImageIcon> statusIconLabel;
 	private FPJGUILabel<String> statusLabel;
+
+	private JButton stopButton;
+
+	private JButton editButton;
+
+	private JButton deleteButton;
+
+	private JButton queueUpButton;
+
+	private JButton queueDownButton;
 
 	/**
 	 * Create the panel.
@@ -39,6 +51,9 @@ public class QueryPanel extends JXPanel {
 		add(statusLabel, "cell 0 0");
 
 		nameLabel = new FPJGUILabel<String>();
+		Font nameFont = nameLabel.getFont().deriveFont(
+				nameLabel.getFont().getSize() + 4f);
+		nameLabel.setFont(nameFont);
 		add(nameLabel, "cell 1 0, center");
 
 		// Component horizontalGlue = Box.createHorizontalGlue();
@@ -48,28 +63,27 @@ public class QueryPanel extends JXPanel {
 		PlainToolbar toolbar = new PlainToolbar(true);
 		add(toolbar, "cell 2 0");
 
-		JButton stopButton = new JButton("Stop", Icons.STOP_20.getIcon());
+		stopButton = new JButton("Stop", Icons.STOP_20.getIcon());
 		stopButton.setIconTextGap(4);
 		stopButton.setMargin(new Insets(1, 4, 2, 4));
 		toolbar.add(stopButton);
 
-		JButton editButton = new JButton("Edit", Icons.EDIT_20.getIcon());
+		editButton = new JButton("Edit", Icons.EDIT_20.getIcon());
 		editButton.setIconTextGap(4);
 		editButton.setMargin(new Insets(1, 4, 2, 4));
 		toolbar.add(editButton);
 
-		JButton deleteButton = new JButton("Delete", Icons.DELETE_20.getIcon());
+		deleteButton = new JButton("Delete", Icons.DELETE_20.getIcon());
 		deleteButton.setIconTextGap(4);
 		deleteButton.setMargin(new Insets(1, 4, 2, 4));
 		toolbar.add(deleteButton);
 
-		JButton queueUpButton = new JButton("Queue up",
-				Icons.QUEUE_UP_20.getIcon());
+		queueUpButton = new JButton("Queue up", Icons.QUEUE_UP_20.getIcon());
 		queueUpButton.setIconTextGap(4);
 		queueUpButton.setMargin(new Insets(1, 4, 2, 4));
 		toolbar.add(queueUpButton);
 
-		JButton queueDownButton = new JButton("Queue down",
+		queueDownButton = new JButton("Queue down",
 				Icons.QUEUE_DOWN_20.getIcon());
 		queueDownButton.setIconTextGap(4);
 		queueDownButton.setMargin(new Insets(1, 4, 2, 4));
@@ -86,7 +100,7 @@ public class QueryPanel extends JXPanel {
 				}
 			}
 		});
-		
+
 		queueUpButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -97,7 +111,7 @@ public class QueryPanel extends JXPanel {
 				}
 			}
 		});
-		
+
 		queueDownButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -107,19 +121,51 @@ public class QueryPanel extends JXPanel {
 					// TODO Auto-generated catch block
 				}
 			}
-		});		
-		
+		});
+
 		// set entity
 		setEntity(q);
 
 	}
 
 	public void setEntity(Query q) {
-		this.query = q;
+
 		nameLabel.setValue(q.getName());
-		statusLabel.setValue(q.getStatus().getTellingName());
-		statusIconLabel.setValue(q.getStatus().getIcon());
+
+		if (this.query == null || this.query.getStatus() != q.getStatus()) {
+			statusLabel.setValue(q.getStatus().getTellingName());
+			statusIconLabel.setValue(q.getStatus().getIcon());
+			if (q.getStatus() == QueryStatus.FINISHED) {
+				stopButton.setEnabled(false);
+				queueUpButton.setEnabled(false);
+				queueDownButton.setEnabled(false);
+				deleteButton.setEnabled(true);
+				editButton.setEnabled(true);
+			} else if (q.getStatus() == QueryStatus.IDLE) {
+				stopButton.setEnabled(false);
+				queueUpButton.setEnabled(false);
+				queueDownButton.setEnabled(false);
+				deleteButton.setEnabled(true);
+				editButton.setEnabled(true);
+			} else if (q.getStatus() == QueryStatus.CRAWLING) {
+				stopButton.setEnabled(true);
+				queueUpButton.setEnabled(false);
+				queueDownButton.setEnabled(false);
+				deleteButton.setEnabled(false);
+				editButton.setEnabled(false);
+			} else if (q.getStatus() == QueryStatus.QUEUED) {
+				stopButton.setEnabled(true);
+				queueUpButton.setEnabled(true);
+				queueDownButton.setEnabled(true);
+				deleteButton.setEnabled(false);
+				editButton.setEnabled(false);
+			}
+		}
+
 		repaint();
+
+		this.query = q;
+
 	}
 
 }

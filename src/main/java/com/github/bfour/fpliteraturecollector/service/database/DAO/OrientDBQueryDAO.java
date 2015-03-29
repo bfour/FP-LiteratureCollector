@@ -34,27 +34,30 @@ import com.github.bfour.fpliteraturecollector.service.AuthorService;
 import com.github.bfour.fpliteraturecollector.service.LiteratureService;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
 public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements
 		QueryDAO {
 
 	private static class LazyQuery extends Query {
 
-		private Vertex vertex;
+		private Object vertexID;
+		private OrientGraph db;
 		private LazyGraphEntity entity;
 		private OrientDBAtomicRequestDAO atomicRequestDAO;
 
-		public LazyQuery(Vertex vertex,
+		public LazyQuery(Object vertexID, OrientGraph db,
 				OrientDBAtomicRequestDAO atomicRequestDAO) {
-			this.vertex = vertex;
-			this.entity = new LazyGraphEntity(vertex);
+			this.vertexID = vertexID;
+			this.db = db;
+			this.entity = new LazyGraphEntity(vertexID, db);
 			this.atomicRequestDAO = atomicRequestDAO;
 		}
 
 		@Override
 		public String getName() {
 			if (name == null)
-				name = vertex.getProperty("name");
+				name = db.getVertex(vertexID).getProperty("name");
 			return name;
 		}
 
@@ -63,8 +66,9 @@ public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements
 			try {
 				if (atomicRequests == null)
 					atomicRequests = GraphUtils
-							.getCollectionFromVertexProperty(vertex,
-									"atomicRequests", atomicRequestDAO);
+							.getCollectionFromVertexProperty(
+									db.getVertex(vertexID), "atomicRequests",
+									atomicRequestDAO);
 			} catch (DatalayerException e) {
 				// TODO (low) improve
 				atomicRequests = new ArrayList<AtomicRequest>(0);
@@ -75,14 +79,15 @@ public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements
 		@Override
 		public Integer getQueuePosition() {
 			if (queuePosition == null)
-				queuePosition = vertex.getProperty("queuePosition");
+				queuePosition = db.getVertex(vertexID).getProperty(
+						"queuePosition");
 			return queuePosition;
 		}
 
 		@Override
 		public QueryStatus getStatus() {
 			if (status == null)
-				status = QueryStatus.valueOf((String) vertex
+				status = QueryStatus.valueOf((String) db.getVertex(vertexID)
 						.getProperty("status"));
 			return status;
 		}
@@ -151,7 +156,7 @@ public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements
 
 	@Override
 	public Query vertexToEntity(Vertex vertex) throws DatalayerException {
-		return new LazyQuery(vertex, atomicRequestDAO);
+		return new LazyQuery(vertex.getId(), db, atomicRequestDAO);
 	}
 
 	@Override

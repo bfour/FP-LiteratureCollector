@@ -33,6 +33,7 @@ import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.service.AuthorService;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
 public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 		implements LiteratureDAO {
@@ -40,20 +41,23 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 	// TODO if values in DB are null -> remember somehow if already accessed
 	private static class LazyLiterature extends Literature {
 
-		private Vertex vertex;
+		private Object vertexID;
+		private OrientGraph db;
 		private OrientDBAuthorDAO personDAO;
 		private LazyGraphEntity entity;
 
-		public LazyLiterature(Vertex vertex, OrientDBAuthorDAO personDAO) {
-			this.vertex = vertex;
-			this.entity = new LazyGraphEntity(vertex);
+		public LazyLiterature(Object vertexID, OrientGraph db,
+				OrientDBAuthorDAO personDAO) {
+			this.vertexID = vertexID;
+			this.db = db;
+			this.entity = new LazyGraphEntity(vertexID, db);
 			this.personDAO = personDAO;
 		}
 
 		@Override
 		public String getTitle() {
 			if (title == null)
-				title = vertex.getProperty("title");
+				title = db.getVertex(vertexID).getProperty("title");
 			return title;
 		}
 
@@ -62,7 +66,7 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 			if (authors == null) {
 				try {
 					authors = GraphUtils.getCollectionFromVertexProperty(
-							vertex, "authors", personDAO);
+							db.getVertex(vertexID), "authors", personDAO);
 				} catch (DatalayerException e) {
 					authors = new ArrayList<Author>(0);
 					// TODO (low) improve
@@ -74,14 +78,14 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 		@Override
 		public String getDOI() {
 			if (DOI == null)
-				DOI = vertex.getProperty("DOI");
+				DOI = db.getVertex(vertexID).getProperty("DOI");
 			return DOI;
 		}
 
 		@Override
 		public ISBN getISBN() {
 			if (ISBN == null) {
-				String ISBNString = vertex.getProperty("ISBN");
+				String ISBNString = db.getVertex(vertexID).getProperty("ISBN");
 				if (ISBNString != null)
 					ISBN = new ISBN(ISBNString);
 			}
@@ -91,7 +95,7 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 		@Override
 		public LiteratureType getType() {
 			if (type == null)
-				type = LiteratureType.valueOf((String) vertex
+				type = LiteratureType.valueOf((String) db.getVertex(vertexID)
 						.getProperty("type"));
 			return type;
 		}
@@ -99,35 +103,37 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 		@Override
 		public Integer getYear() {
 			if (year == null)
-				year = (Integer) vertex.getProperty("year");
+				year = (Integer) db.getVertex(vertexID).getProperty("year");
 			return year;
 		}
 
 		@Override
 		public String getPublicationContext() {
 			if (publicationContext == null)
-				publicationContext = vertex.getProperty("publicationContext");
+				publicationContext = db.getVertex(vertexID).getProperty(
+						"publicationContext");
 			return publicationContext;
 		}
 
 		@Override
 		public String getPublisher() {
 			if (publisher == null)
-				publisher = vertex.getProperty("publisher");
+				publisher = db.getVertex(vertexID).getProperty("publisher");
 			return publisher;
 		}
 
 		@Override
 		public String getWebsiteURL() {
 			if (websiteURL == null)
-				websiteURL = vertex.getProperty("websiteURL");
+				websiteURL = db.getVertex(vertexID).getProperty("websiteURL");
 			return websiteURL;
 		}
 
 		@Override
 		public Path getFulltextFilePath() {
 			if (fulltextFilePath == null) {
-				String pathString = vertex.getProperty("fulltextFilePath");
+				String pathString = db.getVertex(vertexID).getProperty(
+						"fulltextFilePath");
 				if (pathString != null)
 					fulltextFilePath = Paths.get(pathString);
 			}
@@ -137,14 +143,15 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 		@Override
 		public String getFulltextURL() {
 			if (fulltextURL == null)
-				fulltextURL = (String) vertex.getProperty("fulltextURL");
+				fulltextURL = (String) db.getVertex(vertexID).getProperty(
+						"fulltextURL");
 			return fulltextURL;
 		}
 
 		@Override
 		public Integer getgScholarNumCitations() {
 			if (gScholarNumCitations == null)
-				gScholarNumCitations = (Integer) vertex
+				gScholarNumCitations = (Integer) db.getVertex(vertexID)
 						.getProperty("gScholarNumCitations");
 			return gScholarNumCitations;
 		}
@@ -240,7 +247,7 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 
 	@Override
 	public Literature vertexToEntity(Vertex vertex) {
-		return new LazyLiterature(vertex, authorDAO);
+		return new LazyLiterature(vertex.getId(), db, authorDAO);
 	}
 
 }

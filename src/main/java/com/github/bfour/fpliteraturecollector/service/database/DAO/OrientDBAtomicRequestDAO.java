@@ -33,20 +33,23 @@ import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
 import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlerService;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
 public class OrientDBAtomicRequestDAO extends OrientDBEntityDAO<AtomicRequest>
 		implements AtomicRequestDAO {
 
 	private static class LazyAtomicRequest extends AtomicRequest {
 
-		private Vertex vertex;
+		private OrientGraph db;
+		private Object vertexID;
 		private LazyGraphEntity entity;
 		private OrientDBLiteratureDAO literatureDAO;
 
-		public LazyAtomicRequest(Vertex vertex,
+		public LazyAtomicRequest(Object vertexID, OrientGraph db,
 				OrientDBLiteratureDAO literatureDAO) {
-			this.vertex = vertex;
-			this.entity = new LazyGraphEntity(vertex);
+			this.vertexID = vertexID;
+			this.db = db;
+			this.entity = new LazyGraphEntity(vertexID, db);
 			this.literatureDAO = literatureDAO;
 		}
 
@@ -54,21 +57,24 @@ public class OrientDBAtomicRequestDAO extends OrientDBEntityDAO<AtomicRequest>
 		public Crawler getCrawler() {
 			if (crawler == null)
 				crawler = CrawlerService.getInstance().getCrawlerForIdentifier(
-						(String) vertex.getProperty("searchEngine"));
+						(String) db.getVertex(vertexID).getProperty(
+								"searchEngine"));
 			return crawler;
 		}
 
 		@Override
 		public String getSearchString() {
 			if (searchString == null)
-				searchString = (String) vertex.getProperty("searchString");
+				searchString = (String) db.getVertex(vertexID).getProperty(
+						"searchString");
 			return searchString;
 		}
 
 		@Override
 		public Integer getMaxPageTurns() {
-			if (maxPageTurns == null) 
-				maxPageTurns = (Integer) vertex.getProperty("maxPageTurns");
+			if (maxPageTurns == null)
+				maxPageTurns = (Integer) db.getVertex(vertexID).getProperty(
+						"maxPageTurns");
 			return maxPageTurns;
 		}
 
@@ -77,7 +83,7 @@ public class OrientDBAtomicRequestDAO extends OrientDBEntityDAO<AtomicRequest>
 			try {
 				if (results == null)
 					results = GraphUtils.getCollectionFromVertexProperty(
-							vertex, "results", literatureDAO);
+							db.getVertex(vertexID), "results", literatureDAO);
 			} catch (DatalayerException e) {
 				// TODO (low) improve
 				results = new ArrayList<Literature>(0);
@@ -136,14 +142,14 @@ public class OrientDBAtomicRequestDAO extends OrientDBEntityDAO<AtomicRequest>
 		entityVertex.setProperty("maxPageTurns", entity.getMaxPageTurns());
 		GraphUtils.setCollectionPropertyOnVertex(entityVertex, "results",
 				entity.getResults(), literatureDAO, litServ, true);
-		
+
 		return entityVertex;
 
 	}
 
 	@Override
 	public AtomicRequest vertexToEntity(Vertex vertex) {
-		return new LazyAtomicRequest(vertex, literatureDAO);
+		return new LazyAtomicRequest(vertex.getId(), db, literatureDAO);
 	}
 
 }

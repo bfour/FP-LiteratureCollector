@@ -23,34 +23,39 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
 import java.util.Date;
 
 import com.github.bfour.fpjcommons.model.Entity;
-import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
 public class LazyGraphEntity extends Entity {
 
-	private Vertex vertex;
+	private Object vertexID;
+	private OrientGraph db;
 
-	public LazyGraphEntity(Vertex vertex) {
-		this.vertex = vertex;
+	public LazyGraphEntity(Object vertexID, OrientGraph db) {
+		this.vertexID = vertexID;
+		this.db = db;
+
 	}
 
 	@Override
 	public Long getID() {
 		if (ID == null)
-			ID = (Long) vertex.getProperty("ID");
+			ID = (Long) db.getVertex(vertexID).getProperty("ID");
 		return ID;
 	}
 
 	@Override
 	public Date getCreationTime() {
 		if (creationTime == null)
-			creationTime = (Date) vertex.getProperty("creationTime");
+			creationTime = (Date) db.getVertex(vertexID).getProperty(
+					"creationTime");
 		return creationTime;
 	}
 
 	@Override
 	public Date getLastChangeTime() {
 		if (lastChangeTime == null)
-			lastChangeTime = (Date) vertex.getProperty("lastChangeTime");
+			lastChangeTime = (Date) db.getVertex(vertexID).getProperty(
+					"lastChangeTime");
 		return lastChangeTime;
 	}
 

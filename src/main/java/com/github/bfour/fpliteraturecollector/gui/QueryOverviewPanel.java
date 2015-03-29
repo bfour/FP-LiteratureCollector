@@ -156,7 +156,16 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 				stopButton.setEnabled(false);
 			}
 		});
-		
+
+		// set initial query status
+		try {
+			servMan.getQueryService().setAllIdleOrFinished();
+		} catch (ServiceException e1) {
+			feedbackProxy.fireFeedback(new Feedback(QueryOverviewPanel.this,
+					"Sorry, failed to set initial query status.", e1
+							.getMessage(), FeedbackType.ERROR));
+		}
+
 		// ==== loader ====
 		EntityLoader<Query> loader = new EntityLoader<Query>() {
 			@Override
@@ -177,7 +186,7 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		DefaultListLikeChangeListener<Query> changeListener = new DefaultListLikeChangeListener<>(
 				this, new EntityFilterPipeline<Query>());
 		ChangeHandler.getInstance(Query.class).addEventListener(changeListener);
-		
+
 		// load initial data
 		for (Query q : loader.get())
 			addEntry(q);
@@ -229,10 +238,9 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		} else if (query.getStatus() == QueryStatus.QUEUED) {
 			queuePanel.add(queryPanel, "cell 0 " + position + ", wrap, growx");
 		} else if (query.getStatus() == QueryStatus.FINISHED) {
-			finishedPanel.add(queryPanel, "cell 0 " + position
-					+ ", wrap, growx");
+			finishedPanel.add(queryPanel, "growx, wrap");
 		} else if (query.getStatus() == QueryStatus.IDLE) {
-			idlePanel.add(queryPanel, "cell 0 " + position + ", wrap, growx");
+			idlePanel.add(queryPanel, "growx, wrap");
 		}
 		componentQueryMap.put(queryPanel, query);
 		revalidate();

@@ -50,45 +50,49 @@ import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
 public class OrientDBAuthorDAO extends OrientDBEntityDAO<Author> implements
 		AuthorDAO {
 
 	private static class LazyPerson extends Author {
 
-		private Vertex vertex;
+		private Object vertexID;
+		private OrientGraph db;
 		private LazyGraphEntity entity;
 
-		public LazyPerson(Vertex vertex) {
-			this.vertex = vertex;
-			this.entity = new LazyGraphEntity(vertex);
+		public LazyPerson(Object vertexID, OrientGraph db) {
+			this.vertexID = vertexID;
+			this.db = db;
+			this.entity = new LazyGraphEntity(vertexID, db);
 		}
 
 		@Override
 		public String getFirstName() {
 			if (firstName == null)
-				firstName = vertex.getProperty("firstName");
+				firstName = db.getVertex(vertexID).getProperty("firstName");
 			return firstName;
 		}
 
 		@Override
 		public String getLastName() {
 			if (lastName == null)
-				lastName = vertex.getProperty("lastName");
+				lastName = db.getVertex(vertexID).getProperty("lastName");
 			return lastName;
 		}
 
 		@Override
 		public String getgScholarID() {
 			if (gScholarID == null)
-				gScholarID = vertex.getProperty("gScholarID");
+				gScholarID = db.getVertex(vertexID).getProperty("gScholarID");
 			return gScholarID;
 		}
 
 		@Override
 		public String getMsAcademicID() {
 			if (msAcademicID == null)
-				msAcademicID = vertex.getProperty("msAcademicID");
+				msAcademicID = db.getVertex(vertexID).getProperty(
+						"msAcademicID");
 			return msAcademicID;
 		}
 
@@ -142,12 +146,13 @@ public class OrientDBAuthorDAO extends OrientDBEntityDAO<Author> implements
 	public Author vertexToEntity(Vertex vertex) {
 		if (vertex == null)
 			return null;
-		return new LazyPerson(vertex);
+		return new LazyPerson(vertex.getId(), db);
 	}
 
 	public Author getByGScholarID(String gScholarID) throws ServiceException {
-		Iterator<Vertex> iter = db.getVertices("person", new String[] { "gScholarID" },
-				new Object[] { gScholarID }).iterator();
+		Iterator<Vertex> iter = db.getVertices("person",
+				new String[] { "gScholarID" }, new Object[] { gScholarID })
+				.iterator();
 		if (!iter.hasNext())
 			return null;
 		return vertexToEntity(iter.next());
@@ -155,8 +160,9 @@ public class OrientDBAuthorDAO extends OrientDBEntityDAO<Author> implements
 
 	public Author getByMsAcademicID(String msAcademicID)
 			throws ServiceException {
-		Iterator<Vertex> iter = db.getVertices("person", new String[] { "msAcademicID" },
-				new Object[] { msAcademicID }).iterator();
+		Iterator<Vertex> iter = db.getVertices("person",
+				new String[] { "msAcademicID" }, new Object[] { msAcademicID })
+				.iterator();
 		if (!iter.hasNext())
 			return null;
 		return vertexToEntity(iter.next());
