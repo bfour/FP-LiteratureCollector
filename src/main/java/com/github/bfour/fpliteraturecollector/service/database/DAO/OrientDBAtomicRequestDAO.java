@@ -136,7 +136,7 @@ public class OrientDBAtomicRequestDAO extends OrientDBEntityDAO<AtomicRequest>
 		entityVertex.setProperty("maxPageTurns", entity.getMaxPageTurns());
 		GraphUtils.setCollectionPropertyOnVertex(entityVertex, "results",
 				entity.getResults(), literatureDAO, litServ, true);
-
+		
 		return entityVertex;
 
 	}

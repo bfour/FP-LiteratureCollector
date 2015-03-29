@@ -105,20 +105,30 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 
 	@Override
 	public void delete(T entity) {
+		delete(entity, true);
+	}
+
+	public void delete(T entity, boolean commit) {
 		Vertex v = getVertexForEntity(entity);
 		if (v != null) {
 			db.removeVertex(v);
-			db.commit();
+			if (commit)
+				db.commit();
 		}
 	}
 
 	@Override
 	public T create(T entity) throws DatalayerException {
+		return create(entity, true);
+	}
+
+	public T create(T entity, boolean commit) throws DatalayerException {
 		Long ID = entity.getID();
 		if (ID == null)
 			ID = getNewEntityID();
 		Vertex newEntity = entityToVertex(entity, ID);
-		db.commit();
+		if (commit)
+			db.commit();
 		if (newEntity == null)
 			return null;
 		return vertexToEntity(newEntity);
@@ -126,12 +136,18 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 
 	@Override
 	public T update(T oldEntity, T newEntity) throws DatalayerException {
+		return update(oldEntity, newEntity, true);
+	}
+
+	public T update(T oldEntity, T newEntity, boolean commit)
+			throws DatalayerException {
 		Vertex v = getVertexForEntity(oldEntity);
 		if (v == null)
 			throw new DatalayerException(
 					"failed to update old entity: old entity no longer exists");
 		entityToVertex(newEntity, oldEntity.getID(), v);
-		db.commit();
+		if (commit)
+			db.commit();
 		return vertexToEntity(v);
 	}
 

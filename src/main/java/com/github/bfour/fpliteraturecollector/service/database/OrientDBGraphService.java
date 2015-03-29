@@ -21,7 +21,6 @@ package com.github.bfour.fpliteraturecollector.service.database;
  */
 
 import com.github.bfour.fpjcommons.services.ServiceException;
-import com.orientechnologies.orient.core.config.OGlobalConfiguration;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
@@ -68,7 +67,7 @@ public abstract class OrientDBGraphService {
 			throws ServiceException {
 
 		// OGlobalConfiguration.DB_MVCC.setValue(false);
-		OGlobalConfiguration.CACHE_LEVEL1_ENABLED.setValue(false);
+		// OGlobalConfiguration.CACHE_LEVEL1_ENABLED.setValue(false);
 		// OGlobalConfiguration.CACHE_LEVEL2_ENABLED.setValue(false);
 
 		if (currentDB != null && !currentDB.isClosed())
@@ -93,7 +92,7 @@ public abstract class OrientDBGraphService {
 			String user, String password) throws ServiceException {
 
 		// OGlobalConfiguration.DB_MVCC.setValue(false);
-		OGlobalConfiguration.CACHE_LEVEL1_ENABLED.setValue(false);
+		// OGlobalConfiguration.CACHE_LEVEL1_ENABLED.setValue(false);
 		// OGlobalConfiguration.CACHE_LEVEL2_ENABLED.setValue(false);
 
 		if (currentDB != null && !currentDB.isClosed())

@@ -75,7 +75,7 @@ public class GraphUtils {
 						.getVertex(Direction.IN)
 						.getEdges(Direction.IN, edgeName).iterator().hasNext();
 				if (cascadeDelete && !referencedVertexHasMoreEdges) {
-					collectionItemDAO.delete(p);
+					collectionItemDAO.delete(p, false);
 					collectionItemService.receiveDelete(p);
 				}
 			}
@@ -85,12 +85,14 @@ public class GraphUtils {
 		for (T itemToAdd : itemsToAdd) {
 			Vertex itemVertex = collectionItemDAO.getVertexForEntity(itemToAdd);
 			if (itemVertex == null) {
-				T createdItem = collectionItemDAO.create(itemToAdd);
+				T createdItem = collectionItemDAO.create(itemToAdd, false);
 				collectionItemService.receiveCreate(createdItem);
 				itemVertex = collectionItemDAO.getVertexForEntity(createdItem);
 			}
 			vertex.addEdge(edgeName, itemVertex);
 		}
+		
+		// TODO items to be updated
 
 	}
 
