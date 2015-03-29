@@ -126,9 +126,11 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 
 		@Override
 		public Path getFulltextFilePath() {
-			if (fulltextFilePath == null)
-				fulltextFilePath = Paths.get((String) vertex
-						.getProperty("fulltextFilePath"));
+			if (fulltextFilePath == null) {
+				String pathString = vertex.getProperty("fulltextFilePath");
+				if (pathString != null)
+					fulltextFilePath = Paths.get(pathString);
+			}
 			return fulltextFilePath;
 		}
 
