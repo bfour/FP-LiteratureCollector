@@ -82,8 +82,8 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 
 		@Override
 		protected void done() {
-			super.done();
-			finish();
+			if (!isCancelled())
+				finish(this);
 		}
 
 		public List<Exception> getErrors() {
@@ -109,6 +109,24 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 		return instance;
 	}
 
+	public void initialize() {
+		try {
+			setState(BackgroundWorkerState.NOT_STARTED);
+		} catch (InvalidStateTransitionException e) {
+			feedbackProxy.feedbackBroadcasted(new Feedback(null,
+					"Sorry, failed to set initial status of crawler.", e
+							.getMessage(), FeedbackType.ERROR));
+		}
+		try {
+			servMan.getQueryService().setAllIdleOrFinished();
+			servMan.getQueryService().unqueueAll();
+		} catch (ServiceException e1) {
+			feedbackProxy.feedbackBroadcasted(new Feedback(null,
+					"Sorry, failed to set initial query status.", e1
+							.getMessage(), FeedbackType.ERROR));
+		}
+	}
+
 	/**
 	 * 
 	 * @return whether the crawler has been started
@@ -118,7 +136,7 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 		try {
 			if (!servMan.getQueryService().hasAnyUnprocessedRequest()) {
 				feedbackProxy
-						.fireFeedback(new Feedback(
+						.feedbackBroadcasted(new Feedback(
 								null,
 								"<html>Did not start crawling, because there are <b>no queries that could be run</b>.</html>",
 								FeedbackType.INFO));
@@ -126,7 +144,7 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 			}
 		} catch (ServiceException e1) {
 			feedbackProxy
-					.fireFeedback(new Feedback(
+					.feedbackBroadcasted(new Feedback(
 							null,
 							"<html>Did not start crawling, because I could not determine <br/> whether there are queries that could be run.</html>",
 							e1.getMessage(), FeedbackType.INFO));
@@ -137,7 +155,7 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 			setState(BackgroundWorkerState.RUNNING);
 		} catch (InvalidStateTransitionException e) {
 			feedbackProxy
-					.fireFeedback(new Feedback(
+					.feedbackBroadcasted(new Feedback(
 							null,
 							"Sorry, failed to set Crawler to running, state transition invalid.",
 							e.getMessage(), FeedbackType.WARN));
@@ -149,7 +167,7 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 			servMan.getQueryService().queueAll();
 		} catch (ServiceException e) {
 			feedbackProxy
-					.fireFeedback(new Feedback(
+					.feedbackBroadcasted(new Feedback(
 							null,
 							"Sorry, failed to queue queries, therefore will not start crawling.",
 							e.getMessage(), FeedbackType.WARN));
@@ -164,7 +182,7 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 			worker.execute();
 			workers.add(worker);
 		}
-		
+
 		return true;
 
 	}
@@ -173,32 +191,39 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 		// TODO
 	}
 
-	@Override
 	public synchronized void abort() {
 		try {
 			setState(BackgroundWorkerState.ABORTED);
-			feedbackProxy.fireFeedback(new Feedback(null,
+			for (CrawlerWorker worker : workers)
+				worker.cancel(true);
+			servMan.getQueryService().setAllIdleOrFinished();
+			servMan.getQueryService().unqueueAll();
+			feedbackProxy.feedbackBroadcasted(new Feedback(null,
 					"Crawling has been aborted.", FeedbackType.INFO));
 		} catch (InvalidStateTransitionException e) {
 			feedbackProxy
-					.fireFeedback(new Feedback(
+					.feedbackBroadcasted(new Feedback(
 							null,
 							"Sorry, failed to set Crawler to aborted, state transition invalid.",
 							e.getMessage(), FeedbackType.WARN));
+		} catch (ServiceException e) {
+			feedbackProxy.feedbackBroadcasted(new Feedback(null,
+					"Sorry, failed to set reset query status after abort.", e
+							.getMessage(), FeedbackType.WARN));
 		}
-		for (CrawlerWorker worker : workers)
-			worker.cancel(true);
 	}
 
-	@Override
-	protected synchronized void finish() {
+	protected synchronized void finish(CrawlerWorker crawlerWorker) {
+		workers.remove(crawlerWorker);
+		if (!workers.isEmpty())
+			return;
 		try {
 			setState(BackgroundWorkerState.FINISHED);
-			feedbackProxy.fireFeedback(new Feedback(null,
+			feedbackProxy.feedbackBroadcasted(new Feedback(null,
 					"Crawling has been finished.", FeedbackType.SUCCESS));
 		} catch (InvalidStateTransitionException e) {
 			feedbackProxy
-					.fireFeedback(new Feedback(
+					.feedbackBroadcasted(new Feedback(
 							null,
 							"Sorry, failed to set Crawler to finished, state transition invalid.",
 							e.getMessage(), FeedbackType.WARN));

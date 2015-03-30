@@ -21,13 +21,13 @@ package com.github.bfour.fpliteraturecollector.service;
  */
 
 import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.EventCreatingEntityCRUDService;
+import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBAtomicRequestDAO;
 
 public class DefaultAtomicRequestService extends
-		EventCreatingEntityCRUDService<AtomicRequest, OrientDBAtomicRequestDAO>
+		EventCreatingCRUDService<AtomicRequest, OrientDBAtomicRequestDAO>
 		implements AtomicRequestService {
 
 	private static DefaultAtomicRequestService instance;

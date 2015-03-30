@@ -43,7 +43,7 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		createQueryButton.setIconTextGap(6);
 		createQueryButton.setMargin(new Insets(4, 16, 4, 16));
 		toolbar.add(createQueryButton);
-		
+
 		JButton browseAuthorsButton = new JButton("Browse authors",
 				Icons.PERSON_GROUP.getIcon());
 		browseAuthorsButton.setIconTextGap(6);
@@ -83,7 +83,7 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 				queryOverviewPanel.createNew();
 			}
 		});
-		
+
 		browseAuthorsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -119,17 +119,17 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 
 	@Override
 	public void feedbackBroadcasted(Feedback arg0) {
-		feedbackProxy.fireFeedback(arg0);
+		feedbackProxy.feedbackBroadcasted(arg0);
 	}
 
 	@Override
 	public void feedbackChanged(Feedback arg0, Feedback arg1) {
-		feedbackProxy.changeFeedback(arg0, arg1);
+		feedbackProxy.feedbackChanged(arg0, arg1);
 	}
 
 	@Override
 	public void feedbackRevoked(Feedback arg0) {
-		feedbackProxy.revokeFeedback(arg0);
+		feedbackProxy.feedbackRevoked(arg0);
 	}
 
 }

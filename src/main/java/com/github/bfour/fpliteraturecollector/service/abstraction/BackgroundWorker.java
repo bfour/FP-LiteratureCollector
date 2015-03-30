@@ -64,14 +64,6 @@ public abstract class BackgroundWorker {
 	// public abstract void suspend() throws OperationNotSupportedException;
 
 	/**
-	 * Abort the crawling process. Won't do anything if the crawler hasn't been
-	 * started yet or is finished.
-	 */
-	public abstract void abort();
-
-	protected abstract void finish();
-
-	/**
 	 * Get the state in which the Crawler is currently in.
 	 * 
 	 * @return current state of the Crawler

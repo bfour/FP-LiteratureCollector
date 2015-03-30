@@ -33,6 +33,7 @@ import com.github.bfour.fpjgui.design.PanelDecorator;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 import com.github.bfour.fpliteraturecollector.gui.components.ScrollableJPanel;
+import com.github.bfour.fpliteraturecollector.gui.design.Colors;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.abstraction.BackgroundWorker.FinishListener;
@@ -40,8 +41,8 @@ import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlExecutor;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-public class QueryOverviewPanel extends JXPanel implements FeedbackProvider, FeedbackListener,
-		ListLikeValueContainer<Query> {
+public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
+		FeedbackListener, ListLikeValueContainer<Query> {
 
 	private static final long serialVersionUID = 5529685995539560855L;
 
@@ -85,11 +86,10 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider, Fee
 		idlePanel = new JPanel();
 		idlePanel.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
 		container.add(idlePanel, "growx, wrap");
-		
+
 		finishedPanel = new JPanel();
 		finishedPanel.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
 		container.add(finishedPanel, "growx, wrap");
-
 
 		// bottom toolbar
 		PlainToolbar toolbar = new PlainToolbar(true);
@@ -106,7 +106,8 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider, Fee
 		playButton.setMargin(new Insets(4, 8, 4, 8));
 		toolbar.add(playButton);
 
-		final JButton rerunButton = new JButton("Rerun", Icons.RERUN_24.getIcon());
+		final JButton rerunButton = new JButton("Rerun",
+				Icons.RERUN_24.getIcon());
 		rerunButton.setIconTextGap(6);
 		rerunButton.setMargin(new Insets(4, 8, 4, 8));
 		toolbar.add(rerunButton);
@@ -128,7 +129,7 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider, Fee
 				stopButton.setEnabled(false);
 				boolean started = exec.start();
 				if (started) {
-					stopButton.setEnabled(true);					
+					stopButton.setEnabled(true);
 				} else {
 					playButton.setEnabled(true);
 				}
@@ -151,17 +152,10 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider, Fee
 				stopButton.setEnabled(false);
 			}
 		});
-		
+
 		exec.addFeedbackListener(this);
 
-		// set initial query status
-		try {
-			servMan.getQueryService().setAllIdleOrFinished();
-		} catch (ServiceException e1) {
-			feedbackProxy.fireFeedback(new Feedback(QueryOverviewPanel.this,
-					"Sorry, failed to set initial query status.", e1
-							.getMessage(), FeedbackType.ERROR));
-		}
+		exec.initialize();
 
 		// ==== loader ====
 		EntityLoader<Query> loader = new EntityLoader<Query>() {
@@ -171,7 +165,7 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider, Fee
 				try {
 					list = servMan.getQueryService().getAll();
 				} catch (ServiceException e) {
-					feedbackProxy.fireFeedback(new Feedback(
+					feedbackProxy.feedbackBroadcasted(new Feedback(
 							QueryOverviewPanel.this, e.getMessage(),
 							FeedbackType.ERROR));
 				}
@@ -192,7 +186,8 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider, Fee
 
 	public synchronized void createNew() {
 		final QueryEditPanel editPanel = new QueryEditPanel(servMan, null);
-		PanelDecorator.decorateWithDropShadow(editPanel);
+		PanelDecorator.decorateWithDropShadow(editPanel,
+				Colors.CREATE_QUERY_DROPSHADOW.getColor());
 		createPanel.add(editPanel, "growx, wrap");
 		ActionListener closeProxy = new ActionListener() {
 			@Override
@@ -227,16 +222,21 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider, Fee
 	@Override
 	public synchronized void addEntry(Query query) {
 		QueryPanel queryPanel = new QueryPanel(servMan, query);
-		PanelDecorator.decorateWithDropShadow(queryPanel);
 		int position = (query.getQueuePosition() == null ? 0 : query
 				.getQueuePosition());
 		if (query.getStatus() == QueryStatus.CRAWLING) {
+			PanelDecorator.decorateWithDropShadow(queryPanel,
+					Colors.QUERY_CRAWLING_DROPSHADOW.getColor());
 			queuePanel.add(queryPanel, "cell 0 " + position + ", wrap, growx");
 		} else if (query.getStatus() == QueryStatus.QUEUED) {
+			PanelDecorator.decorateWithDropShadow(queryPanel,
+					Colors.QUERY_QUEUED_DROPSHADOW.getColor());
 			queuePanel.add(queryPanel, "cell 0 " + position + ", wrap, growx");
 		} else if (query.getStatus() == QueryStatus.FINISHED) {
+			PanelDecorator.decorateWithDropShadow(queryPanel);
 			finishedPanel.add(queryPanel, "growx, wrap");
 		} else if (query.getStatus() == QueryStatus.IDLE) {
+			PanelDecorator.decorateWithDropShadow(queryPanel);
 			idlePanel.add(queryPanel, "growx, wrap");
 		}
 		componentQueryMap.put(queryPanel, query);
@@ -302,16 +302,16 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider, Fee
 
 	@Override
 	public void feedbackBroadcasted(Feedback arg0) {
-		feedbackProxy.fireFeedback(arg0);
+		feedbackProxy.feedbackBroadcasted(arg0);
 	}
 
 	@Override
 	public void feedbackChanged(Feedback arg0, Feedback arg1) {
-		feedbackProxy.changeFeedback(arg0, arg1);
+		feedbackProxy.feedbackChanged(arg0, arg1);
 	}
 
 	@Override
 	public void feedbackRevoked(Feedback arg0) {
-		feedbackProxy.revokeFeedback(arg0);
+		feedbackProxy.feedbackRevoked(arg0);
 	}
 }

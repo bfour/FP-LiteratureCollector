@@ -13,16 +13,22 @@ import net.miginfocom.swing.MigLayout;
 import org.jdesktop.swingx.JXPanel;
 
 import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
+import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
+import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
 import com.github.bfour.fpjgui.components.FPJGUILabel;
 import com.github.bfour.fpjgui.components.PlainToolbar;
+import com.github.bfour.fpjgui.util.DefaultActionInterfacingHandler;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
-public class QueryPanel extends JXPanel {
+public class QueryPanel extends JXPanel implements FeedbackProvider {
 
 	private static final long serialVersionUID = -4594624554195026146L;
+
+	private FeedbackProviderProxy feedbackProxy;
 
 	private Query query;
 	private FPJGUILabel<String> nameLabel;
@@ -30,20 +36,19 @@ public class QueryPanel extends JXPanel {
 	private FPJGUILabel<String> statusLabel;
 
 	private JButton stopButton;
-
 	private JButton editButton;
-
 	private JButton deleteButton;
-
 	private JButton queueUpButton;
-
 	private JButton queueDownButton;
 
 	/**
 	 * Create the panel.
 	 */
 	public QueryPanel(final ServiceManager servMan, Query q) {
-		setLayout(new MigLayout("insets 0", "[][grow][]", "[]"));
+
+		feedbackProxy = new FeedbackProviderProxy();
+
+		setLayout(new MigLayout("insets 0", "[116lp][grow][]", "[]"));
 
 		statusIconLabel = new FPJGUILabel<ImageIcon>();
 		add(statusIconLabel, "cell 0 0");
@@ -93,11 +98,9 @@ public class QueryPanel extends JXPanel {
 		deleteButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					servMan.getQueryService().delete(query);
-				} catch (ServiceException e1) {
-					// TODO Auto-generated catch block
-				}
+				DefaultActionInterfacingHandler.getInstance()
+						.requestDeleteFromList(deleteButton, feedbackProxy,
+								query, servMan.getQueryService());
 			}
 		});
 
@@ -166,6 +169,16 @@ public class QueryPanel extends JXPanel {
 
 		this.query = q;
 
+	}
+
+	@Override
+	public void addFeedbackListener(FeedbackListener arg0) {
+		feedbackProxy.addFeedbackListener(arg0);
+	}
+
+	@Override
+	public void removeFeedbackListener(FeedbackListener arg0) {
+		feedbackProxy.removeFeedbackListener(arg0);
 	}
 
 }

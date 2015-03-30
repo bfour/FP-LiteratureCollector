@@ -21,13 +21,13 @@ package com.github.bfour.fpliteraturecollector.service;
  */
 
 import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.EventCreatingEntityCRUDService;
+import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBAuthorDAO;
 
 public class DefaultAuthorService extends
-		EventCreatingEntityCRUDService<Author, OrientDBAuthorDAO> implements
+		EventCreatingCRUDService<Author, OrientDBAuthorDAO> implements
 		AuthorService {
 
 	private static DefaultAuthorService instance;

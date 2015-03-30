@@ -65,7 +65,7 @@ public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature>
 					list = servMan.getLiteratureService().getAll();
 				} catch (ServiceException e) {
 					feedbackProxy
-							.fireFeedback(new Feedback(
+							.feedbackBroadcasted(new Feedback(
 									LiteratureBrowsePanel.this,
 									"Sorry, failed to get literature from LiteratureService.",
 									FeedbackType.ERROR));

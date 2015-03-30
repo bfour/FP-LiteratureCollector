@@ -21,14 +21,13 @@ package com.github.bfour.fpliteraturecollector.service;
  */
 
 import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.EventCreatingEntityCRUDService;
+import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBTagDAO;
 
 public class DefaultTagService extends
-		EventCreatingEntityCRUDService<Tag, OrientDBTagDAO> implements
-		TagService {
+		EventCreatingCRUDService<Tag, OrientDBTagDAO> implements TagService {
 
 	private static DefaultTagService instance;
 

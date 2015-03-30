@@ -20,14 +20,14 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
-import com.github.bfour.fpjcommons.services.CRUD.EventCreatingEntityCRUDService;
+import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBLiteratureDAO;
 
 public class DefaultLiteratureService extends
-		EventCreatingEntityCRUDService<Literature, OrientDBLiteratureDAO>
-		implements LiteratureService {
+		EventCreatingCRUDService<Literature, OrientDBLiteratureDAO> implements
+		LiteratureService {
 
 	private static DefaultLiteratureService instance;
 

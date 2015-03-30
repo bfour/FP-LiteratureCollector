@@ -26,7 +26,7 @@ import java.util.List;
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
-import com.github.bfour.fpjcommons.services.CRUD.EventCreatingEntityCRUDService;
+import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
@@ -36,7 +36,7 @@ import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphServ
 import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBQueryDAO;
 
 public class DefaultQueryService extends
-		EventCreatingEntityCRUDService<Query, OrientDBQueryDAO> implements
+		EventCreatingCRUDService<Query, OrientDBQueryDAO> implements
 		QueryService {
 
 	private static DefaultQueryService instance;
@@ -148,9 +148,22 @@ public class DefaultQueryService extends
 
 	@Override
 	public synchronized void queueAll() throws ServiceException {
-		for (Query q : getAll()) {
+		for (Query q : getAll())
 			queue(q);
-		}
+	}
+
+	@Override
+	public synchronized Query unqueue(Query query) throws ServiceException {
+		Query newQuery = new QueryBuilder(query).setQueuePosition(null)
+				.getObject();
+		newQuery = setInitialStatus(newQuery);
+		return update(query, newQuery);
+	}
+
+	@Override
+	public synchronized void unqueueAll() throws ServiceException {
+		for (Query q : getAll())
+			unqueue(q);
 	}
 
 	@Override
