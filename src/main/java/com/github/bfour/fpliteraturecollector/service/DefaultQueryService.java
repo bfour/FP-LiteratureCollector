@@ -25,6 +25,7 @@ import java.util.List;
 
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingEntityCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Query;
@@ -167,6 +168,25 @@ public class DefaultQueryService extends
 	}
 
 	@Override
+	public boolean hasAnyUnprocessedRequest() throws ServiceException {
+		DataIterator<Query> iter = getAllByStream();
+		try {
+			while (iter.hasNext()) {
+				Query query;
+				query = iter.next();
+				for (AtomicRequest atomReq : query.getAtomicRequests()) {
+					if (atomReq.getResults() == null
+							|| atomReq.getResults().isEmpty())
+						return true;
+				}
+			}
+		} catch (DatalayerException e) {
+			throw new ServiceException(e);
+		}
+		return false;
+	}
+
+	@Override
 	public synchronized AtomicRequest getFirstUnprocessedRequestForCrawler(
 			Query query, Crawler crawler) throws ServiceException {
 
@@ -207,7 +227,7 @@ public class DefaultQueryService extends
 			update(q, setInitialStatus(q));
 		}
 	}
-	
+
 	private Query setStatus(Query q) {
 		if (q.getStatus() != null)
 			return q;

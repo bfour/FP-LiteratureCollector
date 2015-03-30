@@ -80,7 +80,7 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 				Vertex v = vertexIterator.next();
 				if (v == null)
 					return null;
-				return vertexToEntity(vertexIterator.next());
+				return vertexToEntity(v);
 			}
 
 			@Override

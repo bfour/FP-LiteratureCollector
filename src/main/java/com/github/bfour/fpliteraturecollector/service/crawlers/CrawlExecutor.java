@@ -7,6 +7,11 @@ import java.util.List;
 import javax.swing.SwingWorker;
 
 import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
+import com.github.bfour.fpjgui.abstraction.feedback.Feedback.FeedbackType;
+import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
+import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
+import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Query;
@@ -17,7 +22,7 @@ import com.github.bfour.fpliteraturecollector.service.QueryService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.abstraction.BackgroundWorker;
 
-public class CrawlExecutor extends BackgroundWorker {
+public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider {
 
 	private class CrawlerWorker extends SwingWorker<Void, Void> {
 
@@ -88,10 +93,12 @@ public class CrawlExecutor extends BackgroundWorker {
 	}
 
 	private static CrawlExecutor instance;
+	private FeedbackProviderProxy feedbackProxy;
 	private ServiceManager servMan;
 	private List<CrawlerWorker> workers;
 
 	private CrawlExecutor(ServiceManager servMan) {
+		this.feedbackProxy = new FeedbackProviderProxy();
 		this.servMan = servMan;
 		this.workers = new ArrayList<CrawlerWorker>();
 	}
@@ -102,20 +109,53 @@ public class CrawlExecutor extends BackgroundWorker {
 		return instance;
 	}
 
-	public synchronized void start() {
+	/**
+	 * 
+	 * @return whether the crawler has been started
+	 */
+	public synchronized boolean start() {
+
+		try {
+			if (!servMan.getQueryService().hasAnyUnprocessedRequest()) {
+				feedbackProxy
+						.fireFeedback(new Feedback(
+								null,
+								"<html>Did not start crawling, because there are <b>no queries that could be run</b>.</html>",
+								FeedbackType.INFO));
+				return false;
+			}
+		} catch (ServiceException e1) {
+			feedbackProxy
+					.fireFeedback(new Feedback(
+							null,
+							"<html>Did not start crawling, because I could not determine <br/> whether there are queries that could be run.</html>",
+							e1.getMessage(), FeedbackType.INFO));
+			return false;
+		}
+
 		try {
 			setState(BackgroundWorkerState.RUNNING);
 		} catch (InvalidStateTransitionException e) {
-			// TODO Auto-generated catch block
-			return;
+			feedbackProxy
+					.fireFeedback(new Feedback(
+							null,
+							"Sorry, failed to set Crawler to running, state transition invalid.",
+							e.getMessage(), FeedbackType.WARN));
+			return false;
 		}
+
 		// queue all queries
 		try {
 			servMan.getQueryService().queueAll();
 		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			return;
+			feedbackProxy
+					.fireFeedback(new Feedback(
+							null,
+							"Sorry, failed to queue queries, therefore will not start crawling.",
+							e.getMessage(), FeedbackType.WARN));
+			return false;
 		}
+
 		// for each crawler, create a worker
 		// all workers - each standing for a crawler - will then run in parallel
 		for (Crawler crawler : CrawlerService.getInstance()
@@ -124,6 +164,9 @@ public class CrawlExecutor extends BackgroundWorker {
 			worker.execute();
 			workers.add(worker);
 		}
+		
+		return true;
+
 	}
 
 	public synchronized void rerunAll() {
@@ -134,9 +177,14 @@ public class CrawlExecutor extends BackgroundWorker {
 	public synchronized void abort() {
 		try {
 			setState(BackgroundWorkerState.ABORTED);
+			feedbackProxy.fireFeedback(new Feedback(null,
+					"Crawling has been aborted.", FeedbackType.INFO));
 		} catch (InvalidStateTransitionException e) {
-			// TODO Auto-generated catch block
-			return;
+			feedbackProxy
+					.fireFeedback(new Feedback(
+							null,
+							"Sorry, failed to set Crawler to aborted, state transition invalid.",
+							e.getMessage(), FeedbackType.WARN));
 		}
 		for (CrawlerWorker worker : workers)
 			worker.cancel(true);
@@ -146,8 +194,14 @@ public class CrawlExecutor extends BackgroundWorker {
 	protected synchronized void finish() {
 		try {
 			setState(BackgroundWorkerState.FINISHED);
+			feedbackProxy.fireFeedback(new Feedback(null,
+					"Crawling has been finished.", FeedbackType.SUCCESS));
 		} catch (InvalidStateTransitionException e) {
-			// TODO Auto-generated catch block
+			feedbackProxy
+					.fireFeedback(new Feedback(
+							null,
+							"Sorry, failed to set Crawler to finished, state transition invalid.",
+							e.getMessage(), FeedbackType.WARN));
 			return;
 		}
 		for (FinishListener listener : finishListeners)
@@ -158,6 +212,16 @@ public class CrawlExecutor extends BackgroundWorker {
 	public List<Exception> getErrors() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void addFeedbackListener(FeedbackListener arg0) {
+		feedbackProxy.addFeedbackListener(arg0);
+	}
+
+	@Override
+	public void removeFeedbackListener(FeedbackListener arg0) {
+		feedbackProxy.removeFeedbackListener(arg0);
 	}
 
 }

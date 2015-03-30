@@ -40,7 +40,7 @@ import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlExecutor;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
+public class QueryOverviewPanel extends JXPanel implements FeedbackProvider, FeedbackListener,
 		ListLikeValueContainer<Query> {
 
 	private static final long serialVersionUID = 5529685995539560855L;
@@ -82,27 +82,23 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		queuePanel.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
 		container.add(queuePanel, "growx, wrap");
 
+		idlePanel = new JPanel();
+		idlePanel.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
+		container.add(idlePanel, "growx, wrap");
+		
 		finishedPanel = new JPanel();
 		finishedPanel.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
 		container.add(finishedPanel, "growx, wrap");
 
-		idlePanel = new JPanel();
-		idlePanel.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
-		container.add(idlePanel, "growx, wrap");
 
 		// bottom toolbar
 		PlainToolbar toolbar = new PlainToolbar(true);
 		add(toolbar, "cell 0 1, growx");
 
-		JButton createButton = new JButton("Create new query",
-				Icons.ADD_24.getIcon());
-		createButton.setIconTextGap(6);
-		createButton.setMargin(new Insets(4, 8, 4, 8));
-		toolbar.add(createButton);
-
 		final JButton stopButton = new JButton("Stop", Icons.STOP_24.getIcon());
 		stopButton.setIconTextGap(6);
 		stopButton.setMargin(new Insets(4, 8, 4, 8));
+		stopButton.setEnabled(false);
 		toolbar.add(stopButton);
 
 		final JButton playButton = new JButton("Crawl", Icons.PLAY_24.getIcon());
@@ -110,20 +106,13 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		playButton.setMargin(new Insets(4, 8, 4, 8));
 		toolbar.add(playButton);
 
-		JButton rerunButton = new JButton("Rerun", Icons.RERUN_24.getIcon());
+		final JButton rerunButton = new JButton("Rerun", Icons.RERUN_24.getIcon());
 		rerunButton.setIconTextGap(6);
 		rerunButton.setMargin(new Insets(4, 8, 4, 8));
 		toolbar.add(rerunButton);
 
 		// ==== logic ====
 		final CrawlExecutor exec = CrawlExecutor.getInstance(servMan);
-
-		createButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				createNew();
-			}
-		});
 
 		stopButton.addActionListener(new ActionListener() {
 			@Override
@@ -136,8 +125,13 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				playButton.setEnabled(false);
-				stopButton.setEnabled(true);
-				exec.start();
+				stopButton.setEnabled(false);
+				boolean started = exec.start();
+				if (started) {
+					stopButton.setEnabled(true);					
+				} else {
+					playButton.setEnabled(true);
+				}
 			}
 		});
 
@@ -152,10 +146,13 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		exec.registerFinishListener(new FinishListener() {
 			@Override
 			public void receiveFinished() {
+				rerunButton.setEnabled(true);
 				playButton.setEnabled(true);
 				stopButton.setEnabled(false);
 			}
 		});
+		
+		exec.addFeedbackListener(this);
 
 		// set initial query status
 		try {
@@ -193,7 +190,7 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 
 	}
 
-	private synchronized void createNew() {
+	public synchronized void createNew() {
 		final QueryEditPanel editPanel = new QueryEditPanel(servMan, null);
 		PanelDecorator.decorateWithDropShadow(editPanel);
 		createPanel.add(editPanel, "growx, wrap");
@@ -301,5 +298,20 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		}
 		// pos has not changed, update panel information
 		componentQueryMap.inverse().get(oldQuery).setEntity(newQuery);
+	}
+
+	@Override
+	public void feedbackBroadcasted(Feedback arg0) {
+		feedbackProxy.fireFeedback(arg0);
+	}
+
+	@Override
+	public void feedbackChanged(Feedback arg0, Feedback arg1) {
+		feedbackProxy.changeFeedback(arg0, arg1);
+	}
+
+	@Override
+	public void feedbackRevoked(Feedback arg0) {
+		feedbackProxy.revokeFeedback(arg0);
 	}
 }

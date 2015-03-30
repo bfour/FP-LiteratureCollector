@@ -32,6 +32,8 @@ public interface QueryService extends BidirectionalCRUDService<Query> {
 
 	Query getFirstInQueueForCrawler(Crawler crawler) throws ServiceException;
 
+	boolean hasAnyUnprocessedRequest() throws ServiceException;
+
 	AtomicRequest getFirstUnprocessedRequestForCrawler(Query query,
 			Crawler crawler) throws ServiceException;
 

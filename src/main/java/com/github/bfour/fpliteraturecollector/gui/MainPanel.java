@@ -38,6 +38,12 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		// toolbar
 		PlainToolbar toolbar = new PlainToolbar(true);
 
+		JButton createQueryButton = new JButton("Create query",
+				Icons.ADD.getIcon());
+		createQueryButton.setIconTextGap(6);
+		createQueryButton.setMargin(new Insets(4, 16, 4, 16));
+		toolbar.add(createQueryButton);
+		
 		JButton browseAuthorsButton = new JButton("Browse authors",
 				Icons.PERSON_GROUP.getIcon());
 		browseAuthorsButton.setIconTextGap(6);
@@ -65,12 +71,19 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		add(toolbar, "cell 0 0, grow");
 
 		// content
-		QueryOverviewPanel queryOverviewPanel = new QueryOverviewPanel(
+		final QueryOverviewPanel queryOverviewPanel = new QueryOverviewPanel(
 				serviceManager);
 		add(queryOverviewPanel, "cell 0 1,grow");
 		queryOverviewPanel.addFeedbackListener(this);
 
 		// logic
+		createQueryButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				queryOverviewPanel.createNew();
+			}
+		});
+		
 		browseAuthorsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
