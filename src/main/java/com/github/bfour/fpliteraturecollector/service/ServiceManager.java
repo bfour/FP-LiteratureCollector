@@ -53,7 +53,7 @@ import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphServ
 public class ServiceManager {
 
 	public static enum ServiceManagerMode {
-		DEFAULT, TEST;
+		DEFAULT, TEST, REMOTE_TEST;
 	}
 
 	private static ServiceManager instance;
@@ -83,7 +83,8 @@ public class ServiceManager {
 		modeMemory = mode;
 		
 		if (mode == ServiceManagerMode.DEFAULT
-				|| mode == ServiceManagerMode.TEST) {
+				|| mode == ServiceManagerMode.TEST 
+				|| mode == ServiceManagerMode.REMOTE_TEST) {
 
 			graphService = FPLCOrientDBGraphService.getInstance();
 
@@ -94,6 +95,8 @@ public class ServiceManager {
 				graphService.setLocalDatabase("junitTestDatabase");
 				graphService.dropCurrentDB();
 				graphService.setLocalDatabase("junitTestDatabase");
+			} else if (mode == ServiceManagerMode.REMOTE_TEST) {
+				graphService.setRemoteDatabase("localhost", "cat2", "meow", "meow");
 			}
 
 			this.authServ = DefaultAuthorService.getInstance(graphService, true);

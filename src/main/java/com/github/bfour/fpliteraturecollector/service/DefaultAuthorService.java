@@ -79,4 +79,12 @@ public class DefaultAuthorService extends
 		return getDAO().getByMsAcademicID(msAcademicID);
 	}
 
+	@Override
+	public void deleteIfMaxOneAdjacentLiterature(Author author)
+			throws ServiceException {
+		if (getDAO().hasMaxOneAdjacentLiterature(author)) {
+			super.delete(author);
+		}
+	}
+
 }

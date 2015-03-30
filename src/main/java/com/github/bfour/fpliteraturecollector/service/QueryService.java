@@ -28,6 +28,8 @@ import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
 
 public interface QueryService extends BidirectionalCRUDService<Query> {
 
+	void deleteCascade(Query q) throws ServiceException;
+	
 	Query getByQueuePosition(int position) throws ServiceException;
 
 	Query getFirstInQueueForCrawler(Crawler crawler) throws ServiceException;
@@ -50,6 +52,7 @@ public interface QueryService extends BidirectionalCRUDService<Query> {
 	void unqueueAll() throws ServiceException;
 
 	void setAllIdleOrFinished() throws ServiceException;
+
 
 
 }

@@ -4,6 +4,9 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -12,7 +15,9 @@ import net.miginfocom.swing.MigLayout;
 
 import org.jdesktop.swingx.JXPanel;
 
+import com.github.bfour.fpjcommons.lang.Tuple;
 import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpjgui.abstraction.GUIOption;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
@@ -98,9 +103,49 @@ public class QueryPanel extends JXPanel implements FeedbackProvider {
 		deleteButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				DefaultActionInterfacingHandler.getInstance()
-						.requestDeleteFromList(deleteButton, feedbackProxy,
-								query, servMan.getQueryService());
+
+				Map<GUIOption, Tuple<Callable<Void>, String>> actionsMap = new HashMap<>();
+
+				actionsMap.put(
+						new GUIOption("Delete with literature", "", null),
+						new Tuple<Callable<Void>, String>(new Callable<Void>() {
+							@Override
+							public Void call() throws Exception {
+								servMan.getQueryService().deleteCascade(query);
+								return null;
+							}
+						}, "Sorry, failed to delete query \"" + query.getName()
+								+ "\" with its associated literature."));
+
+				actionsMap.put(new GUIOption("Delete and keep literature", "",
+						null), new Tuple<Callable<Void>, String>(
+						new Callable<Void>() {
+							@Override
+							public Void call() throws Exception {
+								servMan.getQueryService().delete(query);
+								return null;
+							}
+						}, "Sorry, failed to delete query \"" + query.getName()
+								+ "\"."));
+
+				actionsMap.put(new GUIOption("Cancel", "", null),
+						new Tuple<Callable<Void>, String>(new Callable<Void>() {
+							@Override
+							public Void call() throws Exception {
+								return null;
+							}
+						}, "Sorry, failed to cancel."));
+
+				DefaultActionInterfacingHandler
+						.getInstance()
+						.abstractDialogueBasedAction(
+								deleteButton,
+								feedbackProxy,
+								"<html>This query might be associated with literature that has been found for this query. <br/>"
+										+ "You can delete this query without its associated literature or remove the associated literature as well. <br/>"
+										+ "Literature that is associated with other queries will not be deleted in any case.</html>",
+								actionsMap);
+
 			}
 		});
 

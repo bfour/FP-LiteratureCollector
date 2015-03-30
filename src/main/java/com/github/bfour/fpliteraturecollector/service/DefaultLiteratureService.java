@@ -20,7 +20,9 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
+import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
+import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBLiteratureDAO;
@@ -30,11 +32,13 @@ public class DefaultLiteratureService extends
 		LiteratureService {
 
 	private static DefaultLiteratureService instance;
+	private AuthorService authServ;
 
 	private DefaultLiteratureService(OrientDBGraphService graphService,
 			boolean forceCreateNewInstance, AuthorService authServ) {
 		super(OrientDBLiteratureDAO.getInstance(graphService,
 				forceCreateNewInstance, authServ));
+		this.authServ = authServ;
 	}
 
 	public static DefaultLiteratureService getInstance(
@@ -44,6 +48,16 @@ public class DefaultLiteratureService extends
 			instance = new DefaultLiteratureService(graphService,
 					forceCreateNewInstance, authServ);
 		return instance;
+	}
+
+	@Override
+	public void deleteCascadeIfMaxOneAdjacentAtomicRequest(Literature literature)
+			throws ServiceException {
+		if (getDAO().hasMaxOneAdjacentAtomicRequest(literature)) {
+			for (Author author : literature.getAuthors())
+				authServ.deleteIfMaxOneAdjacentLiterature(author);
+			super.delete(literature);
+		}
 	}
 
 }

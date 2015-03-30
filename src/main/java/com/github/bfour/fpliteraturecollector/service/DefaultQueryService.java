@@ -40,12 +40,14 @@ public class DefaultQueryService extends
 		QueryService {
 
 	private static DefaultQueryService instance;
+	private AtomicRequestService atomReqServ;
 
 	private DefaultQueryService(OrientDBGraphService graphService,
 			boolean forceCreateNewInstance, AtomicRequestService atomReqServ,
 			LiteratureService litServ, AuthorService authServ) {
 		super(OrientDBQueryDAO.getInstance(graphService,
 				forceCreateNewInstance, atomReqServ, litServ, authServ));
+		this.atomReqServ = atomReqServ;
 	}
 
 	public static DefaultQueryService getInstance(
@@ -70,6 +72,20 @@ public class DefaultQueryService extends
 			throws ServiceException {
 		checkIntegrity(newEntity);
 		return super.update(oldEntity, newEntity);
+	}
+	
+	@Override
+	public void delete(Query entity) throws ServiceException {
+		for (AtomicRequest ar : entity.getAtomicRequests())
+			atomReqServ.delete(ar);
+		super.delete(entity);
+	}
+
+	@Override
+	public synchronized void deleteCascade(Query q) throws ServiceException {
+		for (AtomicRequest ar : q.getAtomicRequests())
+			atomReqServ.deleteCascade(ar);
+		super.delete(q);
 	}
 
 	private void checkIntegrity(Query entity) throws ServiceException {

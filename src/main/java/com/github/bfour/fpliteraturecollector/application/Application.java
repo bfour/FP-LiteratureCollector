@@ -39,7 +39,7 @@ public class Application {
 		try {
 
 			ServiceManager servMan = ServiceManager
-					.getInstance(ServiceManagerMode.DEFAULT);
+					.getInstance(ServiceManagerMode.TEST);
 
 			FPJGUIManager.getInstance().initialize();
 

@@ -108,6 +108,14 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 		delete(entity, true);
 	}
 
+	/**
+	 * Delete the given entity.
+	 * 
+	 * @param entity
+	 *            the entity to be deleted
+	 * @param commit
+	 *            whether to commit the transaction
+	 */
 	public void delete(T entity, boolean commit) {
 		Vertex v = getVertexForEntity(entity);
 		if (v != null) {

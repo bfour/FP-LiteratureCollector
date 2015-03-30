@@ -20,9 +20,13 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
+import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.BidirectionalCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 
-public interface AtomicRequestService extends BidirectionalCRUDService<AtomicRequest> {
-	
+public interface AtomicRequestService extends
+		BidirectionalCRUDService<AtomicRequest> {
+
+	void deleteCascade(AtomicRequest atomReq) throws ServiceException;
+
 }

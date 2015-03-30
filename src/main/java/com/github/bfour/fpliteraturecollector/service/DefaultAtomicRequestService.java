@@ -23,6 +23,7 @@ package com.github.bfour.fpliteraturecollector.service;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
+import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBAtomicRequestDAO;
 
@@ -31,12 +32,14 @@ public class DefaultAtomicRequestService extends
 		implements AtomicRequestService {
 
 	private static DefaultAtomicRequestService instance;
+	private LiteratureService litServ;
 
 	private DefaultAtomicRequestService(OrientDBGraphService graphService,
 			boolean forceCreateNewInstance, LiteratureService litServ,
 			AuthorService authServ) {
 		super(OrientDBAtomicRequestDAO.getInstance(graphService,
 				forceCreateNewInstance, litServ, authServ));
+		this.litServ = litServ;
 	}
 
 	public static DefaultAtomicRequestService getInstance(
@@ -59,6 +62,13 @@ public class DefaultAtomicRequestService extends
 			throws ServiceException {
 		checkIntegrity(newEntity);
 		return super.update(oldEntity, newEntity);
+	}
+
+	@Override
+	public void deleteCascade(AtomicRequest atomReq) throws ServiceException {
+		for (Literature literature : atomReq.getResults())
+			litServ.deleteCascadeIfMaxOneAdjacentAtomicRequest(literature);
+		super.delete(atomReq);
 	}
 
 	private void checkIntegrity(AtomicRequest entity) throws ServiceException {

@@ -24,14 +24,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import com.github.bfour.fpjcommons.services.DatalayerException;
+import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.ISBN;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
-import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.service.AuthorService;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
+import com.tinkerpop.blueprints.Direction;
+import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
@@ -248,6 +251,15 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 	@Override
 	public Literature vertexToEntity(Vertex vertex) {
 		return new LazyLiterature(vertex.getId(), db, authorDAO);
+	}
+
+	public boolean hasMaxOneAdjacentAtomicRequest(Literature lit) {
+		Vertex v = getVertexForEntity(lit);
+		Iterator<Edge> iter = v.getEdges(Direction.BOTH, "results").iterator();
+		if (!iter.hasNext())
+			return true;
+		iter.next();
+		return !iter.hasNext();
 	}
 
 }

@@ -20,12 +20,13 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
-
-
-
+import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.BidirectionalCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 
 public interface LiteratureService extends BidirectionalCRUDService<Literature> {
+
+	void deleteCascadeIfMaxOneAdjacentAtomicRequest(Literature literature)
+			throws ServiceException;
 
 }

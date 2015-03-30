@@ -49,6 +49,8 @@ import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
+import com.tinkerpop.blueprints.Direction;
+import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
@@ -166,6 +168,15 @@ public class OrientDBAuthorDAO extends OrientDBEntityDAO<Author> implements
 		if (!iter.hasNext())
 			return null;
 		return vertexToEntity(iter.next());
+	}
+
+	public boolean hasMaxOneAdjacentLiterature(Author author) {
+		Vertex v = getVertexForEntity(author);
+		Iterator<Edge> iter = v.getEdges(Direction.BOTH, "authors").iterator();
+		if (!iter.hasNext())
+			return true;
+		iter.next();
+		return !iter.hasNext();
 	}
 
 }
