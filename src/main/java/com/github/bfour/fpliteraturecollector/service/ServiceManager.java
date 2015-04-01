@@ -96,7 +96,7 @@ public class ServiceManager {
 				graphService.dropCurrentDB();
 				graphService.setLocalDatabase("junitTestDatabase");
 			} else if (mode == ServiceManagerMode.REMOTE_TEST) {
-				graphService.setRemoteDatabase("localhost", "cat2", "meow", "meow");
+				graphService.setRemoteDatabase("localhost", "cat2", "root", "meow");
 			}
 
 			this.authServ = DefaultAuthorService.getInstance(graphService, true);
