@@ -222,6 +222,7 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 	@Override
 	public synchronized void addEntry(Query query) {
 		QueryPanel queryPanel = new QueryPanel(servMan, query);
+		queryPanel.addFeedbackListener(feedbackProxy);
 		int position = (query.getQueuePosition() == null ? 0 : query
 				.getQueuePosition());
 		if (query.getStatus() == QueryStatus.CRAWLING) {

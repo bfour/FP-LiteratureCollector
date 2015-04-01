@@ -45,10 +45,6 @@ public class Application {
 
 			MainWindow.getInstance(servMan).setVisible(true);
 
-			// new
-			// EpopScholarCrawler(servMan).start("q="+URLEncoder.encode("e-health wearable",
-			// "UTF-8"), 1);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane

@@ -4,8 +4,8 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import javax.swing.ImageIcon;
@@ -104,10 +104,11 @@ public class QueryPanel extends JXPanel implements FeedbackProvider {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				Map<GUIOption, Tuple<Callable<Void>, String>> actionsMap = new HashMap<>();
+				List<Tuple<GUIOption, Tuple<Callable<Void>, String>>> actionsMap = new ArrayList<>(
+						3);
 
-				actionsMap.put(
-						new GUIOption("Delete with literature", "", null),
+				actionsMap.add(new Tuple<>(new GUIOption(
+						"Delete with literature", "", null),
 						new Tuple<Callable<Void>, String>(new Callable<Void>() {
 							@Override
 							public Void call() throws Exception {
@@ -115,26 +116,26 @@ public class QueryPanel extends JXPanel implements FeedbackProvider {
 								return null;
 							}
 						}, "Sorry, failed to delete query \"" + query.getName()
-								+ "\" with its associated literature."));
+								+ "\" with its associated literature.")));
 
-				actionsMap.put(new GUIOption("Delete and keep literature", "",
-						null), new Tuple<Callable<Void>, String>(
-						new Callable<Void>() {
+				actionsMap.add(new Tuple<>(new GUIOption(
+						"Delete and keep literature", "", null),
+						new Tuple<Callable<Void>, String>(new Callable<Void>() {
 							@Override
 							public Void call() throws Exception {
 								servMan.getQueryService().delete(query);
 								return null;
 							}
 						}, "Sorry, failed to delete query \"" + query.getName()
-								+ "\"."));
+								+ "\".")));
 
-				actionsMap.put(new GUIOption("Cancel", "", null),
+				actionsMap.add(new Tuple<>(new GUIOption("Cancel", "", null),
 						new Tuple<Callable<Void>, String>(new Callable<Void>() {
 							@Override
 							public Void call() throws Exception {
 								return null;
 							}
-						}, "Sorry, failed to cancel."));
+						}, "Sorry, failed to cancel.")));
 
 				DefaultActionInterfacingHandler
 						.getInstance()
