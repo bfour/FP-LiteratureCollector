@@ -1,11 +1,8 @@
 package com.github.bfour.fpliteraturecollector.gui;
 
 import java.awt.Dimension;
-import java.awt.Font;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.swing.JLabel;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -18,14 +15,14 @@ import com.github.bfour.fpjcommons.utils.Getter;
 import com.github.bfour.fpjgui.abstraction.EntityEditPanel;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
 import com.github.bfour.fpjgui.components.FPJGUILabel;
+import com.github.bfour.fpjgui.components.FPJGUILabelPanel;
 import com.github.bfour.fpjgui.components.FPJGUIMultilineLabel;
+import com.github.bfour.fpjgui.components.FPJGUIScrollableTextPane;
 import com.github.bfour.fpjgui.components.FPJGUITextField;
-import com.github.bfour.fpjgui.components.FPJGUITextPane;
 import com.github.bfour.fpjgui.components.SearchComboBox;
 import com.github.bfour.fpjgui.components.ToggleEditFormComponent;
 import com.github.bfour.fpjgui.components.composite.EntityBrowsePanel;
 import com.github.bfour.fpjgui.components.table.FPJGUITable;
-import com.github.bfour.fpjgui.design.Colors;
 import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.builders.AtomicRequestBuilder;
@@ -118,18 +115,9 @@ public class AtomicRequestPanel extends
 		setCRUDButtonsVisible(false);
 
 		getContentPane().setLayout(
-				new MigLayout("insets 0", "[grow]", "[]8[]0[]8[]0[]"));
-
-		JLabel dummy = new JLabel();
-		Font labelFont = dummy.getFont().deriveFont(
-				dummy.getFont().getSize() - 2f);
+				new MigLayout("insets 0", "[grow]", "[][][grow]"));
 
 		// crawler
-		JLabel lblCrawler = new JLabel("Crawler");
-		lblCrawler.setFont(labelFont);
-		lblCrawler.setForeground(Colors.VERY_STRONG_GRAY.getColor());
-		getContentPane().add(lblCrawler, "cell 0 1,growx");
-
 		EntityBrowsePanel<Crawler> crawlerBrowsePanel = new CrawlerBrowsePanel(
 				servMan);
 		crawlerBrowsePanel.setDeleteEntityEnabled(false);
@@ -164,14 +152,10 @@ public class AtomicRequestPanel extends
 		ToggleEditFormComponent<Crawler> crawlerToggle = new ToggleEditFormComponent<Crawler>(
 				categoryLabel, crawlerBox);
 		registerToggleComponent(crawlerToggle);
-		getContentPane().add(crawlerToggle, "cell 0 2,growx");
+		getContentPane().add(new FPJGUILabelPanel("Crawler", crawlerToggle),
+				"cell 0 0,growx");
 
 		// max. page turns
-		JLabel lblMaxPageTurns = new JLabel("Max. page turns");
-		lblMaxPageTurns.setFont(labelFont);
-		lblMaxPageTurns.setForeground(Colors.VERY_STRONG_GRAY.getColor());
-		getContentPane().add(lblMaxPageTurns, "cell 0 3,growx");
-
 		FPJGUITextField maxPageTurnsField = new FPJGUITextField();
 		maxPageTurnsField.setValidationRule(new ValidationRule<String>() {
 			@Override
@@ -195,15 +179,12 @@ public class AtomicRequestPanel extends
 		ToggleEditFormComponent<String> maxPageTurnsToggle = new ToggleEditFormComponent<String>(
 				maxPageTurnsLabel, maxPageTurnsField);
 		registerToggleComponent(maxPageTurnsToggle);
-		getContentPane().add(maxPageTurnsToggle, "cell 0 4,grow");
+		getContentPane().add(
+				new FPJGUILabelPanel("Max. page turns", maxPageTurnsToggle),
+				"cell 0 1,growx");
 
 		// request
-		JLabel lblRequestString = new JLabel("Request String");
-		lblRequestString.setFont(labelFont);
-		lblRequestString.setForeground(Colors.VERY_STRONG_GRAY.getColor());
-		getContentPane().add(lblRequestString, "cell 0 5,growx");
-
-		FPJGUITextPane requestStringField = new FPJGUITextPane();
+		FPJGUIScrollableTextPane requestStringField = new FPJGUIScrollableTextPane();
 		requestStringField.setValidationRule(new ValidationRule<String>() {
 			@Override
 			public ValidationRuleResult evaluate(String arg0) {
@@ -218,7 +199,7 @@ public class AtomicRequestPanel extends
 		ToggleEditFormComponent<String> requestStringToggle = new ToggleEditFormComponent<String>(
 				requestStringLabel, requestStringField);
 		registerToggleComponent(requestStringToggle);
-		getContentPane().add(requestStringToggle, "cell 0 6,grow");
+		getContentPane().add(new FPJGUILabelPanel("Request string", requestStringToggle), "cell 0 2,grow");
 
 		// mappings
 		ObjectGraphicalValueContainerMapper<AtomicRequestBuilder, Crawler> crawlerMapper = new ObjectGraphicalValueContainerMapper<AtomicRequestBuilder, Crawler>(
