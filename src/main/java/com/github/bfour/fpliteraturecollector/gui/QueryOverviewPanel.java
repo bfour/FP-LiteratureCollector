@@ -226,20 +226,16 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		int position = (query.getQueuePosition() == null ? 0 : query
 				.getQueuePosition());
 		if (query.getStatus() == QueryStatus.CRAWLING) {
-			PanelDecorator.decorateWithDropShadow(queryPanel,
-					Colors.QUERY_CRAWLING_DROPSHADOW.getColor());
-			queuePanel.add(queryPanel, "cell 0 " + position + ", wrap, growx");
+			crawlingPanel.add(queryPanel, "cell 0 " + position
+					+ ", wrap, growx");
 		} else if (query.getStatus() == QueryStatus.QUEUED) {
-			PanelDecorator.decorateWithDropShadow(queryPanel,
-					Colors.QUERY_QUEUED_DROPSHADOW.getColor());
 			queuePanel.add(queryPanel, "cell 0 " + position + ", wrap, growx");
 		} else if (query.getStatus() == QueryStatus.FINISHED) {
-			PanelDecorator.decorateWithDropShadow(queryPanel);
 			finishedPanel.add(queryPanel, "growx, wrap");
 		} else if (query.getStatus() == QueryStatus.IDLE) {
-			PanelDecorator.decorateWithDropShadow(queryPanel);
 			idlePanel.add(queryPanel, "growx, wrap");
 		}
+		updateBorderColor(queryPanel, query);
 		componentQueryMap.put(queryPanel, query);
 		revalidate();
 		repaint();
@@ -286,19 +282,37 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 
 	@Override
 	public synchronized void updateEntry(Query oldQuery, Query newQuery) {
-		// TODO
 		// check if queue position has changed
-		Integer currentPos = componentQueryMap.get(
-				componentQueryMap.inverse().get(newQuery)).getQueuePosition();
-		Integer newPos = newQuery.getQueuePosition();
-		if ((currentPos == null && newPos != null)
-				|| !currentPos.equals(newPos)) {
-			deleteEntry(oldQuery);
-			addEntry(newQuery);
-			return;
-		}
+		// Integer currentPos = componentQueryMap.get(
+		// componentQueryMap.inverse().get(oldQuery)).getQueuePosition();
+		// Integer newPos = newQuery.getQueuePosition();
+		// if ((currentPos == null && newPos != null)
+		// || !currentPos.equals(newPos)) {
+		deleteEntry(oldQuery);
+		addEntry(newQuery);
+		// return;
+		// } else {
+		// updateBorderColor(componentQueryMap.inverse().get(oldQuery),
+		// newQuery);
+		// }
 		// pos has not changed, update panel information
-		componentQueryMap.inverse().get(oldQuery).setEntity(newQuery);
+		// componentQueryMap.inverse().get(oldQuery).setEntity(newQuery);
+	}
+
+	private void updateBorderColor(QueryPanel queryPanel, Query query) {
+
+		if (query.getStatus() == QueryStatus.CRAWLING) {
+			PanelDecorator.decorateWithDropShadow(queryPanel,
+					Colors.QUERY_CRAWLING_DROPSHADOW.getColor());
+		} else if (query.getStatus() == QueryStatus.QUEUED) {
+			PanelDecorator.decorateWithDropShadow(queryPanel,
+					Colors.QUERY_QUEUED_DROPSHADOW.getColor());
+		} else if (query.getStatus() == QueryStatus.FINISHED) {
+			PanelDecorator.decorateWithDropShadow(queryPanel);
+		} else if (query.getStatus() == QueryStatus.IDLE) {
+			PanelDecorator.decorateWithDropShadow(queryPanel);
+		}
+
 	}
 
 	@Override

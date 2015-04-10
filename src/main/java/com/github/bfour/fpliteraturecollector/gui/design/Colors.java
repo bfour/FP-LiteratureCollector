@@ -12,7 +12,7 @@ public enum Colors {
 
 	/* @formatter:off */
 	CREATE_QUERY_DROPSHADOW(new Color(0,116,0)),
-	QUERY_CRAWLING_DROPSHADOW(new Color(116,116,0)),
+	QUERY_CRAWLING_DROPSHADOW(new Color(116,0,0)),
 	QUERY_QUEUED_DROPSHADOW(new Color(0,0,116)),
 
 	;
