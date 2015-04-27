@@ -333,9 +333,11 @@ public class GoogleScholarProvider extends DataProvider {
 
 	}
 
-	public Tuple<String, String> getFirstAndLastNameFromNameString(String name)
+	private Tuple<String, String> getFirstAndLastNameFromNameString(String name)
 			throws ServiceException {
 		name = name.trim();
+		name = name.replace("\r\n", "");
+		name = name.replace("\n", "");
 		if (name.isEmpty())
 			return null;
 		// first token is first name, others are last name
@@ -343,14 +345,20 @@ public class GoogleScholarProvider extends DataProvider {
 		if (!spaceTokenizer.hasMoreTokens())
 			throw new ServiceException(
 					"getFirstAndLastNameFromNameString failed: no tokens found");
-		String first = spaceTokenizer.nextToken();
+		String first = cleanName(spaceTokenizer.nextToken());
 		StringBuilder last = new StringBuilder();
 		while (spaceTokenizer.hasMoreTokens()) {
-			last.append("-");
-			last.append(spaceTokenizer.nextToken());
+			last.append(cleanName(spaceTokenizer.nextToken()));
+			last.append(" ");
 		}
-		return new Tuple<String, String>(first, last.subSequence(1,
-				last.length()).toString());
+		String lastNameString = cleanName(last.toString());
+		return new Tuple<String, String>(first, lastNameString);
+	}
+
+	private String cleanName(String name) {
+		name = name.replaceAll("<\\D+?>", "");
+		name = name.trim();
+		return name;
 	}
 
 }

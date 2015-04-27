@@ -29,7 +29,26 @@ import com.github.bfour.fpjcommons.model.Entity;
 public class Literature extends Entity {
 
 	public static enum LiteratureType {
-		UNKNOWN, BOOK, DISSERTATION, JOURNAL_PAPER, CONFERENCE_PAPER,
+		UNKNOWN("unknown"), BOOK("book"), 
+		DISSERTATION("dissertation"), 
+		JOURNAL_PAPER("journal paper"), 
+		CONFERENCE_PAPER("conference paper");
+
+		private String tellingName;
+
+		LiteratureType(String tellingName) {
+			this.tellingName = tellingName;
+		}
+		
+		public String getTellingName() {
+			return tellingName;
+		}
+		
+		@Override
+		public String toString() {
+			return tellingName;
+		}
+
 	}
 
 	protected String title;
@@ -46,7 +65,7 @@ public class Literature extends Entity {
 	protected String websiteURL;
 	protected String fulltextURL;
 	protected Path fulltextFilePath;
-	
+
 	protected Integer gScholarNumCitations;
 
 	// TODO: also important: type of publication (journal, proceeding
@@ -54,8 +73,9 @@ public class Literature extends Entity {
 
 	public Literature(Long iD, Date creationTime, Date lastChangeTime,
 			String title, LiteratureType type, List<Author> authors,
-			String DOI, ISBN ISBN, Integer year, String publicationContext, String publisher, String websiteURL, 
-			String fulltextURL, Path fulltextFilePath, Integer gScholarNumCitations) {
+			String DOI, ISBN ISBN, Integer year, String publicationContext,
+			String publisher, String websiteURL, String fulltextURL,
+			Path fulltextFilePath, Integer gScholarNumCitations) {
 		super(iD, creationTime, lastChangeTime);
 		this.title = title;
 		this.type = type;
@@ -72,8 +92,9 @@ public class Literature extends Entity {
 	}
 
 	public Literature(String title, LiteratureType type, List<Author> authors,
-			String DOI, ISBN ISBN, Integer year, String publicationContext, String publisher, String websiteURL, 
-			String fulltextURL, Path fulltextFilePath, Integer gScholarNumCitations) {
+			String DOI, ISBN ISBN, Integer year, String publicationContext,
+			String publisher, String websiteURL, String fulltextURL,
+			Path fulltextFilePath, Integer gScholarNumCitations) {
 		super();
 		this.title = title;
 		this.type = type;
@@ -140,7 +161,7 @@ public class Literature extends Entity {
 	public Integer getgScholarNumCitations() {
 		return gScholarNumCitations;
 	}
-	
+
 	@Override
 	public String toString() {
 		return title;
