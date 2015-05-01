@@ -161,10 +161,12 @@ public class LiteraturePanel extends
 				List<Author> authors = object.getAuthors();
 				StringBuilder builder = new StringBuilder();
 				for (Author auth : authors) {
+					builder.append(auth.getFirstName());
+					builder.append(" ");
 					builder.append(auth.getLastName());
 					builder.append(", ");
 				}
-				return builder.toString();
+				return builder.substring(0, builder.length()-2);
 			}
 
 			@Override

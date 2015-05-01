@@ -57,6 +57,9 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 		setDeleteEntityEnabled(true);
 		setEditEntityEnabled(true);
 		setCreateEntityEnabled(true);
+		
+		// hide search bar
+		setSearchPanel(null);
 
 		// ==== columns ====
 		FPJGUITableColumn<AtomicRequest> crawlerColumn = new FPJGUITableColumn<AtomicRequest>(

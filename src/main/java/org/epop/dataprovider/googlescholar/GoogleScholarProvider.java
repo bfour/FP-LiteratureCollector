@@ -43,11 +43,10 @@ import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 
 public class GoogleScholarProvider extends DataProvider {
-	// Try the regex here: http://regex101.com/r/xR1aS1/3
+	
 	private static final Pattern citespattern = Pattern.compile("(\\d+)");
 
 	private static final List<String> malformed = new LinkedList<String>();
-	private static final int MAX_NUM_PAPERS = 20;
 	private static final long DELAY = 18611;
 	private static final String SCHOLAR_GOOGLE_COM = "scholar.google.com";
 	//

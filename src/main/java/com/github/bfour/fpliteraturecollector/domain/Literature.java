@@ -29,10 +29,14 @@ import com.github.bfour.fpjcommons.model.Entity;
 public class Literature extends Entity {
 
 	public static enum LiteratureType {
-		UNKNOWN("unknown"), BOOK("book"), 
+		UNKNOWN("unknown"), 
+		BOOK("book"), 
 		DISSERTATION("dissertation"), 
 		JOURNAL_PAPER("journal paper"), 
-		CONFERENCE_PAPER("conference paper");
+		CONFERENCE_PAPER("conference paper"), 
+		PATENT("patent"),
+		BOOK_CHAPTER("book chapter"),
+		WORKING_PAPER("working paper");
 
 		private String tellingName;
 
@@ -57,19 +61,18 @@ public class Literature extends Entity {
 	protected String DOI;
 	protected ISBN ISBN;
 	protected Integer year;
+	
 	/**
 	 * eg. name of journal, name of conference ...
 	 */
 	protected String publicationContext;
 	protected String publisher;
+	
 	protected String websiteURL;
 	protected String fulltextURL;
 	protected Path fulltextFilePath;
 
 	protected Integer gScholarNumCitations;
-
-	// TODO: also important: type of publication (journal, proceeding
-	// (Konferenzband), book chapter), Verlag, Datum (Jahr)
 
 	public Literature(Long iD, Date creationTime, Date lastChangeTime,
 			String title, LiteratureType type, List<Author> authors,
