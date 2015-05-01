@@ -14,6 +14,7 @@ import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
 import com.github.bfour.fpjgui.components.PlainToolbar;
+import com.github.bfour.fpliteraturecollector.gui.authors.AuthorsWindow;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 import com.github.bfour.fpliteraturecollector.gui.literature.LiteratureWindow;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
@@ -87,7 +88,7 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		browseAuthorsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO
+				AuthorsWindow.getInstance(serviceManager).setVisible(true);
 			}
 		});
 
