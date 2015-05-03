@@ -14,8 +14,7 @@ import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.builders.AuthorBuilder;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
-public class AuthorsPanel extends
-		EntityEditPanel<Author, AuthorBuilder> {
+public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 
 	private static final long serialVersionUID = -6108218045598314837L;
 
@@ -52,9 +51,10 @@ public class AuthorsPanel extends
 		ToggleEditFormComponent<String> firstNameToggle = new ToggleEditFormComponent<String>(
 				firstNameLabel, firstNameField);
 		registerToggleComponent(firstNameToggle);
-		getContentPane().add(new FPJGUILabelPanel("First Name", firstNameToggle),
+		getContentPane().add(
+				new FPJGUILabelPanel("First Name", firstNameToggle),
 				"cell 0 1,growx");
-		
+
 		// last name
 		FPJGUIMultilineLabel lastNameField = new FPJGUIMultilineLabel();
 		lastNameField.setValidationRule(new ValidationRule<String>() {
@@ -69,8 +69,9 @@ public class AuthorsPanel extends
 		ToggleEditFormComponent<String> lastNameToggle = new ToggleEditFormComponent<String>(
 				lastNameLabel, lastNameField);
 		registerToggleComponent(lastNameToggle);
-		getContentPane().add(new FPJGUILabelPanel("Last Name(s)", lastNameToggle),
-				"cell 0 2,growx");		
+		getContentPane().add(
+				new FPJGUILabelPanel("Last Name(s)", lastNameToggle),
+				"cell 0 2,growx");
 
 		// mappings
 		ObjectGraphicalValueContainerMapper<AuthorBuilder, String> IDMapper = new ObjectGraphicalValueContainerMapper<AuthorBuilder, String>(
@@ -103,7 +104,7 @@ public class AuthorsPanel extends
 			}
 		};
 		getMappers().add(firstNameMapper);
-		
+
 		ObjectGraphicalValueContainerMapper<AuthorBuilder, String> lastNameMapper = new ObjectGraphicalValueContainerMapper<AuthorBuilder, String>(
 				lastNameToggle) {
 			@Override
@@ -116,7 +117,7 @@ public class AuthorsPanel extends
 				object.setLastName(value);
 			}
 		};
-		getMappers().add(lastNameMapper);		
+		getMappers().add(lastNameMapper);
 
 	}
 }

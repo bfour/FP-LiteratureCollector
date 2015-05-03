@@ -24,13 +24,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.ISBN;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
+import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.service.AuthorService;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Direction;
@@ -47,14 +50,16 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 		private Object vertexID;
 		private OrientGraph db;
 		private OrientDBAuthorDAO personDAO;
+		private OrientDBTagDAO tagDAO;
 		private LazyGraphEntity entity;
 
 		public LazyLiterature(Object vertexID, OrientGraph db,
-				OrientDBAuthorDAO personDAO) {
+				OrientDBAuthorDAO personDAO, OrientDBTagDAO tagDAO) {
 			this.vertexID = vertexID;
 			this.db = db;
 			this.entity = new LazyGraphEntity(vertexID, db);
 			this.personDAO = personDAO;
+			this.tagDAO = tagDAO;
 		}
 
 		@Override
@@ -160,6 +165,21 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 		}
 
 		@Override
+		public Set<Tag> getTags() {
+			if (tags == null) {
+				try {
+					tags = new HashSet<Tag>(
+							GraphUtils.getCollectionFromVertexProperty(
+									db.getVertex(vertexID), "tags", tagDAO));
+				} catch (DatalayerException e) {
+					// tags = new HashSet<Tag>();
+					// TODO (low) improve
+				}
+			}
+			return this.tags;
+		}
+
+		@Override
 		public Long getID() {
 			return entity.getID();
 		}
@@ -178,6 +198,7 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 
 	private static OrientDBLiteratureDAO instance;
 	private OrientDBAuthorDAO authorDAO;
+	private OrientDBTagDAO tagDAO;
 	private AuthorService authServ;
 
 	private OrientDBLiteratureDAO(OrientDBGraphService dbs,
@@ -185,6 +206,7 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 		super(dbs, "literature");
 		this.authorDAO = OrientDBAuthorDAO.getInstance(dbs,
 				forceCreateNewInstance);
+		this.tagDAO = OrientDBTagDAO.getInstance(dbs, forceCreateNewInstance);
 		this.authServ = authServ;
 	}
 
@@ -250,7 +272,7 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 
 	@Override
 	public Literature vertexToEntity(Vertex vertex) {
-		return new LazyLiterature(vertex.getId(), db, authorDAO);
+		return new LazyLiterature(vertex.getId(), db, authorDAO, tagDAO);
 	}
 
 	public boolean hasMaxOneAdjacentAtomicRequest(Literature lit) {

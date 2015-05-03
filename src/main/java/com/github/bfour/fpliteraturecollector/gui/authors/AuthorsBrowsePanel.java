@@ -39,7 +39,7 @@ public class AuthorsBrowsePanel extends EntityBrowsePanel<Author>
 
 		// show default buttons for CRUD options
 		setDeleteEntityEnabled(true);
-		setEditEntityEnabled(true);
+		setEditEntityEnabled(false);
 		setCreateEntityEnabled(true);
 
 		// ==== columns ====
@@ -58,8 +58,8 @@ public class AuthorsBrowsePanel extends EntityBrowsePanel<Author>
 					public String get(Author item) {
 						return item.getLastName();
 					}
-				}, true, 30, 30, "firstName", false);
-		getTable().addColumn(lastNameColumn);		
+				}, true, 30, 30, "lastName", false);
+		getTable().addColumn(lastNameColumn);
 
 		this.table.setPreferredColumnWidth(firstNameColumn, 200);
 		this.table.setPreferredColumnWidth(lastNameColumn, 286);

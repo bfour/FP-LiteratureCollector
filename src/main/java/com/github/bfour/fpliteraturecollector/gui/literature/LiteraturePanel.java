@@ -159,6 +159,8 @@ public class LiteraturePanel extends
 			@Override
 			public String getValue(LiteratureBuilder object) {
 				List<Author> authors = object.getAuthors();
+				if (authors == null)
+					return "";
 				StringBuilder builder = new StringBuilder();
 				for (Author auth : authors) {
 					builder.append(auth.getFirstName());
@@ -166,12 +168,12 @@ public class LiteraturePanel extends
 					builder.append(auth.getLastName());
 					builder.append(", ");
 				}
-				return builder.substring(0, builder.length()-2);
+				return builder.substring(0, builder.length() - 2);
 			}
 
 			@Override
 			public void setValue(LiteratureBuilder object, String value) {
-				// object.setType(value);
+				// TODO
 			}
 		};
 		getMappers().add(authorMapper);

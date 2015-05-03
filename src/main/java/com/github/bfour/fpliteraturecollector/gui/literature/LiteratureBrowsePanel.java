@@ -8,21 +8,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JMenuItem;
+import javax.swing.ListSelectionModel;
 
 import org.apache.commons.beanutils.BeanUtils;
 
 import com.github.bfour.fpjcommons.events.ChangeHandler;
 import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpjcommons.utils.Getter;
 import com.github.bfour.fpjgui.abstraction.DefaultListLikeChangeListener;
 import com.github.bfour.fpjgui.abstraction.EntityFilterPipeline;
 import com.github.bfour.fpjgui.abstraction.EntityLoader;
 import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
 import com.github.bfour.fpjgui.abstraction.feedback.Feedback.FeedbackType;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
+import com.github.bfour.fpjgui.components.FPJGUIButton;
+import com.github.bfour.fpjgui.components.FPJGUIButton.ButtonFormats;
+import com.github.bfour.fpjgui.components.FPJGUIButton.FPJGUIButtonFactory;
+import com.github.bfour.fpjgui.components.FPJGUIPopover;
 import com.github.bfour.fpjgui.components.composite.EntityBrowsePanel;
+import com.github.bfour.fpjgui.components.composite.EntityConfirmableOperationPanel;
 import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGetter;
 import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
+import com.github.bfour.fpjgui.design.Lengths;
 import com.github.bfour.fpjgui.util.DefaultActionInterfacingHandler;
+import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.service.LiteratureService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
@@ -37,10 +46,51 @@ public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature>
 	 */
 	public LiteratureBrowsePanel(final ServiceManager servMan) {
 
+		EntityConfirmableOperationPanel<Literature> tagPanel = new EntityConfirmableOperationPanel<Literature>(
+				"Assign Tags", "",
+				"Assign tags", new Getter<Literature, String>() {
+					@Override
+					public String get(Literature input) {
+						return "";
+					}
+				});
+		final FPJGUIPopover tagPopover = new FPJGUIPopover(tagPanel);
+
+		tagPanel.addCancelListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				tagPopover.hidePopup();
+			}
+		});
+		tagPanel.addConfirmListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+
 		// show default buttons for CRUD options
 		setDeleteEntityEnabled(true);
-		setEditEntityEnabled(true);
+		setEditEntityEnabled(false);
 		setCreateEntityEnabled(true);
+
+		// extra buttons
+		final FPJGUIButton tagButton = FPJGUIButtonFactory.createButton(
+				ButtonFormats.DEFAULT, Lengths.LARGE_BUTTON_HEIGHT.getLength(),
+				"Tag",
+				com.github.bfour.fpliteraturecollector.gui.design.Icons.TAG_16
+						.getIcon());
+		mainPanel.add(tagButton, "cell 0 2");
+		tagButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				tagPopover.showPopup(tagButton);
+			}
+		});
+
+		// selection mode
+		getTable().getTable().setSelectionMode(
+				ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
 		// ==== columns ====
 		FPJGUITableColumn<Literature> titleColumn = new FPJGUITableColumn<Literature>(
@@ -52,9 +102,28 @@ public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature>
 				}, true, 30, 30, "title", false);
 		getTable().addColumn(titleColumn);
 
+		FPJGUITableColumn<Literature> authorsColumn = new FPJGUITableColumn<Literature>(
+				"Authors", new FPJGUITableFieldGetter<Literature>() {
+					@Override
+					public String get(Literature item) {
+						List<Author> authors = item.getAuthors();
+						if (authors == null)
+							return "";
+						StringBuilder builder = new StringBuilder();
+						for (Author author : authors) {
+							builder.append(author.getLastName());
+							builder.append(", ");
+						}
+						return builder.substring(0, builder.length() - 2);
+					}
+				}, true, 30, 30, "authors", false);
+		getTable().addColumn(authorsColumn);
+
 		this.table.setPreferredColumnWidth(titleColumn, 200);
+		this.table.setPreferredColumnWidth(authorsColumn, 40);
 
 		this.table.setMinimumColumnWidth(titleColumn, 100);
+		this.table.setMinimumColumnWidth(authorsColumn, 40);
 
 		// ==== loader ====
 		this.loader = new EntityLoader<Literature>() {

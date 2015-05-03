@@ -22,13 +22,15 @@ package com.github.bfour.fpliteraturecollector.domain.builders;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 
 import com.github.bfour.fpjcommons.lang.Builder;
 import com.github.bfour.fpjcommons.model.EntityBuilder;
+import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.ISBN;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
-import com.github.bfour.fpliteraturecollector.domain.Author;
+import com.github.bfour.fpliteraturecollector.domain.Tag;
 
 public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		Builder<Literature> {
@@ -45,6 +47,7 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 	private String fulltextURL;
 	private Path fulltextFilePath;
 	private Integer gScholarNumCitations;
+	private Set<Tag> tags;
 
 	public LiteratureBuilder() {
 		super();
@@ -70,6 +73,8 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 
 		setgScholarNumCitations(l.getgScholarNumCitations());
 
+		setTags(l.getTags());
+		
 	}
 
 	@Override
@@ -78,7 +83,7 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 				getTitle(), getType(), getAuthors(), getDOI(), getISBN(),
 				getYear(), getPublicationContext(), getPublisher(),
 				getWebsiteURL(), getFulltextURL(), getFulltextFilePath(),
-				getgScholarNumCitations());
+				getgScholarNumCitations(), getTags());
 	}
 
 	public String getTitle() {
@@ -175,6 +180,14 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 
 	public void setgScholarNumCitations(Integer gScholarNumCitations) {
 		this.gScholarNumCitations = gScholarNumCitations;
+	}
+
+	public Set<Tag> getTags() {
+		return tags;
+	}
+
+	public void setTags(Set<Tag> tags) {
+		this.tags = tags;
 	}
 
 }

@@ -23,6 +23,7 @@ package com.github.bfour.fpliteraturecollector.domain;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import com.github.bfour.fpjcommons.model.Entity;
 
@@ -73,12 +74,14 @@ public class Literature extends Entity {
 	protected Path fulltextFilePath;
 
 	protected Integer gScholarNumCitations;
+	
+	protected Set<Tag> tags;
 
 	public Literature(Long iD, Date creationTime, Date lastChangeTime,
 			String title, LiteratureType type, List<Author> authors,
 			String DOI, ISBN ISBN, Integer year, String publicationContext,
 			String publisher, String websiteURL, String fulltextURL,
-			Path fulltextFilePath, Integer gScholarNumCitations) {
+			Path fulltextFilePath, Integer gScholarNumCitations, Set<Tag> tags) {
 		super(iD, creationTime, lastChangeTime);
 		this.title = title;
 		this.type = type;
@@ -92,12 +95,13 @@ public class Literature extends Entity {
 		this.fulltextURL = fulltextURL;
 		this.fulltextFilePath = fulltextFilePath;
 		this.gScholarNumCitations = gScholarNumCitations;
+		this.tags = tags;
 	}
 
 	public Literature(String title, LiteratureType type, List<Author> authors,
 			String DOI, ISBN ISBN, Integer year, String publicationContext,
 			String publisher, String websiteURL, String fulltextURL,
-			Path fulltextFilePath, Integer gScholarNumCitations) {
+			Path fulltextFilePath, Integer gScholarNumCitations, Set<Tag> tags) {
 		super();
 		this.title = title;
 		this.type = type;
@@ -111,6 +115,7 @@ public class Literature extends Entity {
 		this.fulltextURL = fulltextURL;
 		this.fulltextFilePath = fulltextFilePath;
 		this.gScholarNumCitations = gScholarNumCitations;
+		this.tags = tags;
 	}
 
 	public Literature() {
@@ -163,6 +168,10 @@ public class Literature extends Entity {
 
 	public Integer getgScholarNumCitations() {
 		return gScholarNumCitations;
+	}
+
+	public Set<Tag> getTags() {
+		return tags;
 	}
 
 	@Override

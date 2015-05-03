@@ -96,6 +96,7 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 	private FeedbackProviderProxy feedbackProxy;
 	private ServiceManager servMan;
 	private List<CrawlerWorker> workers;
+	private Feedback mainStatusFeedback;
 
 	private CrawlExecutor(ServiceManager servMan) {
 		this.feedbackProxy = new FeedbackProviderProxy();
@@ -183,6 +184,12 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 			workers.add(worker);
 		}
 
+		// feedback
+		mainStatusFeedback = new Feedback(null, "Crawling", null,
+				FeedbackType.PROGRESS.getColor(), com.github.bfour.fpliteraturecollector.gui.design.Icons.CRAWLING_32.getIcon(),
+				FeedbackType.PROGRESS, true);
+		feedbackProxy.feedbackBroadcasted(mainStatusFeedback);
+
 		return true;
 
 	}
@@ -192,6 +199,7 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 	}
 
 	public synchronized void abort() {
+		feedbackProxy.feedbackRevoked(mainStatusFeedback);
 		try {
 			setState(BackgroundWorkerState.ABORTED);
 			for (CrawlerWorker worker : workers)
@@ -214,6 +222,7 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 	}
 
 	protected synchronized void finish(CrawlerWorker crawlerWorker) {
+		feedbackProxy.feedbackRevoked(mainStatusFeedback);
 		workers.remove(crawlerWorker);
 		if (!workers.isEmpty())
 			return;
