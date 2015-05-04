@@ -5,7 +5,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JMenuItem;
 import javax.swing.ListSelectionModel;
@@ -14,7 +16,6 @@ import org.apache.commons.beanutils.BeanUtils;
 
 import com.github.bfour.fpjcommons.events.ChangeHandler;
 import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.utils.Getter;
 import com.github.bfour.fpjgui.abstraction.DefaultListLikeChangeListener;
 import com.github.bfour.fpjgui.abstraction.EntityFilterPipeline;
 import com.github.bfour.fpjgui.abstraction.EntityLoader;
@@ -26,13 +27,14 @@ import com.github.bfour.fpjgui.components.FPJGUIButton.ButtonFormats;
 import com.github.bfour.fpjgui.components.FPJGUIButton.FPJGUIButtonFactory;
 import com.github.bfour.fpjgui.components.FPJGUIPopover;
 import com.github.bfour.fpjgui.components.composite.EntityBrowsePanel;
-import com.github.bfour.fpjgui.components.composite.EntityConfirmableOperationPanel;
 import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGetter;
 import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
 import com.github.bfour.fpjgui.design.Lengths;
 import com.github.bfour.fpjgui.util.DefaultActionInterfacingHandler;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
+import com.github.bfour.fpliteraturecollector.domain.Tag;
+import com.github.bfour.fpliteraturecollector.gui.TaggingPanel;
 import com.github.bfour.fpliteraturecollector.service.LiteratureService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
@@ -46,26 +48,19 @@ public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature>
 	 */
 	public LiteratureBrowsePanel(final ServiceManager servMan) {
 
-		EntityConfirmableOperationPanel<Literature> tagPanel = new EntityConfirmableOperationPanel<Literature>(
-				"Assign Tags", "",
-				"Assign tags", new Getter<Literature, String>() {
-					@Override
-					public String get(Literature input) {
-						return "";
-					}
-				});
-		final FPJGUIPopover tagPopover = new FPJGUIPopover(tagPanel);
+		final TaggingPanel taggingPanel = new TaggingPanel(servMan);
+		final FPJGUIPopover tagPopover = new FPJGUIPopover(taggingPanel);
 
-		tagPanel.addCancelListener(new ActionListener() {
+		taggingPanel.addCancelListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				tagPopover.hidePopup();
 			}
 		});
-		tagPanel.addConfirmListener(new ActionListener() {
+		taggingPanel.addConfirmListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+
 			}
 		});
 
@@ -84,6 +79,13 @@ public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature>
 		tagButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				List<Literature> selectedLiterature = getValue();
+				taggingPanel.setValue(selectedLiterature);
+				Set<Tag> allTags = new HashSet<Tag>();
+				for (Literature lit : selectedLiterature)
+					allTags.addAll(lit.getTags());
+				taggingPanel.setTags(new ArrayList<>(allTags));
+				tagPopover.pack();
 				tagPopover.showPopup(tagButton);
 			}
 		});

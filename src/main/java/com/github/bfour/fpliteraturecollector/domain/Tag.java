@@ -31,7 +31,7 @@ public class Tag extends Entity {
 	private String name;	
 	private Color colour;
 	
-	public Tag(long ID, Date creationTime, Date lastChangeTime, String name, Color colour) {
+	public Tag(Long ID, Date creationTime, Date lastChangeTime, String name, Color colour) {
 		super(ID, creationTime, lastChangeTime);
 		this.name = name;
 		this.colour = colour;
@@ -49,6 +49,11 @@ public class Tag extends Entity {
 
 	public Color getColour() {
 		return colour;
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 	
 }

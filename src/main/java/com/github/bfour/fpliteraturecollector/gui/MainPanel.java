@@ -17,6 +17,7 @@ import com.github.bfour.fpjgui.components.PlainToolbar;
 import com.github.bfour.fpliteraturecollector.gui.authors.AuthorsWindow;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 import com.github.bfour.fpliteraturecollector.gui.literature.LiteratureWindow;
+import com.github.bfour.fpliteraturecollector.gui.tags.TagsWindow;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
 public class MainPanel extends JPanel implements FeedbackProvider,
@@ -45,13 +46,19 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		createQueryButton.setMargin(new Insets(4, 16, 4, 16));
 		toolbar.add(createQueryButton);
 
-		JButton browseAuthorsButton = new JButton("Browse authors",
+		JButton browseAuthorsButton = new JButton("Authors",
 				Icons.PERSON_GROUP.getIcon());
 		browseAuthorsButton.setIconTextGap(6);
 		browseAuthorsButton.setMargin(new Insets(4, 16, 4, 16));
 		toolbar.add(browseAuthorsButton);
+		
+		JButton tagsButton = new JButton("Tags",
+				Icons.TAG_32.getIcon());
+		tagsButton.setIconTextGap(6);
+		tagsButton.setMargin(new Insets(4, 16, 4, 16));
+		toolbar.add(tagsButton);		
 
-		JButton browseLiteratureButton = new JButton("Browse literature",
+		JButton browseLiteratureButton = new JButton("Literature",
 				Icons.BOOKS.getIcon());
 		browseLiteratureButton.setIconTextGap(6);
 		browseLiteratureButton.setMargin(new Insets(4, 16, 4, 16));
@@ -91,6 +98,13 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 				AuthorsWindow.getInstance(serviceManager).setVisible(true);
 			}
 		});
+		
+		tagsButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				TagsWindow.getInstance(serviceManager).setVisible(true);
+			}
+		});		
 
 		browseLiteratureButton.addActionListener(new ActionListener() {
 			@Override

@@ -23,6 +23,11 @@ public enum Icons {
 	DUPLICATE("classpath:icons/column_double.png"),
 	CONFIG("classpath:icons/setting_tools_32.png"),
 	
+	TAG_16("classpath:icons/three_tags_16.png"),
+	TAG_32("classpath:icons/three_tags_32.png"),
+	
+	CROSS_12("classpath:icons/cross_12.png"),
+	
 	ADD("classpath:icons/add.png"),
 	ADD_24("classpath:icons/add_24.png"),
 	
@@ -49,8 +54,6 @@ public enum Icons {
 	EDIT_20("classpath:icons/pencil_20.png"),
 	DELETE_20("classpath:icons/bin_20.png"),
 	STOP_20("classpath:icons/stop_20.png"),
-	
-	TAG_16("classpath:icons/three_tags_16.png"),
 	
 	;
 	
