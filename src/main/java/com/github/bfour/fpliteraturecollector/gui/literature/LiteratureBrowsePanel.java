@@ -34,6 +34,7 @@ import com.github.bfour.fpjgui.util.DefaultActionInterfacingHandler;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
+import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 import com.github.bfour.fpliteraturecollector.gui.TaggingPanel;
 import com.github.bfour.fpliteraturecollector.service.LiteratureService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
@@ -60,7 +61,21 @@ public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature>
 		taggingPanel.addConfirmListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+				List<Tag> tags = taggingPanel.getTags();
+				LiteratureService litServ = servMan.getLiteratureService();
+				for (Literature selectedLit : getValue()) {
+					Literature newLiterature = new LiteratureBuilder(
+							selectedLit).setTags(new HashSet<Tag>(tags))
+							.getObject();
+					try {
+						litServ.update(selectedLit, newLiterature);
+					} catch (ServiceException e1) {
+						fireFeedback(new Feedback(LiteratureBrowsePanel.this,
+								"Sorry, failed to set tags for " + selectedLit,
+								e1.getMessage(), FeedbackType.ERROR));
+					}
+				}
+				tagPopover.hidePopup();
 			}
 		});
 

@@ -90,48 +90,54 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		return title;
 	}
 
-	public void setTitle(String title) {
+	public LiteratureBuilder setTitle(String title) {
 		this.title = title;
+		return this;
 	}
 
 	public LiteratureType getType() {
 		return type;
 	}
 
-	public void setType(LiteratureType type) {
+	public LiteratureBuilder setType(LiteratureType type) {
 		this.type = type;
+		return this;
 	}
 
 	public List<Author> getAuthors() {
 		return authors;
 	}
 
-	public void setAuthors(List<Author> authors) {
+	public LiteratureBuilder setAuthors(List<Author> authors) {
 		this.authors = authors;
+		return this;
 	}
 
 	public String getDOI() {
 		return DOI;
 	}
 
-	public void setDOI(String dOI) {
+	public LiteratureBuilder setDOI(String dOI) {
 		DOI = dOI;
+		return this;
 	}
 
 	public ISBN getISBN() {
 		return ISBN;
 	}
 
-	public void setISBN(ISBN iSBN) {
+	public LiteratureBuilder setISBN(ISBN iSBN) {
 		ISBN = iSBN;
+		return this;
 	}
 
 	public Integer getYear() {
 		return year;
 	}
 
-	public void setYear(Integer year) {
+	public LiteratureBuilder setYear(Integer year) {
 		this.year = year;
+		return this;
 	}
 
 	public String getPublicationContext() {
@@ -142,52 +148,59 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		return publisher;
 	}
 
-	public void setPublisher(String publisher) {
+	public LiteratureBuilder setPublisher(String publisher) {
 		this.publisher = publisher;
+		return this;
 	}
 
-	public void setPublicationContext(String publicationContext) {
+	public LiteratureBuilder setPublicationContext(String publicationContext) {
 		this.publicationContext = publicationContext;
+		return this;
 	}
 
 	public String getWebsiteURL() {
 		return websiteURL;
 	}
 
-	public void setWebsiteURL(String websiteURL) {
+	public LiteratureBuilder setWebsiteURL(String websiteURL) {
 		this.websiteURL = websiteURL;
+		return this;
 	}
 
 	public String getFulltextURL() {
 		return fulltextURL;
 	}
 
-	public void setFulltextURL(String fulltextURL) {
+	public LiteratureBuilder setFulltextURL(String fulltextURL) {
 		this.fulltextURL = fulltextURL;
+		return this;
 	}
 
 	public Path getFulltextFilePath() {
 		return fulltextFilePath;
 	}
 
-	public void setFulltextFilePath(Path fulltextFilePath) {
+	public LiteratureBuilder setFulltextFilePath(Path fulltextFilePath) {
 		this.fulltextFilePath = fulltextFilePath;
+		return this;
 	}
 
 	public Integer getgScholarNumCitations() {
 		return gScholarNumCitations;
 	}
 
-	public void setgScholarNumCitations(Integer gScholarNumCitations) {
+	public LiteratureBuilder setgScholarNumCitations(Integer gScholarNumCitations) {
 		this.gScholarNumCitations = gScholarNumCitations;
+		return this;
 	}
 
 	public Set<Tag> getTags() {
 		return tags;
 	}
 
-	public void setTags(Set<Tag> tags) {
+	public LiteratureBuilder setTags(Set<Tag> tags) {
 		this.tags = tags;
+		return this;
 	}
 
 }

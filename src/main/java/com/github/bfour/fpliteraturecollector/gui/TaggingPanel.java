@@ -158,13 +158,6 @@ public class TaggingPanel extends
 		getContentPanel().add(tagCombo, "cell 0 1, growx");
 		getContentPanel().add(addTagButton, "cell 0 1, growy");
 
-		try {
-			tagsPanel.addEntries(servMan.getTagService().getAll());
-		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 
 	public void setTags(List<Tag> tags) {
