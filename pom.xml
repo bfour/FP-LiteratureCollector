@@ -160,14 +160,14 @@
 		<dependency>
 			<groupId>com.orientechnologies</groupId>
 			<artifactId>orientdb-graphdb</artifactId>
-			<version>2.0.6</version>
+			<version>2.0.8</version>
 		</dependency>
 		<!-- INCLUDE THIS IF YOU'RE CONNECTING TO THE SERVER THROUGH THE REMOTE 
 			ENGINE -->
 		<dependency>
 			<groupId>com.orientechnologies</groupId>
 			<artifactId>orientdb-client</artifactId>
-			<version>2.0.6</version>
+			<version>2.0.8</version>
 			<type>bundle</type>
 		</dependency>
 		<!-- END REMOTE ENGINE DEPENDENCY -->
@@ -179,17 +179,6 @@
 			<version>2.6.0</version>
 		</dependency>
 		<!-- END BLUEPRINTS DEPENDENCY -->
-
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.tinkerpop.blueprints</groupId> -->
-<!-- 			<artifactId>blueprints-orient-graph</artifactId> -->
-<!-- 			<version>2.4.0</version> -->
-<!-- 		</dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>com.tinkerpop</groupId> -->
-		<!-- <artifactId>frames</artifactId> -->
-		<!-- <version>2.5.0</version> -->
-		<!-- </dependency> -->
 
 		<!-- epop -->
 		<dependency>
