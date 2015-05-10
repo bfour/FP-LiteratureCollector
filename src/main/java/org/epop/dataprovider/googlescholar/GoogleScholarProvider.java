@@ -89,6 +89,7 @@ public class GoogleScholarProvider extends DataProvider {
 				while (counter < pageTurnLimit
 						&& newResponseBody
 								.contains("<b style=\"display:block;margin-left:50px\">Next</b>")) {
+					counter++;
 					Thread.sleep(DELAY);
 					URI newUri = URIUtils.createURI("http", SCHOLAR_GOOGLE_COM,
 							-1, "/scholar", htmlParams + "&start="
@@ -96,7 +97,6 @@ public class GoogleScholarProvider extends DataProvider {
 					System.out.println(newUri);
 					Document e = Jsoup.connect(newUri.toURL().toString())
 							.userAgent("Mozilla").get();
-					counter++;
 					if (e != null) {
 						// docs.add(e);
 						newResponseBody = e.html();

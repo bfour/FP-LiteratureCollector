@@ -90,6 +90,7 @@ public class FPLCOrientDBGraphService extends OrientDBGraphService {
 		literatureClass.createProperty("authors", OType.LINKLIST);
 		literatureClass.createProperty("DOI", OType.STRING);
 		literatureClass.createProperty("ISBN", OType.STRING);
+		literatureClass.createProperty("tags", OType.LINKLIST);
 
 		db.createKeyIndex("ID", Vertex.class,
 				new Parameter<>("type", "UNIQUE"), new Parameter<>("class",
@@ -104,6 +105,8 @@ public class FPLCOrientDBGraphService extends OrientDBGraphService {
 		atomicRequestClass.createProperty("searchEngine", OType.STRING);
 		atomicRequestClass.createProperty("searchString", OType.STRING);
 		atomicRequestClass.createProperty("results", OType.LINKLIST);
+		atomicRequestClass.createProperty("processed", OType.BOOLEAN);
+		atomicRequestClass.createProperty("processingError", OType.STRING);
 
 		db.createKeyIndex("ID", Vertex.class,
 				new Parameter<>("type", "UNIQUE"), new Parameter<>("class",
@@ -126,6 +129,7 @@ public class FPLCOrientDBGraphService extends OrientDBGraphService {
 		db.createEdgeType("authors");
 		db.createEdgeType("atomicRequests");
 		db.createEdgeType("results");
+		db.createEdgeType("tags");
 		
 		// end
 		db.shutdown();

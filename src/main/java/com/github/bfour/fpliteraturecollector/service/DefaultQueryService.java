@@ -23,6 +23,7 @@ package com.github.bfour.fpliteraturecollector.service;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.github.bfour.fpjcommons.lang.Tuple;
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
@@ -44,19 +45,22 @@ public class DefaultQueryService extends
 
 	private DefaultQueryService(OrientDBGraphService graphService,
 			boolean forceCreateNewInstance, AtomicRequestService atomReqServ,
-			LiteratureService litServ, AuthorService authServ) {
-		super(OrientDBQueryDAO.getInstance(graphService,
-				forceCreateNewInstance, atomReqServ, litServ, authServ));
+			LiteratureService litServ, AuthorService authServ,
+			TagService tagServ) {
+		super(OrientDBQueryDAO
+				.getInstance(graphService, forceCreateNewInstance, atomReqServ,
+						litServ, authServ, tagServ));
 		this.atomReqServ = atomReqServ;
 	}
 
 	public static DefaultQueryService getInstance(
 			OrientDBGraphService graphService, boolean forceCreateNewInstance,
 			AtomicRequestService atomReqServ, LiteratureService litServ,
-			AuthorService authServ) {
+			AuthorService authServ, TagService tagServ) {
 		if (instance == null || forceCreateNewInstance)
 			instance = new DefaultQueryService(graphService,
-					forceCreateNewInstance, atomReqServ, litServ, authServ);
+					forceCreateNewInstance, atomReqServ, litServ, authServ,
+					tagServ);
 		return instance;
 	}
 
@@ -73,18 +77,20 @@ public class DefaultQueryService extends
 		checkIntegrity(newEntity);
 		return super.update(oldEntity, newEntity);
 	}
-	
+
 	@Override
 	public void delete(Query entity) throws ServiceException {
-		for (AtomicRequest ar : entity.getAtomicRequests())
-			atomReqServ.delete(ar);
+		if (entity.getAtomicRequests() != null)
+			for (AtomicRequest ar : entity.getAtomicRequests())
+				atomReqServ.delete(ar);
 		super.delete(entity);
 	}
 
 	@Override
 	public synchronized void deleteCascade(Query q) throws ServiceException {
-		for (AtomicRequest ar : q.getAtomicRequests())
-			atomReqServ.deleteCascade(ar);
+		if (q.getAtomicRequests() != null)
+			for (AtomicRequest ar : q.getAtomicRequests())
+				atomReqServ.deleteCascade(ar);
 		super.delete(q);
 	}
 
@@ -183,20 +189,6 @@ public class DefaultQueryService extends
 	}
 
 	@Override
-	public synchronized Query getFirstInQueueForCrawler(Crawler crawler)
-			throws ServiceException {
-		// TODO (low) improve performance by using direct SQL max() query
-		int pos = 1;
-		Query q;
-		while ((q = getByQueuePosition(pos)) != null) {
-			pos++;
-			if (getFirstUnprocessedRequestForCrawler(q, crawler) != null)
-				return q;
-		}
-		return null;
-	}
-
-	@Override
 	public boolean hasAnyUnprocessedRequest() throws ServiceException {
 		DataIterator<Query> iter = getAllByStream();
 		try {
@@ -204,8 +196,7 @@ public class DefaultQueryService extends
 				Query query;
 				query = iter.next();
 				for (AtomicRequest atomReq : query.getAtomicRequests()) {
-					if (atomReq.getResults() == null
-							|| atomReq.getResults().isEmpty())
+					if (!atomReq.isProcessed())
 						return true;
 				}
 			}
@@ -216,27 +207,23 @@ public class DefaultQueryService extends
 	}
 
 	@Override
-	public synchronized AtomicRequest getFirstUnprocessedRequestForCrawler(
-			Query query, Crawler crawler) throws ServiceException {
+	public synchronized Tuple<Query, AtomicRequest> getFirstUnprocessedRequestInQueueForCrawler(
+			Crawler crawler) throws ServiceException {
 
-		for (AtomicRequest atomReq : query.getAtomicRequests()) {
-			if (!atomReq.getCrawler().equals(crawler))
-				continue;
-			if (atomReq.getResults() == null || atomReq.getResults().isEmpty())
-				return atomReq;
+		// TODO (low) improve performance by using direct SQL max() query
+		int pos = 1;
+		Query q;
+		while ((q = getByQueuePosition(pos)) != null) {
+			pos++;
+			for (AtomicRequest atomReq : q.getAtomicRequests()) {
+				if (!atomReq.getCrawler().equals(crawler))
+					continue;
+				if (!atomReq.isProcessed())
+					return new Tuple<Query, AtomicRequest>(q, atomReq);
+			}
 		}
-
 		return null;
 
-	}
-
-	private List<AtomicRequest> getUnprocessedAtomicRequests(Query query) {
-		List<AtomicRequest> list = new LinkedList<AtomicRequest>();
-		for (AtomicRequest atomReq : query.getAtomicRequests()) {
-			if (atomReq.getResults() == null || atomReq.getResults().isEmpty())
-				list.add(atomReq);
-		}
-		return list;
 	}
 
 	private int getMaxQueuePosition() throws ServiceException {
@@ -260,17 +247,30 @@ public class DefaultQueryService extends
 	private Query setStatus(Query q) {
 		if (q.getStatus() != null)
 			return q;
-		if (!q.getAtomicRequests().isEmpty()
-				&& getUnprocessedAtomicRequests(q).isEmpty())
+
+		boolean hasError = false;
+		for (AtomicRequest atomReq : q.getAtomicRequests()) {
+			if (!atomReq.isProcessed())
+				return new QueryBuilder(q).setStatus(QueryStatus.IDLE)
+						.getObject();
+			if (atomReq.getProcessingError() != null)
+				hasError = true;
+		}
+
+		if (hasError)
+			return new QueryBuilder(q).setStatus(
+					QueryStatus.FINISHED_WITH_ERROR).getObject();
+		else
 			return new QueryBuilder(q).setStatus(QueryStatus.FINISHED)
 					.getObject();
-		return new QueryBuilder(q).setStatus(QueryStatus.IDLE).getObject();
+
 	}
 
 	private Query setInitialStatus(Query q) {
 		if (q.getStatus() != null
 				&& (q.getStatus() == QueryStatus.FINISHED || q.getStatus() == QueryStatus.FINISHED_WITH_ERROR)) {
-			return new QueryBuilder(q).setStatus(q.getStatus()).getObject();
+			// return new QueryBuilder(q).setStatus(q.getStatus()).getObject();
+			return q;
 		}
 		return new QueryBuilder(q).setStatus(QueryStatus.IDLE).getObject();
 	}

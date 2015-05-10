@@ -15,29 +15,34 @@ public class AtomicRequestBuilder extends EntityBuilder<AtomicRequest>
 	private String searchString;
 	private Integer maxPageTurns;
 	private List<Literature> results;
+	private boolean processed;
+	private String processingError;
 
 	public AtomicRequestBuilder() {
 		super();
 	}
 
 	public AtomicRequestBuilder(AtomicRequest a) {
-		
+
 		setID(a.getID());
 		setCreationTime(a.getCreationTime());
 		setLastChangeTime(a.getLastChangeTime());
-		
+
 		setCrawler(a.getCrawler());
 		setSearchString(a.getSearchString());
 		setMaxPageTurns(a.getMaxPageTurns());
 		setResults(a.getResults());
-		
+		setProcessed(a.isProcessed());
+		setProcessingError(a.getProcessingError());
+
 	}
 
 	@Override
 	public AtomicRequest getObject() {
 		return new AtomicRequest(getID(), getCreationTime(),
 				getLastChangeTime(), getCrawler(), getSearchString(),
-				getMaxPageTurns(), getResults());
+				getMaxPageTurns(), getResults(), isProcessed(),
+				getProcessingError());
 	}
 
 	public Crawler getCrawler() {
@@ -73,6 +78,24 @@ public class AtomicRequestBuilder extends EntityBuilder<AtomicRequest>
 
 	public AtomicRequestBuilder setResults(List<Literature> results) {
 		this.results = results;
+		return this;
+	}
+
+	public boolean isProcessed() {
+		return processed;
+	}
+
+	public AtomicRequestBuilder setProcessed(boolean processed) {
+		this.processed = processed;
+		return this;
+	}
+
+	public String getProcessingError() {
+		return processingError;
+	}
+
+	public AtomicRequestBuilder setProcessingError(String processingError) {
+		this.processingError = processingError;
 		return this;
 	}
 

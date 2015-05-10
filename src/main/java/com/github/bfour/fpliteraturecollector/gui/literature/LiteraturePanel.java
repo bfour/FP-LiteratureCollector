@@ -2,6 +2,7 @@ package com.github.bfour.fpliteraturecollector.gui.literature;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import net.miginfocom.swing.MigLayout;
@@ -21,7 +22,9 @@ import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
+import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
+import com.github.bfour.fpliteraturecollector.gui.tags.TagTilePanel;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
 public class LiteraturePanel extends
@@ -107,6 +110,15 @@ public class LiteraturePanel extends
 		registerToggleComponent(authorToggle);
 		getContentPane().add(new FPJGUILabelPanel("Author", authorToggle),
 				"cell 0 3,growx");
+		
+		// tags
+		TagTilePanel tagLabel = new TagTilePanel(false);
+		TagTilePanel tagField = new TagTilePanel(false);
+		ToggleEditFormComponent<List<Tag>> tagToggle = new ToggleEditFormComponent<List<Tag>>(
+				tagLabel, tagField);
+		registerToggleComponent(tagToggle);
+		getContentPane().add(new FPJGUILabelPanel("Tags", tagToggle),
+				"cell 0 4,growx");
 
 		// mappings
 		ObjectGraphicalValueContainerMapper<LiteratureBuilder, String> IDMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, String>(
@@ -177,6 +189,21 @@ public class LiteraturePanel extends
 			}
 		};
 		getMappers().add(authorMapper);
+		
+		ObjectGraphicalValueContainerMapper<LiteratureBuilder, List<Tag>> tagMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, List<Tag>>(
+				tagToggle) {
+					@Override
+					public List<Tag> getValue(LiteratureBuilder object) {
+						return new ArrayList<>(object.getTags());
+					}
+
+					@Override
+					public void setValue(LiteratureBuilder object,
+							List<Tag> value) {
+						object.setTags(new HashSet<>(value));
+					}
+		};
+		getMappers().add(tagMapper);		
 
 	}
 }

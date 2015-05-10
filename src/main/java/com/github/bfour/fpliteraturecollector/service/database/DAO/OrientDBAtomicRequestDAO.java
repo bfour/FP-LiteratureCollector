@@ -29,6 +29,7 @@ import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.service.AuthorService;
 import com.github.bfour.fpliteraturecollector.service.LiteratureService;
+import com.github.bfour.fpliteraturecollector.service.TagService;
 import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
 import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlerService;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
@@ -92,6 +93,20 @@ public class OrientDBAtomicRequestDAO extends OrientDBEntityDAO<AtomicRequest>
 		}
 
 		@Override
+		public boolean isProcessed() {
+			Boolean processed = db.getVertex(vertexID).getProperty("processed");
+			return (processed == null ? false : processed);
+		}
+
+		@Override
+		public String getProcessingError() {
+			if (processingError == null)
+				processingError = db.getVertex(vertexID).getProperty(
+						"processingError");
+			return processingError;
+		}
+
+		@Override
 		public Long getID() {
 			return entity.getID();
 		}
@@ -114,19 +129,20 @@ public class OrientDBAtomicRequestDAO extends OrientDBEntityDAO<AtomicRequest>
 
 	private OrientDBAtomicRequestDAO(OrientDBGraphService dbs,
 			boolean forceCreateNewInstance, LiteratureService litServ,
-			AuthorService authServ) {
+			AuthorService authServ, TagService tagServ) {
 		super(dbs, "atomicRequest");
 		this.literatureDAO = OrientDBLiteratureDAO.getInstance(dbs,
-				forceCreateNewInstance, authServ);
+				forceCreateNewInstance, authServ, tagServ);
 		this.litServ = litServ;
 	}
 
 	public static OrientDBAtomicRequestDAO getInstance(
 			OrientDBGraphService dbs, boolean forceCreateNewInstance,
-			LiteratureService litServ, AuthorService authServ) {
+			LiteratureService litServ, AuthorService authServ,
+			TagService tagServ) {
 		if (instance == null || forceCreateNewInstance)
 			instance = new OrientDBAtomicRequestDAO(dbs,
-					forceCreateNewInstance, litServ, authServ);
+					forceCreateNewInstance, litServ, authServ, tagServ);
 		return instance;
 	}
 
@@ -142,6 +158,10 @@ public class OrientDBAtomicRequestDAO extends OrientDBEntityDAO<AtomicRequest>
 		entityVertex.setProperty("maxPageTurns", entity.getMaxPageTurns());
 		GraphUtils.setCollectionPropertyOnVertex(entityVertex, "results",
 				entity.getResults(), literatureDAO, litServ, true);
+		GraphUtils.setProperty(entityVertex, "processed",
+				entity.isProcessed(), false);
+		GraphUtils.setProperty(entityVertex, "processingError",
+				entity.getProcessingError(), true);
 
 		return entityVertex;
 

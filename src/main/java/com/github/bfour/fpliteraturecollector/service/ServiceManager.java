@@ -93,17 +93,17 @@ public class ServiceManager {
 //				graphService.setRemoteDatabase("localhost", "litcoll", "meow", "meow");
 			} else if (mode == ServiceManagerMode.TEST) {
 				graphService.setLocalDatabase("junitTestDatabase");
-//				graphService.dropCurrentDB();
-//				graphService.setLocalDatabase("junitTestDatabase");
+				graphService.dropCurrentDB();
+				graphService.setLocalDatabase("junitTestDatabase");
 			} else if (mode == ServiceManagerMode.REMOTE_TEST) {
-				graphService.setRemoteDatabase("localhost", "cat2", "root", "meow");
+				graphService.setRemoteDatabase("localhost", "cat", "root", "meow");
 			}
 
 			this.authServ = DefaultAuthorService.getInstance(graphService, true);
 			this.tagServ = DefaultTagService.getInstance(graphService, true);
-			this.litServ = DefaultLiteratureService.getInstance(graphService, true, this.authServ);
-			this.atomReqServ = DefaultAtomicRequestService.getInstance(graphService, true, this.litServ, this.authServ);
-			this.queryServ = DefaultQueryService.getInstance(graphService, true, this.atomReqServ, this.litServ, this.authServ);
+			this.litServ = DefaultLiteratureService.getInstance(graphService, true, this.authServ, this.tagServ);
+			this.atomReqServ = DefaultAtomicRequestService.getInstance(graphService, true, this.litServ, this.authServ, this.tagServ);
+			this.queryServ = DefaultQueryService.getInstance(graphService, true, this.atomReqServ, this.litServ, this.authServ, this.tagServ);
 			this.crawlServ = CrawlerService.getInstance();
 			
 		} else {

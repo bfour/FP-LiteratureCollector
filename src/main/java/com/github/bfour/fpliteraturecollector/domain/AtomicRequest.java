@@ -32,23 +32,30 @@ public class AtomicRequest extends Entity {
 	protected String searchString;
 	protected Integer maxPageTurns;
 	protected List<Literature> results;
+	protected boolean processed;
+	protected String processingError;
 
 	public AtomicRequest(Long iD, Date creationTime, Date lastChangeTime,
 			Crawler crawler, String searchString, Integer maxPageTurns,
-			List<Literature> results) {
+			List<Literature> results, boolean processed, String processingError) {
 		super(iD, creationTime, lastChangeTime);
 		this.crawler = crawler;
 		this.searchString = searchString;
 		this.maxPageTurns = maxPageTurns;
 		this.results = results;
+		this.processed = processed;
+		this.processingError = processingError;
 	}
 
-	public AtomicRequest(Crawler crawler, String searchString, Integer maxPageTurns,
-			List<Literature> results) {
+	public AtomicRequest(Crawler crawler, String searchString,
+			Integer maxPageTurns, List<Literature> results, boolean processed,
+			String processingError) {
 		this.crawler = crawler;
 		this.searchString = searchString;
 		this.maxPageTurns = maxPageTurns;
 		this.results = results;
+		this.processed = processed;
+		this.processingError = processingError;
 	}
 
 	public AtomicRequest() {
@@ -69,6 +76,14 @@ public class AtomicRequest extends Entity {
 
 	public List<Literature> getResults() {
 		return results;
+	}
+
+	public boolean isProcessed() {
+		return processed;
+	}
+
+	public String getProcessingError() {
+		return processingError;
 	}
 
 	@Override

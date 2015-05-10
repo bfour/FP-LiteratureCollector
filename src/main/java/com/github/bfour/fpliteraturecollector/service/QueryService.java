@@ -20,6 +20,7 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
+import com.github.bfour.fpjcommons.lang.Tuple;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.BidirectionalCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
@@ -29,15 +30,13 @@ import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
 public interface QueryService extends BidirectionalCRUDService<Query> {
 
 	void deleteCascade(Query q) throws ServiceException;
-	
+
 	Query getByQueuePosition(int position) throws ServiceException;
 
-	Query getFirstInQueueForCrawler(Crawler crawler) throws ServiceException;
+	Tuple<Query, AtomicRequest> getFirstUnprocessedRequestInQueueForCrawler(Crawler crawler)
+			throws ServiceException;
 
 	boolean hasAnyUnprocessedRequest() throws ServiceException;
-
-	AtomicRequest getFirstUnprocessedRequestForCrawler(Query query,
-			Crawler crawler) throws ServiceException;
 
 	Query queueUp(Query q) throws ServiceException;
 
@@ -46,13 +45,11 @@ public interface QueryService extends BidirectionalCRUDService<Query> {
 	Query queue(Query q) throws ServiceException;
 
 	void queueAll() throws ServiceException;
-	
+
 	Query unqueue(Query query) throws ServiceException;
-	
+
 	void unqueueAll() throws ServiceException;
 
 	void setAllIdleOrFinished() throws ServiceException;
-
-
 
 }

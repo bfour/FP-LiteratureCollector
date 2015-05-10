@@ -32,6 +32,7 @@ import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 import com.github.bfour.fpliteraturecollector.service.AtomicRequestService;
 import com.github.bfour.fpliteraturecollector.service.AuthorService;
 import com.github.bfour.fpliteraturecollector.service.LiteratureService;
+import com.github.bfour.fpliteraturecollector.service.TagService;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
@@ -115,19 +116,21 @@ public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements
 
 	protected OrientDBQueryDAO(OrientDBGraphService dbs,
 			boolean forceCreateNewInstance, AtomicRequestService atomReqServ,
-			LiteratureService litServ, AuthorService authServ) {
+			LiteratureService litServ, AuthorService authServ,
+			TagService tagServ) {
 		super(dbs, "query");
 		this.atomicRequestDAO = OrientDBAtomicRequestDAO.getInstance(dbs,
-				forceCreateNewInstance, litServ, authServ);
+				forceCreateNewInstance, litServ, authServ, tagServ);
 		this.atomReqServ = atomReqServ;
 	}
 
 	public static OrientDBQueryDAO getInstance(OrientDBGraphService dbs,
 			boolean forceCreateNewInstance, AtomicRequestService atomReqServ,
-			LiteratureService litServ, AuthorService authServ) {
+			LiteratureService litServ, AuthorService authServ,
+			TagService tagServ) {
 		if (instance == null || forceCreateNewInstance)
 			instance = new OrientDBQueryDAO(dbs, forceCreateNewInstance,
-					atomReqServ, litServ, authServ);
+					atomReqServ, litServ, authServ, tagServ);
 		return instance;
 	}
 

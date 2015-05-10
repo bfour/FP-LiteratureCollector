@@ -31,11 +31,11 @@ import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 public class Query extends Entity {
 
 	public static enum QueryStatus {
-		CRAWLING("crawling", com.github.bfour.fpjgui.design.Icons.BUSY_16
-				.getIcon()), FINISHED("finished", Icons.FINISHED_20.getIcon()), FINISHED_WITH_ERROR(
-				"finished with error", Icons.FINISHED_WITH_ERROR_20.getIcon()), QUEUED(
-				"queued", Icons.QUEUED_20.getIcon()), IDLE("idle",
-				Icons.IDLE_20.getIcon());
+		CRAWLING("crawling", com.github.bfour.fpjgui.design.Icons.BUSY_16.getIcon()), 
+		FINISHED("finished", Icons.FINISHED_20.getIcon()), 
+		FINISHED_WITH_ERROR("finished with error", Icons.FINISHED_WITH_ERROR_20.getIcon()), 
+		QUEUED("queued", Icons.QUEUED_20.getIcon()), 
+		IDLE("idle", Icons.IDLE_20.getIcon());
 
 		private String tellingName;
 		private ImageIcon icon;

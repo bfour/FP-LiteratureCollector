@@ -35,18 +35,19 @@ public class DefaultLiteratureService extends
 	private AuthorService authServ;
 
 	private DefaultLiteratureService(OrientDBGraphService graphService,
-			boolean forceCreateNewInstance, AuthorService authServ) {
+			boolean forceCreateNewInstance, AuthorService authServ,
+			TagService tagServ) {
 		super(OrientDBLiteratureDAO.getInstance(graphService,
-				forceCreateNewInstance, authServ));
+				forceCreateNewInstance, authServ, tagServ));
 		this.authServ = authServ;
 	}
 
 	public static DefaultLiteratureService getInstance(
 			OrientDBGraphService graphService, boolean forceCreateNewInstance,
-			AuthorService authServ) {
+			AuthorService authServ, TagService tagServ) {
 		if (instance == null || forceCreateNewInstance)
 			instance = new DefaultLiteratureService(graphService,
-					forceCreateNewInstance, authServ);
+					forceCreateNewInstance, authServ, tagServ);
 		return instance;
 	}
 

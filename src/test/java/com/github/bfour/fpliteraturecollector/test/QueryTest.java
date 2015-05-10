@@ -132,7 +132,7 @@ public class QueryTest {
 
 		List<AtomicRequest> createdRequests = createdQuery.getAtomicRequests();
 		Iterator<AtomicRequest> iter = createdRequests.iterator();
-		assert(createdRequests.size() == atomReqs.size());
+		assert (createdRequests.size() == atomReqs.size());
 		for (AtomicRequest atomReq : atomReqs) {
 			assert (iter.next().getCrawler().equals(atomReq.getCrawler()));
 			assert (iter.next().getSearchString().equals(atomReq
@@ -140,7 +140,7 @@ public class QueryTest {
 			assert (iter.next().getMaxPageTurns().equals(atomReq
 					.getMaxPageTurns()));
 		}
-		
+
 		// q2
 		long ID2 = 2;
 		Date creationTime2 = new Date();
@@ -157,29 +157,30 @@ public class QueryTest {
 				.setSearchString(searchString2).setMaxPageTurns(maxPageTurns2)
 				.getObject());
 
-		Query q2 = new QueryBuilder().setName(name2).setQueuePosition(queuePos2)
-				.setAtomicRequests(atomReqs2).setID(ID2)
-				.setCreationTime(creationTime2)
+		Query q2 = new QueryBuilder().setName(name2)
+				.setQueuePosition(queuePos2).setAtomicRequests(atomReqs2)
+				.setID(ID2).setCreationTime(creationTime2)
 				.setLastChangeTime(lastChangeTime2).getObject();
 
 		queryServ.create(q2);
 
-		Query createdQuery2 = queryServ.getAll().get(0);
+		Query createdQuery2 = queryServ.getAll().get(1);
 		assert (createdQuery2.getID().equals(ID2));
 		assert (createdQuery2.getCreationTime().equals(creationTime2));
 		assert (createdQuery2.getName().equals(name2));
 		assert (createdQuery2.getQueuePosition().equals(queuePos2));
 
-		List<AtomicRequest> createdRequests2 = createdQuery2.getAtomicRequests();
+		List<AtomicRequest> createdRequests2 = createdQuery2
+				.getAtomicRequests();
 		Iterator<AtomicRequest> iter2 = createdRequests2.iterator();
-		assert(createdRequests2.size() == atomReqs2.size());
+		assert (createdRequests2.size() == atomReqs2.size());
 		for (AtomicRequest atomReq2 : atomReqs2) {
 			assert (iter2.next().getCrawler().equals(atomReq2.getCrawler()));
 			assert (iter2.next().getSearchString().equals(atomReq2
 					.getSearchString()));
 			assert (iter2.next().getMaxPageTurns().equals(atomReq2
 					.getMaxPageTurns()));
-		}		
+		}
 
 		queryServ.delete(createdQuery);
 		queryServ.delete(createdQuery2);
@@ -207,12 +208,13 @@ public class QueryTest {
 		// create AtomicRequests
 		List<AtomicRequest> atomReqs = new ArrayList<AtomicRequest>(3);
 		atomReqs.add(new AtomicRequest(crawlServ.getAvailableCrawlers()
-				.iterator().next(), "LDL", 2, literatureList));
+				.iterator().next(), "LDL", 2, literatureList, true, null));
 		atomReqs.add(new AtomicRequest(crawlServ.getAvailableCrawlers()
 				.iterator().next(), "another test &%$$ öäüß ß é Á _:_::___' ",
-				1, literatureList));
+				1, literatureList, true, null));
 		atomReqs.add(new AtomicRequest(crawlServ.getAvailableCrawlers()
-				.iterator().next(), ":-) 1861", 0, new ArrayList<Literature>(0)));
+				.iterator().next(), ":-) 1861", 0,
+				new ArrayList<Literature>(0), true, null));
 		for (AtomicRequest atomReq : atomReqs)
 			atomReqs.set(atomReqs.indexOf(atomReq), atomReqServ.create(atomReq));
 

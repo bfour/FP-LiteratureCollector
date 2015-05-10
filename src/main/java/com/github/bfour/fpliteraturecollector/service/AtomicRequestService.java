@@ -28,5 +28,5 @@ public interface AtomicRequestService extends
 		BidirectionalCRUDService<AtomicRequest> {
 
 	void deleteCascade(AtomicRequest atomReq) throws ServiceException;
-
+	
 }

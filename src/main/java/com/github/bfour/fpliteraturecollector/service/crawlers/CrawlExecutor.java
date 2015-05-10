@@ -1,11 +1,11 @@
 package com.github.bfour.fpliteraturecollector.service.crawlers;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.SwingWorker;
 
+import com.github.bfour.fpjcommons.lang.Tuple;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
 import com.github.bfour.fpjgui.abstraction.feedback.Feedback.FeedbackType;
@@ -26,13 +26,11 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 
 	private class CrawlerWorker extends SwingWorker<Void, Void> {
 
-		private List<Exception> exceptions;
 		private QueryService qServ;
 		private List<Exception> errors;
 		private Crawler crawler;
 
 		public CrawlerWorker(ServiceManager servMan, Crawler crawler) {
-			exceptions = new LinkedList<Exception>();
 			this.qServ = servMan.getQueryService();
 			this.errors = new ArrayList<Exception>();
 			this.crawler = crawler;
@@ -40,42 +38,50 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 
 		@Override
 		protected Void doInBackground() {
-			Query topQuery;
+			Tuple<Query, AtomicRequest> topRequest;
 			try {
-				while ((topQuery = qServ.getFirstInQueueForCrawler(crawler)) != null) {
+				// get the first atomic request with the corresponding query in
+				// queue for the given crawler
+				// (search engine)
+				while ((topRequest = qServ
+						.getFirstUnprocessedRequestInQueueForCrawler(crawler)) != null) {
 					try {
-						// set query status to crawling
-						QueryBuilder qBuilder = new QueryBuilder(topQuery);
-						qBuilder.setStatus(QueryStatus.CRAWLING);
-						topQuery = qServ.update(topQuery, qBuilder.getObject());
 
-						// fill atomic request with results
-						AtomicRequest undoneReq = qServ
-								.getFirstUnprocessedRequestForCrawler(topQuery,
-										crawler);
-						List<Literature> results = crawler.process(undoneReq);
+						// set crawling
+						qServ.update(
+								topRequest.getA(),
+								new QueryBuilder(topRequest.getA()).setStatus(
+										QueryStatus.CRAWLING).getObject());
 
-						// update query with finished atomic request
-						List<AtomicRequest> atomReqList = topQuery
-								.getAtomicRequests();
-						atomReqList.set(
-								atomReqList.indexOf(undoneReq),
-								new AtomicRequestBuilder(undoneReq).setResults(
-										results).getObject());
-						qBuilder = new QueryBuilder(topQuery);
-						qBuilder.setAtomicRequests(atomReqList);
-						qBuilder.setStatus(QueryStatus.FINISHED);
-						topQuery = qServ.update(topQuery, qBuilder.getObject());
+						// get results and update
+						List<Literature> results = crawler.process(topRequest
+								.getB());
+						List<AtomicRequest> atomReqs = new ArrayList<>(
+								topRequest.getA().getAtomicRequests());
+						atomReqs.set(atomReqs.indexOf(topRequest.getB()),
+								new AtomicRequestBuilder(topRequest.getB())
+										.setProcessed(true).setResults(results)
+										.getObject());
+						qServ.update(topRequest.getA(), new QueryBuilder(
+								topRequest.getA()).setAtomicRequests(atomReqs)
+								.getObject());
 
 					} catch (Exception e) {
-						exceptions.add(e);
-						qServ.update(topQuery, new QueryBuilder(topQuery)
-								.setStatus(QueryStatus.FINISHED_WITH_ERROR)
+						List<AtomicRequest> atomReqs = new ArrayList<>(
+								topRequest.getA().getAtomicRequests());
+						atomReqs.set(
+								atomReqs.indexOf(topRequest.getB()),
+								new AtomicRequestBuilder(topRequest.getB())
+										.setProcessed(true)
+										.setProcessingError(e.getMessage())
+										.getObject());
+						qServ.update(topRequest.getA(), new QueryBuilder(
+								topRequest.getA()).setAtomicRequests(atomReqs)
 								.getObject());
 					}
 				}
 			} catch (Exception e) {
-				exceptions.add(e);
+				errors.add(e);
 			}
 			return null;
 		}
@@ -185,9 +191,13 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 		}
 
 		// feedback
-		mainStatusFeedback = new Feedback(null, "Crawling", null,
-				FeedbackType.PROGRESS.getColor(), com.github.bfour.fpliteraturecollector.gui.design.Icons.CRAWLING_32.getIcon(),
-				FeedbackType.PROGRESS, true);
+		mainStatusFeedback = new Feedback(
+				null,
+				"Crawling",
+				null,
+				FeedbackType.PROGRESS.getColor(),
+				com.github.bfour.fpliteraturecollector.gui.design.Icons.CRAWLING_32
+						.getIcon(), FeedbackType.PROGRESS, true);
 		feedbackProxy.feedbackBroadcasted(mainStatusFeedback);
 
 		return true;

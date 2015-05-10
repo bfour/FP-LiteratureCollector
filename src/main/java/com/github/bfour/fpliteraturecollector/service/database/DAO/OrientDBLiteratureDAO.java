@@ -35,6 +35,7 @@ import com.github.bfour.fpliteraturecollector.domain.ISBN;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.service.AuthorService;
+import com.github.bfour.fpliteraturecollector.service.TagService;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
@@ -200,21 +201,25 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 	private OrientDBAuthorDAO authorDAO;
 	private OrientDBTagDAO tagDAO;
 	private AuthorService authServ;
+	private TagService tagServ;
 
 	private OrientDBLiteratureDAO(OrientDBGraphService dbs,
-			boolean forceCreateNewInstance, AuthorService authServ) {
+			boolean forceCreateNewInstance, AuthorService authServ,
+			TagService tagServ) {
 		super(dbs, "literature");
 		this.authorDAO = OrientDBAuthorDAO.getInstance(dbs,
 				forceCreateNewInstance);
 		this.tagDAO = OrientDBTagDAO.getInstance(dbs, forceCreateNewInstance);
 		this.authServ = authServ;
+		this.tagServ = tagServ;
 	}
 
 	public static OrientDBLiteratureDAO getInstance(OrientDBGraphService dbs,
-			boolean forceCreateNewInstance, AuthorService authServ) {
+			boolean forceCreateNewInstance, AuthorService authServ,
+			TagService tagServ) {
 		if (instance == null || forceCreateNewInstance)
 			instance = new OrientDBLiteratureDAO(dbs, forceCreateNewInstance,
-					authServ);
+					authServ, tagServ);
 		return instance;
 	}
 
@@ -265,6 +270,10 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 		// gScholarNumCitations
 		GraphUtils.setProperty(v, "gScholarNumCitations",
 				entity.getgScholarNumCitations(), true);
+
+		// tags
+		GraphUtils.setCollectionPropertyOnVertex(v, "tags", entity.getTags(),
+				tagDAO, tagServ, true);
 
 		return v;
 
