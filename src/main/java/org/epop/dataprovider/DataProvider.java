@@ -10,7 +10,10 @@
  ******************************************************************************/
 package org.epop.dataprovider;
 
+import java.io.IOException;
 import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import com.github.bfour.fpjcommons.services.DatalayerException;
@@ -36,9 +39,12 @@ public abstract class DataProvider {
 	 * @return the papers, never null
 	 * @throws DataUnavailableException
 	 * @throws DatalayerException
+	 * @throws  
+	 * @throws URISyntaxException 
+	 * @throws MalformedURLException 
 	 */
 	public final List<Literature> runQuery(String htmlParams, int pageTurnLimit)
-			throws DataUnavailableException, DatalayerException {
+			throws DataUnavailableException, DatalayerException, URISyntaxException {
 		try {
 			Reader r = getHTMLDoc(htmlParams, pageTurnLimit);
 			if (r == null)
@@ -48,14 +54,15 @@ public abstract class DataProvider {
 				throw new DataUnavailableException(
 						"parser failed to parse file");
 			return result;
-		} catch (DataUnavailableException e) {
+		} catch (DataUnavailableException | IOException e) {
 			throw new DataUnavailableException(e.getMessage());
 		}
 
 	}
 
 	// get the HTM Document - return null in case of error
-	protected abstract Reader getHTMLDoc(String htmlParams, int pageTurnLimit);
+	protected abstract Reader getHTMLDoc(String htmlParams, int pageTurnLimit)
+			throws URISyntaxException, MalformedURLException, IOException;
 
 	// parse it - return null in case of error
 	protected abstract List<Literature> parsePage(Reader r)

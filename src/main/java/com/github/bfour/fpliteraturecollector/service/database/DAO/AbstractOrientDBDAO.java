@@ -29,9 +29,11 @@ import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.CRUD.CRUDDAO;
 import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
+import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
 public abstract class AbstractOrientDBDAO<T extends Entity> implements
 		CRUDDAO<T> {
@@ -163,19 +165,21 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 		if (entity == null || entity.getID() == null)
 			return null;
 
-//		for (Vertex v : db.getVerticesOfClass(dbClassName)) {
-//			if (v.getProperty("ID").equals(entity.getID()))
-//				return v;
-//		}
-//
-//		return null;
+		for (Vertex v : db.getVerticesOfClass(dbClassName)) {
+			if (v.getProperty("ID").equals(entity.getID())) {
+				(((OrientVertex) v).getRecord()).reload();
+				return v;
+			}
+		}
 
-		 Iterator<Vertex> iter = db.getVertices(dbClassName + ".ID",
-		 entity.getID()).iterator();
-		 // Vertex v = iter.next();
-		 if (!iter.hasNext())
-		 return null;
-		 return iter.next();
+		return null;
+
+		// Iterator<Vertex> iter = db.getVertices(dbClassName + ".ID",
+		// entity.getID()).iterator();
+		// // Vertex v = iter.next();
+		// if (!iter.hasNext())
+		// return null;
+		// return iter.next();
 
 	}
 

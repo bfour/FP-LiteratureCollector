@@ -13,6 +13,7 @@ package org.epop.dataprovider.googlescholar;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 //import org.apache.http.client.params.ClientPNames;
 //import org.apache.http.client.params.CookiePolicy;
@@ -61,7 +61,8 @@ public class GoogleScholarProvider extends DataProvider {
 	}
 
 	@Override
-	protected Reader getHTMLDoc(String htmlParams, int pageTurnLimit) {
+	protected Reader getHTMLDoc(String htmlParams, int pageTurnLimit)
+			throws URISyntaxException, IOException {
 		// connect to the server
 		// build the parameter list
 		URI uri;
@@ -110,15 +111,6 @@ public class GoogleScholarProvider extends DataProvider {
 				// TODO Auto-generated catch block
 				// e1.printStackTrace();
 			}
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} finally {
 			httpclient.getConnectionManager().shutdown();
 		}
