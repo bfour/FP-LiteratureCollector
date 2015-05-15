@@ -165,21 +165,23 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 		if (entity == null || entity.getID() == null)
 			return null;
 
-		for (Vertex v : db.getVerticesOfClass(dbClassName)) {
-			if (v.getProperty("ID").equals(entity.getID())) {
-				(((OrientVertex) v).getRecord()).reload();
-				return v;
-			}
-		}
-
-		return null;
-
-		// Iterator<Vertex> iter = db.getVertices(dbClassName + ".ID",
-		// entity.getID()).iterator();
-		// // Vertex v = iter.next();
-		// if (!iter.hasNext())
+		// for (Vertex v : db.getVerticesOfClass(dbClassName)) {
+		// if (v.getProperty("ID").equals(entity.getID())) {
+		// (((OrientVertex) v).getRecord()).reload();
+		// return v;
+		// }
+		// }
+		//
 		// return null;
-		// return iter.next();
+
+		Iterator<Vertex> iter = db.getVertices(dbClassName + ".ID",
+				entity.getID()).iterator();
+		// Vertex v = iter.next();
+		if (!iter.hasNext())
+			return null;
+		Vertex v = iter.next();
+		(((OrientVertex) v).getRecord()).reload();
+		return v;
 
 	}
 

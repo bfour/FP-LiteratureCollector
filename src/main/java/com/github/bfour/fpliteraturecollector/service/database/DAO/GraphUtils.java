@@ -25,6 +25,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.github.bfour.fpjcommons.model.Entity;
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.CRUD.BidirectionalCRUDService;
@@ -33,6 +35,8 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 
 public class GraphUtils {
+
+	private static final Logger LOGGER = Logger.getLogger(GraphUtils.class);
 
 	public static <T extends Entity> void setCollectionPropertyOnVertex(
 			Vertex vertex, String edgeName, Collection<T> collectionToBeSet,
@@ -70,11 +74,15 @@ public class GraphUtils {
 			T p = collectionItemDAO.vertexToEntity(vertexItemEdge
 					.getVertex(Direction.IN));
 			if (itemsToRemove.contains(p)) {
+				LOGGER.debug("removing vertex item edge "
+						+ vertexItemEdge.getLabel());
 				vertexItemEdge.remove();
 				boolean referencedVertexHasMoreEdges = vertexItemEdge
 						.getVertex(Direction.IN)
 						.getEdges(Direction.IN, edgeName).iterator().hasNext();
 				if (cascadeDelete && !referencedVertexHasMoreEdges) {
+					LOGGER.debug("cascaded deletion of related items: deleting "
+							+ p + " of type " + p.getClass());
 					collectionItemDAO.delete(p, false);
 					collectionItemService.receiveDelete(p);
 				}
@@ -85,13 +93,17 @@ public class GraphUtils {
 		for (T itemToAdd : itemsToAdd) {
 			Vertex itemVertex = collectionItemDAO.getVertexForEntity(itemToAdd);
 			if (itemVertex == null) {
+				LOGGER.debug("creating item " + itemToAdd + " of type "
+						+ itemToAdd.getClass());
 				T createdItem = collectionItemDAO.create(itemToAdd, false);
 				collectionItemService.receiveCreate(createdItem);
 				itemVertex = collectionItemDAO.getVertexForEntity(createdItem);
 			}
+			LOGGER.debug("creating edge between given vertex and " + itemToAdd
+					+ " (" + itemToAdd.getClass() + ")");
 			vertex.addEdge(edgeName, itemVertex);
 		}
-		
+
 		// TODO items to be updated
 
 	}
