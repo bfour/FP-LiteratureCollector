@@ -30,25 +30,21 @@ import com.github.bfour.fpjcommons.model.Entity;
 public class Literature extends Entity {
 
 	public static enum LiteratureType {
-		UNKNOWN("unknown"), 
-		BOOK("book"), 
-		DISSERTATION("dissertation"), 
-		JOURNAL_PAPER("journal paper"), 
-		CONFERENCE_PAPER("conference paper"), 
-		PATENT("patent"),
-		BOOK_CHAPTER("book chapter"),
-		WORKING_PAPER("working paper");
+		UNKNOWN("unknown"), BOOK("book"), DISSERTATION("dissertation"), JOURNAL_PAPER(
+				"journal paper"), CONFERENCE_PAPER("conference paper"), PATENT(
+				"patent"), BOOK_CHAPTER("book chapter"), WORKING_PAPER(
+				"working paper");
 
 		private String tellingName;
 
 		LiteratureType(String tellingName) {
 			this.tellingName = tellingName;
 		}
-		
+
 		public String getTellingName() {
 			return tellingName;
 		}
-		
+
 		@Override
 		public String toString() {
 			return tellingName;
@@ -62,19 +58,19 @@ public class Literature extends Entity {
 	protected String DOI;
 	protected ISBN ISBN;
 	protected Integer year;
-	
+
 	/**
 	 * eg. name of journal, name of conference ...
 	 */
 	protected String publicationContext;
 	protected String publisher;
-	
+
 	protected String websiteURL;
 	protected String fulltextURL;
 	protected Path fulltextFilePath;
 
 	protected Integer gScholarNumCitations;
-	
+
 	protected Set<Tag> tags;
 
 	public Literature(Long iD, Date creationTime, Date lastChangeTime,
@@ -177,6 +173,29 @@ public class Literature extends Entity {
 	@Override
 	public String toString() {
 		return title;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((getID() == null) ? 0 : getID().hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof Literature))
+			return false;
+		Literature other = (Literature) obj;
+		if (getID() == null) {
+			if (other.getID() != null)
+				return false;
+		} else if (!getID().equals(other.getID()))
+			return false;
+		return true;
 	}
 
 }

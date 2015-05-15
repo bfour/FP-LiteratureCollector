@@ -20,6 +20,7 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  * -///////////////////////////////-
  */
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -151,6 +152,8 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 
 	public T update(T oldEntity, T newEntity, boolean commit)
 			throws DatalayerException {
+		if (oldEntity.getID() == null)
+			throw new InvalidParameterException("ID must be defined on update");
 		Vertex v = getVertexForEntity(oldEntity);
 		if (v == null)
 			throw new DatalayerException(
@@ -165,23 +168,23 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 		if (entity == null || entity.getID() == null)
 			return null;
 
-		// for (Vertex v : db.getVerticesOfClass(dbClassName)) {
-		// if (v.getProperty("ID").equals(entity.getID())) {
+		for (Vertex v : db.getVerticesOfClass(dbClassName)) {
+			if (v.getProperty("ID").equals(entity.getID())) {
+				(((OrientVertex) v).getRecord()).reload();
+				return v;
+			}
+		}
+
+		return null;
+
+		// Iterator<Vertex> iter = db.getVertices(dbClassName + ".ID",
+		// entity.getID()).iterator();
+		// // Vertex v = iter.next();
+		// if (!iter.hasNext())
+		// return null;
+		// Vertex v = iter.next();
 		// (((OrientVertex) v).getRecord()).reload();
 		// return v;
-		// }
-		// }
-		//
-		// return null;
-
-		Iterator<Vertex> iter = db.getVertices(dbClassName + ".ID",
-				entity.getID()).iterator();
-		// Vertex v = iter.next();
-		if (!iter.hasNext())
-			return null;
-		Vertex v = iter.next();
-		(((OrientVertex) v).getRecord()).reload();
-		return v;
 
 	}
 

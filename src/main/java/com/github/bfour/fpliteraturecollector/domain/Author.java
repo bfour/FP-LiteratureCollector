@@ -74,5 +74,28 @@ public class Author extends Entity {
 	public String toString() {
 		return getFirstName() + " " + getLastName() + " (ID " + getID() + ")";
 	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((getID() == null) ? 0 : getID().hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof Author))
+			return false;
+		Author other = (Author) obj;
+		if (getID() == null) {
+			if (other.getID() != null)
+				return false;
+		} else if (!getID().equals(other.getID()))
+			return false;
+		return true;
+	}	
 
 }

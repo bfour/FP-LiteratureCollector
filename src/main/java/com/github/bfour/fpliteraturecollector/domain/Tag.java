@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.domain;
  * -///////////////////////////////-
  */
 
-
 import java.awt.Color;
 import java.util.Date;
 
@@ -28,15 +27,16 @@ import com.github.bfour.fpjcommons.model.Entity;
 
 public class Tag extends Entity {
 
-	private String name;	
+	private String name;
 	private Color colour;
-	
-	public Tag(Long ID, Date creationTime, Date lastChangeTime, String name, Color colour) {
+
+	public Tag(Long ID, Date creationTime, Date lastChangeTime, String name,
+			Color colour) {
 		super(ID, creationTime, lastChangeTime);
 		this.name = name;
 		this.colour = colour;
 	}
-	
+
 	public Tag(String name, Color colour) {
 		super();
 		this.name = name;
@@ -55,5 +55,28 @@ public class Tag extends Entity {
 	public String toString() {
 		return name;
 	}
-	
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((getID() == null) ? 0 : getID().hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof Tag))
+			return false;
+		Tag other = (Tag) obj;
+		if (getID() == null) {
+			if (other.getID() != null)
+				return false;
+		} else if (!getID().equals(other.getID()))
+			return false;
+		return true;
+	}
+
 }

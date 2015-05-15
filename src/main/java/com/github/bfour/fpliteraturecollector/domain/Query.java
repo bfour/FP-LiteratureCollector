@@ -31,11 +31,11 @@ import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 public class Query extends Entity {
 
 	public static enum QueryStatus {
-		CRAWLING("crawling", com.github.bfour.fpjgui.design.Icons.BUSY_16.getIcon()), 
-		FINISHED("finished", Icons.FINISHED_20.getIcon()), 
-		FINISHED_WITH_ERROR("finished with error", Icons.FINISHED_WITH_ERROR_20.getIcon()), 
-		QUEUED("queued", Icons.QUEUED_20.getIcon()), 
-		IDLE("idle", Icons.IDLE_20.getIcon());
+		CRAWLING("crawling", com.github.bfour.fpjgui.design.Icons.BUSY_16
+				.getIcon()), FINISHED("finished", Icons.FINISHED_20.getIcon()), FINISHED_WITH_ERROR(
+				"finished with error", Icons.FINISHED_WITH_ERROR_20.getIcon()), QUEUED(
+				"queued", Icons.QUEUED_20.getIcon()), IDLE("idle",
+				Icons.IDLE_20.getIcon());
 
 		private String tellingName;
 		private ImageIcon icon;
@@ -102,6 +102,29 @@ public class Query extends Entity {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((getID() == null) ? 0 : getID().hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof Query))
+			return false;
+		Query other = (Query) obj;
+		if (getID() == null) {
+			if (other.getID() != null)
+				return false;
+		} else if (!getID().equals(other.getID()))
+			return false;
+		return true;
 	}
 
 }
