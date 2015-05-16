@@ -57,13 +57,13 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 public class OrientDBAuthorDAO extends OrientDBEntityDAO<Author> implements
 		AuthorDAO {
 
-	private static class LazyPerson extends Author {
+	private static class LazyAuthor extends Author {
 
 		private Object vertexID;
 		private OrientGraph db;
 		private LazyGraphEntity entity;
 
-		public LazyPerson(Object vertexID, OrientGraph db) {
+		public LazyAuthor(Object vertexID, OrientGraph db) {
 			this.vertexID = vertexID;
 			this.db = db;
 			this.entity = new LazyGraphEntity(vertexID, db);
@@ -148,7 +148,7 @@ public class OrientDBAuthorDAO extends OrientDBEntityDAO<Author> implements
 	public Author vertexToEntity(Vertex vertex) {
 		if (vertex == null)
 			return null;
-		return new LazyPerson(vertex.getId(), db);
+		return new LazyAuthor(vertex.getId(), db);
 	}
 
 	public Author getByGScholarID(String gScholarID) throws ServiceException {

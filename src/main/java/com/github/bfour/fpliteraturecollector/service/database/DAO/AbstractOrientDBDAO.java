@@ -30,7 +30,6 @@ import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.CRUD.CRUDDAO;
 import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;

@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.swing.SwingWorker;
 
+import org.apache.log4j.Logger;
+
 import com.github.bfour.fpjcommons.lang.Tuple;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
@@ -25,6 +27,9 @@ import com.github.bfour.fpliteraturecollector.service.abstraction.BackgroundWork
 public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider {
 
 	private class CrawlerWorker extends SwingWorker<Void, Void> {
+
+		private final Logger LOGGER = Logger
+				.getLogger(CrawlerWorker.class);
 
 		private QueryService qServ;
 		private List<Exception> errors;
@@ -67,6 +72,7 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 								.getObject());
 
 					} catch (Exception e) {
+						LOGGER.error(e);
 						List<AtomicRequest> atomReqs = new ArrayList<>(
 								topRequest.getA().getAtomicRequests());
 						atomReqs.set(

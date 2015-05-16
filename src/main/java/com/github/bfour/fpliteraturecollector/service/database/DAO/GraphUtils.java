@@ -67,6 +67,13 @@ public class GraphUtils {
 					itemsToAdd.add(collectionToBeSetItem);
 			}
 		}
+		List<T> itemsToUpdate = new LinkedList<>();
+		if (collectionToBeSet != null) {
+			for (T collectionToBeSetItem : collectionToBeSet) {
+				if (!itemsToAdd.contains(collectionToBeSetItem))
+					itemsToUpdate.add(collectionToBeSetItem);
+			}
+		}
 
 		// go through existing edges and remove if necessary
 		vertexItemEdges = vertex.getEdges(Direction.OUT, edgeName);
@@ -82,7 +89,7 @@ public class GraphUtils {
 						.getEdges(Direction.IN, edgeName).iterator().hasNext();
 				if (cascadeDelete && !referencedVertexHasMoreEdges) {
 					LOGGER.debug("cascaded deletion of related items: deleting "
-							+ p + " of type " + p.getClass());
+							+ p + " of type " + p.getClass().getName());
 					collectionItemDAO.delete(p, false);
 					collectionItemService.receiveDelete(p);
 				}
@@ -94,17 +101,28 @@ public class GraphUtils {
 			Vertex itemVertex = collectionItemDAO.getVertexForEntity(itemToAdd);
 			if (itemVertex == null) {
 				LOGGER.debug("creating item " + itemToAdd + " of type "
-						+ itemToAdd.getClass());
+						+ itemToAdd.getClass().getName());
 				T createdItem = collectionItemDAO.create(itemToAdd, false);
 				collectionItemService.receiveCreate(createdItem);
 				itemVertex = collectionItemDAO.getVertexForEntity(createdItem);
 			}
 			LOGGER.debug("creating edge between given vertex and " + itemToAdd
-					+ " (" + itemToAdd.getClass() + ")");
+					+ " (" + itemToAdd.getClass().getName() + ")");
 			vertex.addEdge(edgeName, itemVertex);
 		}
 
-		// TODO items to be updated
+		// items to be updated
+		for (T itemToUpdate : itemsToUpdate) {
+			LOGGER.debug("updating item " + itemToUpdate + " ("
+					+ itemToUpdate.getClass().getName() + ")");
+			collectionItemDAO.update(itemToUpdate, itemToUpdate, false); // TODO
+																			// do
+																			// we
+																			// know
+																			// old
+																			// entity?
+																			// improve
+		}
 
 	}
 

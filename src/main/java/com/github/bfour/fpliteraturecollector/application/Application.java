@@ -22,6 +22,8 @@ package com.github.bfour.fpliteraturecollector.application;
 
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
+
 import com.github.bfour.fpjgui.FPJGUIManager;
 import com.github.bfour.fpliteraturecollector.gui.MainWindow;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
@@ -35,7 +37,7 @@ import com.github.bfour.fpliteraturecollector.service.ServiceManager.ServiceMana
 public class Application {
 
 	public static void main(String[] args) {
-
+		
 		try {
 
 			ServiceManager servMan = ServiceManager

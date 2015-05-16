@@ -172,7 +172,7 @@ public class Literature extends Entity {
 
 	@Override
 	public String toString() {
-		return title;
+		return getTitle();
 	}
 
 	@Override
