@@ -48,6 +48,7 @@ import java.util.Iterator;
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpliteraturecollector.domain.Author;
+import com.github.bfour.fpliteraturecollector.domain.builders.AuthorBuilder;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
@@ -146,9 +147,18 @@ public class OrientDBAuthorDAO extends OrientDBEntityDAO<Author> implements
 
 	@Override
 	public Author vertexToEntity(Vertex vertex) {
-		if (vertex == null)
-			return null;
-		return new LazyAuthor(vertex.getId(), db);
+		// if (vertex == null)
+		// return null;
+		// return new LazyAuthor(vertex.getId(), db);
+		return (new AuthorBuilder())
+				.setFirstName((String) vertex.getProperty("firstName"))
+				.setLastName((String) vertex.getProperty("lastName"))
+				.setgScholarID((String) vertex.getProperty("gScholarID"))
+				.setMsAcademicID((String) vertex.getProperty("msAcademicID"))
+				.setID((Long) vertex.getProperty("ID"))
+				.setCreationTime((Date) vertex.getProperty("creationTime"))
+				.setLastChangeTime((Date) vertex.getProperty("lastChangeTime"))
+				.getObject();
 	}
 
 	public Author getByGScholarID(String gScholarID) throws ServiceException {

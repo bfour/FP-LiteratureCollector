@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.github.bfour.fpjcommons.model.Entity;
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.CRUD.CRUDDAO;
@@ -37,6 +39,9 @@ import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
 public abstract class AbstractOrientDBDAO<T extends Entity> implements
 		CRUDDAO<T> {
+
+	private static final Logger LOGGER = Logger
+			.getLogger(AbstractOrientDBDAO.class);
 
 	protected OrientDBGraphService dbs;
 	protected OrientGraph db;
@@ -122,8 +127,11 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 		Vertex v = getVertexForEntity(entity);
 		if (v != null) {
 			db.removeVertex(v);
-			if (commit)
+			if (commit) {
+				LOGGER.debug("committing deletion of " + entity);
 				db.commit();
+				LOGGER.debug("	committed deletion of " + entity);
+			}
 		}
 	}
 
@@ -137,10 +145,15 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 		if (ID == null)
 			ID = getNewEntityID();
 		Vertex newEntity = entityToVertex(entity, ID);
-		if (commit)
+		if (commit) {
+			LOGGER.debug("committing creation of " + entity);
 			db.commit();
+			LOGGER.debug("	committed creation of " + entity);
+		}
 		if (newEntity == null)
-			return null;
+			// return null;
+			throw new DatalayerException(
+					"created new entity, but created vertex is null");
 		return vertexToEntity(newEntity);
 	}
 
@@ -158,8 +171,11 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 			throw new DatalayerException(
 					"failed to update old entity: old entity no longer exists");
 		entityToVertex(newEntity, oldEntity.getID(), v);
-		if (commit)
+		if (commit) {
+			LOGGER.debug("committing update of " + oldEntity);
 			db.commit();
+			LOGGER.debug("	committed update of " + oldEntity);
+		}
 		return vertexToEntity(v);
 	}
 
@@ -176,14 +192,14 @@ public abstract class AbstractOrientDBDAO<T extends Entity> implements
 
 		return null;
 
-		// Iterator<Vertex> iter = db.getVertices(dbClassName + ".ID",
-		// entity.getID()).iterator();
-		// // Vertex v = iter.next();
-		// if (!iter.hasNext())
-		// return null;
-		// Vertex v = iter.next();
-		// (((OrientVertex) v).getRecord()).reload();
-		// return v;
+//		Iterator<Vertex> iter = db.getVertices(dbClassName + ".ID",
+//				entity.getID()).iterator();
+//		// Vertex v = iter.next();
+//		if (!iter.hasNext())
+//			return null;
+//		Vertex v = iter.next();
+//		(((OrientVertex) v).getRecord()).reload();
+//		return v;
 
 	}
 

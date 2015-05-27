@@ -139,7 +139,7 @@ public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements
 			throws DatalayerException {
 
 		Vertex v = super.entityToVertex(entity, ID, givenVertex);
-
+try{
 		GraphUtils.setProperty(v, "name", entity.getName(), false);
 		GraphUtils
 				.setCollectionPropertyOnVertex(v, "atomicRequests",
@@ -154,6 +154,11 @@ public class OrientDBQueryDAO extends OrientDBEntityDAO<Query> implements
 						.getStatus()).name(), false);
 
 		return v;
+} catch (Exception e) {
+	e.printStackTrace();
+	
+}
+return null;
 
 	}
 

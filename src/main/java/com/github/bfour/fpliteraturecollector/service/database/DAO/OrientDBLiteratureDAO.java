@@ -33,7 +33,9 @@ import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.ISBN;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
+import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
+import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 import com.github.bfour.fpliteraturecollector.service.AuthorService;
 import com.github.bfour.fpliteraturecollector.service.TagService;
 import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
@@ -280,8 +282,18 @@ public class OrientDBLiteratureDAO extends OrientDBEntityDAO<Literature>
 	}
 
 	@Override
-	public Literature vertexToEntity(Vertex vertex) {
-		return new LazyLiterature(vertex.getId(), db, authorDAO, tagDAO);
+	public Literature vertexToEntity(Vertex vertex) throws DatalayerException {
+		// return new LazyLiterature(vertex.getId(), db, authorDAO, tagDAO);
+		return new LiteratureBuilder()
+				.setTitle((String) vertex.getProperty("title"))
+				.setType(
+						LiteratureType.valueOf((String) vertex
+								.getProperty("type")))
+				.setAuthors(
+						GraphUtils.getCollectionFromVertexProperty(vertex,
+								"authors", authorDAO))
+				.setID((Long) vertex.getProperty("ID")).getObject();
+		// TODO complete
 	}
 
 	public boolean hasMaxOneAdjacentAtomicRequest(Literature lit) {

@@ -93,8 +93,8 @@ public class ServiceManager {
 //				graphService.setRemoteDatabase("localhost", "litcoll", "meow", "meow");
 			} else if (mode == ServiceManagerMode.TEST) {
 				graphService.setLocalDatabase("junitTestDatabase");
-				graphService.dropCurrentDB();
-				graphService.setLocalDatabase("junitTestDatabase");
+//				graphService.dropCurrentDB();
+//				graphService.setLocalDatabase("junitTestDatabase");
 			} else if (mode == ServiceManagerMode.REMOTE_TEST) {
 				graphService.setRemoteDatabase("localhost", "cat", "root", "meow");
 			}

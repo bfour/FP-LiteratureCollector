@@ -87,6 +87,7 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 					}
 				}
 			} catch (Exception e) {
+				LOGGER.error(e);
 				errors.add(e);
 			}
 			return null;

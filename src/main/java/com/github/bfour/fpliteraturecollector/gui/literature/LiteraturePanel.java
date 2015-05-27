@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -110,7 +111,7 @@ public class LiteraturePanel extends
 		registerToggleComponent(authorToggle);
 		getContentPane().add(new FPJGUILabelPanel("Author", authorToggle),
 				"cell 0 3,growx");
-		
+
 		// tags
 		TagTilePanel tagLabel = new TagTilePanel(false);
 		TagTilePanel tagField = new TagTilePanel(false);
@@ -189,21 +190,24 @@ public class LiteraturePanel extends
 			}
 		};
 		getMappers().add(authorMapper);
-		
+
 		ObjectGraphicalValueContainerMapper<LiteratureBuilder, List<Tag>> tagMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, List<Tag>>(
 				tagToggle) {
-					@Override
-					public List<Tag> getValue(LiteratureBuilder object) {
-						return new ArrayList<>(object.getTags());
-					}
+			@Override
+			public List<Tag> getValue(LiteratureBuilder object) {
+				Set<Tag> set = object.getTags();
+				if (set != null)
+					return new ArrayList<>(set);
+				else
+					return new ArrayList<Tag>(0);
+			}
 
-					@Override
-					public void setValue(LiteratureBuilder object,
-							List<Tag> value) {
-						object.setTags(new HashSet<>(value));
-					}
+			@Override
+			public void setValue(LiteratureBuilder object, List<Tag> value) {
+				object.setTags(new HashSet<>(value));
+			}
 		};
-		getMappers().add(tagMapper);		
+		getMappers().add(tagMapper);
 
 	}
 }
