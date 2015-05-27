@@ -77,32 +77,36 @@ public class AuthorBuilder extends EntityBuilder<Author> implements
 		return firstName;
 	}
 
-	public void setFirstName(String firstName) {
+	public AuthorBuilder setFirstName(String firstName) {
 		this.firstName = firstName;
+		return this;
 	}
 
 	public String getLastName() {
 		return lastName;
 	}
 
-	public void setLastName(String lastName) {
+	public AuthorBuilder setLastName(String lastName) {
 		this.lastName = lastName;
+		return this;
 	}
 
 	public String getgScholarID() {
 		return gScholarID;
 	}
 
-	public void setgScholarID(String gScholarID) {
+	public AuthorBuilder setgScholarID(String gScholarID) {
 		this.gScholarID = gScholarID;
+		return this;
 	}
 
 	public String getMsAcademicID() {
 		return msAcademicID;
 	}
 
-	public void setMsAcademicID(String msAcademicID) {
+	public AuthorBuilder setMsAcademicID(String msAcademicID) {
 		this.msAcademicID = msAcademicID;
+		return this;
 	}
 
 }
