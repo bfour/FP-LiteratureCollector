@@ -97,8 +97,11 @@ public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature>
 				List<Literature> selectedLiterature = getValue();
 				taggingPanel.setValue(selectedLiterature);
 				Set<Tag> allTags = new HashSet<Tag>();
-				for (Literature lit : selectedLiterature)
-					allTags.addAll(lit.getTags());
+				for (Literature lit : selectedLiterature) {
+					Set<Tag> litTags = lit.getTags();
+					if (litTags != null)
+						allTags.addAll(litTags);
+				}
 				taggingPanel.setTags(new ArrayList<>(allTags));
 				tagPopover.pack();
 				tagPopover.showPopup(tagButton);
