@@ -24,30 +24,26 @@ import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
-import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
-import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBAtomicRequestDAO;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.AtomicRequestDAO;
 
 public class DefaultAtomicRequestService extends
-		EventCreatingCRUDService<AtomicRequest, OrientDBAtomicRequestDAO>
-		implements AtomicRequestService {
+		EventCreatingCRUDService<AtomicRequest> implements AtomicRequestService {
 
 	private static DefaultAtomicRequestService instance;
 	private LiteratureService litServ;
 
-	private DefaultAtomicRequestService(OrientDBGraphService graphService,
+	private DefaultAtomicRequestService(AtomicRequestDAO DAO,
 			boolean forceCreateNewInstance, LiteratureService litServ,
 			AuthorService authServ, TagService tagServ) {
-		super(OrientDBAtomicRequestDAO.getInstance(graphService,
-				forceCreateNewInstance, litServ, authServ, tagServ));
+		super(DAO);
 		this.litServ = litServ;
 	}
 
-	public static DefaultAtomicRequestService getInstance(
-			OrientDBGraphService graphService, boolean forceCreateNewInstance,
-			LiteratureService litServ, AuthorService authServ,
-			TagService tagServ) {
+	public static DefaultAtomicRequestService getInstance(AtomicRequestDAO DAO,
+			boolean forceCreateNewInstance, LiteratureService litServ,
+			AuthorService authServ, TagService tagServ) {
 		if (instance == null || forceCreateNewInstance)
-			instance = new DefaultAtomicRequestService(graphService,
+			instance = new DefaultAtomicRequestService(DAO,
 					forceCreateNewInstance, litServ, authServ, tagServ);
 		return instance;
 	}

@@ -110,6 +110,46 @@
 						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>aspectj-maven-plugin</artifactId>
+					<version>1.4</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.aspectj</groupId>
+							<artifactId>aspectjrt</artifactId>
+							<version>1.8.2</version>
+						</dependency>
+						<dependency>
+							<groupId>org.aspectj</groupId>
+							<artifactId>aspectjtools</artifactId>
+							<version>1.8.2</version>
+						</dependency>
+					</dependencies>
+					<executions>
+						<execution>
+							<goals>
+								<goal>compile</goal>
+								<goal>test-compile</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<outxml>true</outxml>
+						<aspectLibraries>
+							<aspectLibrary>
+								<groupId>org.springframework</groupId>
+								<artifactId>spring-aspects</artifactId>
+							</aspectLibrary>
+							<aspectLibrary>
+								<groupId>org.springframework.data</groupId>
+								<artifactId>spring-data-neo4j-aspects</artifactId>
+							</aspectLibrary>
+						</aspectLibraries>
+						<source>1.7</source>
+						<target>1.7</target>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -164,27 +204,42 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.orientechnologies</groupId>
-			<artifactId>orientdb-graphdb</artifactId>
-			<version>2.0.8</version>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-neo4j</artifactId>
+			<version>3.3.0.RELEASE</version>
 		</dependency>
-		<!-- INCLUDE THIS IF YOU'RE CONNECTING TO THE SERVER THROUGH THE REMOTE 
-			ENGINE -->
+
 		<dependency>
-			<groupId>com.orientechnologies</groupId>
-			<artifactId>orientdb-client</artifactId>
-			<version>2.0.8</version>
-			<type>bundle</type>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>1.8.2</version>
 		</dependency>
-		<!-- END REMOTE ENGINE DEPENDENCY -->
+
+		<dependency>
+			<groupId>org.neo4j</groupId>
+			<artifactId>neo4j</artifactId>
+			<version>2.2.2</version>
+		</dependency>
 
 		<!-- INCLUDE THIS IF YOU'RE USING THE TINKERPOP'S BLUEPRINTS API -->
-		<dependency>
-			<groupId>com.tinkerpop.blueprints</groupId>
-			<artifactId>blueprints-core</artifactId>
-			<version>2.6.0</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>com.tinkerpop.blueprints</groupId> -->
+		<!-- <artifactId>blueprints-core</artifactId> -->
+		<!-- <version>2.6.0</version> -->
+		<!-- </dependency> -->
 		<!-- END BLUEPRINTS DEPENDENCY -->
+
+		<!-- This might be needed for advanced mapping -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework.data</groupId> -->
+		<!-- <artifactId>spring-data-neo4j-aspects</artifactId> -->
+		<!-- <version>3.3.0.M1</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.aspectj</groupId> -->
+		<!-- <artifactId>aspectjrt</artifactId> -->
+		<!-- <version>1.8.2</version> -->
+		<!-- </dependency> -->
 
 		<!-- epop -->
 		<dependency>

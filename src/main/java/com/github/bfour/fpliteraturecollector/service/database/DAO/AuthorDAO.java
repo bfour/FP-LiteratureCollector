@@ -28,4 +28,8 @@ import com.github.bfour.fpliteraturecollector.domain.Author;
 
 public interface AuthorDAO extends CRUDDAO<Author> {
 
+	Author getByGScholarID(String gScholarID);
+	Author getByMsAcademicID(String msAcademicID);
+	boolean hasMaxOneAdjacentLiterature(Author author);
+	
 }

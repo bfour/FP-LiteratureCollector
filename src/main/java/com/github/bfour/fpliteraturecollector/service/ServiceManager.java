@@ -44,8 +44,11 @@ package com.github.bfour.fpliteraturecollector.service;
 
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlerService;
-import com.github.bfour.fpliteraturecollector.service.database.FPLCOrientDBGraphService;
-import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JAtomicRequestDAO;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JAuthorDAO;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JLiteratureDAO;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JQueryDAO;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JTagDAO;
 
 /**
  * TODO add comments
@@ -59,7 +62,6 @@ public class ServiceManager {
 	private static ServiceManager instance;
 
 	private ServiceManagerMode modeMemory;
-	private OrientDBGraphService graphService;
 	private AuthorService authServ;
 	private TagService tagServ;
 	private LiteratureService litServ;
@@ -86,24 +88,22 @@ public class ServiceManager {
 				|| mode == ServiceManagerMode.TEST 
 				|| mode == ServiceManagerMode.REMOTE_TEST) {
 
-			graphService = FPLCOrientDBGraphService.getInstance();
+//			if (mode == ServiceManagerMode.DEFAULT) {
+//				graphService.setLocalDatabase("database");
+////				graphService.setRemoteDatabase("localhost", "litcoll", "meow", "meow");
+//			} else if (mode == ServiceManagerMode.TEST) {
+//				graphService.setLocalDatabase("junitTestDatabase");
+//				graphService.dropCurrentDB();
+//				graphService.setLocalDatabase("junitTestDatabase");
+//			} else if (mode == ServiceManagerMode.REMOTE_TEST) {
+//				graphService.setRemoteDatabase("localhost", "cat", "root", "meow");
+//			}
 
-			if (mode == ServiceManagerMode.DEFAULT) {
-				graphService.setLocalDatabase("database");
-//				graphService.setRemoteDatabase("localhost", "litcoll", "meow", "meow");
-			} else if (mode == ServiceManagerMode.TEST) {
-				graphService.setLocalDatabase("junitTestDatabase");
-				graphService.dropCurrentDB();
-				graphService.setLocalDatabase("junitTestDatabase");
-			} else if (mode == ServiceManagerMode.REMOTE_TEST) {
-				graphService.setRemoteDatabase("localhost", "cat", "root", "meow");
-			}
-
-			this.authServ = DefaultAuthorService.getInstance(graphService, true);
-			this.tagServ = DefaultTagService.getInstance(graphService, true);
-			this.litServ = DefaultLiteratureService.getInstance(graphService, true, this.authServ, this.tagServ);
-			this.atomReqServ = DefaultAtomicRequestService.getInstance(graphService, true, this.litServ, this.authServ, this.tagServ);
-			this.queryServ = DefaultQueryService.getInstance(graphService, true, this.atomReqServ, this.litServ, this.authServ, this.tagServ);
+			this.authServ = DefaultAuthorService.getInstance(new Neo4JAuthorDAO(), true);
+			this.tagServ = DefaultTagService.getInstance(new Neo4JTagDAO(), true);
+			this.litServ = DefaultLiteratureService.getInstance(new Neo4JLiteratureDAO(), true, this.authServ, this.tagServ);
+			this.atomReqServ = DefaultAtomicRequestService.getInstance(new Neo4JAtomicRequestDAO(), true, this.litServ, this.authServ, this.tagServ);
+			this.queryServ = DefaultQueryService.getInstance(new Neo4JQueryDAO(), true, this.atomReqServ);
 			this.crawlServ = CrawlerService.getInstance();
 			
 		} else {
@@ -140,16 +140,16 @@ public class ServiceManager {
 	 * Deletes all user data and re-initializes.
 	 */
 	public void resetAllData() throws ServiceException {
-		graphService.deleteAllDataInCurrentDB();
+//		graphService.deleteAllDataInCurrentDB();
 	}
 	
 	public void dropAndReinitDatabase() throws ServiceException {
-		graphService.dropCurrentDB();
+//		graphService.dropCurrentDB();
 		initialize(modeMemory);
 	}
 
 	public void close() {
-		graphService.shutdown();
+//		graphService.shutdown();
 	}
 
 }

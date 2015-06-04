@@ -1,5 +1,9 @@
 package com.github.bfour.fpliteraturecollector.domain;
 
+import java.util.Date;
+
+import org.springframework.data.neo4j.annotation.Indexed;
+
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
  * FP-LiteratureCollector
@@ -20,15 +24,15 @@ package com.github.bfour.fpliteraturecollector.domain;
  * -///////////////////////////////-
  */
 
-import java.util.Date;
-
-import com.github.bfour.fpjcommons.model.Entity;
-
 public class Author extends Entity {
 
 	protected String firstName;
 	protected String lastName;
+
+	@Indexed
 	protected String gScholarID;
+
+	@Indexed
 	protected String msAcademicID;
 
 	public Author(long iD, Date creationTime, Date lastChangeTime,
@@ -40,7 +44,7 @@ public class Author extends Entity {
 		this.gScholarID = gScholarID;
 		this.msAcademicID = msAcademicID;
 	}
-
+	
 	public Author(String firstName, String lastName, String gScholarID,
 			String msAcademicID) {
 		super();
@@ -51,7 +55,6 @@ public class Author extends Entity {
 	}
 
 	public Author() {
-		super();
 	}
 
 	public String getFirstName() {
@@ -74,28 +77,5 @@ public class Author extends Entity {
 	public String toString() {
 		return getFirstName() + " " + getLastName() + " (ID " + getID() + ")";
 	}
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((getID() == null) ? 0 : getID().hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!(obj instanceof Author))
-			return false;
-		Author other = (Author) obj;
-		if (getID() == null) {
-			if (other.getID() != null)
-				return false;
-		} else if (!getID().equals(other.getID()))
-			return false;
-		return true;
-	}	
 
 }

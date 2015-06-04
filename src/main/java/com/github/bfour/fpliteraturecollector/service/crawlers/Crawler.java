@@ -12,6 +12,7 @@ import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.SupportedSearchEngine;
 
+
 public class Crawler {
 
 	private DataProvider provider;

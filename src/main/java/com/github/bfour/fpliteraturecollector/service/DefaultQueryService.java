@@ -20,9 +20,6 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.github.bfour.fpjcommons.lang.Tuple;
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.ServiceException;
@@ -33,34 +30,27 @@ import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 import com.github.bfour.fpliteraturecollector.domain.builders.QueryBuilder;
 import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
-import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
-import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBQueryDAO;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.QueryDAO;
 
-public class DefaultQueryService extends
-		EventCreatingCRUDService<Query, OrientDBQueryDAO> implements
-		QueryService {
+public class DefaultQueryService extends EventCreatingCRUDService<Query>
+		implements QueryService {
 
 	private static DefaultQueryService instance;
 	private AtomicRequestService atomReqServ;
+	private QueryDAO DAO;
 
-	private DefaultQueryService(OrientDBGraphService graphService,
-			boolean forceCreateNewInstance, AtomicRequestService atomReqServ,
-			LiteratureService litServ, AuthorService authServ,
-			TagService tagServ) {
-		super(OrientDBQueryDAO
-				.getInstance(graphService, forceCreateNewInstance, atomReqServ,
-						litServ, authServ, tagServ));
+	private DefaultQueryService(QueryDAO DAO, boolean forceCreateNewInstance,
+			AtomicRequestService atomReqServ) {
+		super(DAO);
+		this.DAO = DAO;
 		this.atomReqServ = atomReqServ;
 	}
 
-	public static DefaultQueryService getInstance(
-			OrientDBGraphService graphService, boolean forceCreateNewInstance,
-			AtomicRequestService atomReqServ, LiteratureService litServ,
-			AuthorService authServ, TagService tagServ) {
+	public static DefaultQueryService getInstance(QueryDAO DAO,
+			boolean forceCreateNewInstance, AtomicRequestService atomReqServ) {
 		if (instance == null || forceCreateNewInstance)
-			instance = new DefaultQueryService(graphService,
-					forceCreateNewInstance, atomReqServ, litServ, authServ,
-					tagServ);
+			instance = new DefaultQueryService(DAO, forceCreateNewInstance,
+					atomReqServ);
 		return instance;
 	}
 
@@ -106,7 +96,7 @@ public class DefaultQueryService extends
 	public synchronized Query getByQueuePosition(int position)
 			throws ServiceException {
 		try {
-			Query q = getDAO().getByQueuePosition(position);
+			Query q = DAO.getByQueuePosition(position);
 			if (q == null)
 				return null;
 			return q;

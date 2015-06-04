@@ -25,7 +25,9 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 
-import com.github.bfour.fpjcommons.model.Entity;
+import org.neo4j.graphdb.Direction;
+import org.springframework.data.neo4j.annotation.RelatedTo;
+
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 
 public class Query extends Entity {
@@ -56,6 +58,7 @@ public class Query extends Entity {
 	}
 
 	protected String name;
+	@RelatedTo(type = "ATOMIC_REQUESTS", direction = Direction.OUTGOING)
 	protected List<AtomicRequest> atomicRequests;
 	protected Integer queuePosition;
 	protected QueryStatus status;
@@ -102,29 +105,6 @@ public class Query extends Entity {
 	@Override
 	public String toString() {
 		return name;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((getID() == null) ? 0 : getID().hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!(obj instanceof Query))
-			return false;
-		Query other = (Query) obj;
-		if (getID() == null) {
-			if (other.getID() != null)
-				return false;
-		} else if (!getID().equals(other.getID()))
-			return false;
-		return true;
 	}
 
 }
