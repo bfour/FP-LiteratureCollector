@@ -22,6 +22,9 @@ package com.github.bfour.fpliteraturecollector.application;
 
 import javax.swing.JOptionPane;
 
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import com.github.bfour.fpjgui.FPJGUIManager;
 import com.github.bfour.fpliteraturecollector.gui.MainWindow;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
@@ -38,6 +41,12 @@ public class Application {
 		
 		try {
 
+			ConfigurableApplicationContext context;
+			context = new ClassPathXmlApplicationContext("SpringConfig.xml");
+
+//			Neo4jResource myBean = context.getBean(Neo4jResource.class);
+//			myBean.functionThatUsesTheRepo();
+			
 			ServiceManager servMan = ServiceManager
 					.getInstance(ServiceManagerMode.TEST);
 
