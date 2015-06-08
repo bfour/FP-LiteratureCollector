@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.gui;
  * -///////////////////////////////-
  */
 
-
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -78,7 +77,7 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 		setDeleteEntityEnabled(true);
 		setEditEntityEnabled(true);
 		setCreateEntityEnabled(true);
-		
+
 		// hide search bar
 		setSearchPanel(null);
 
@@ -116,7 +115,7 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 				if (query == null)
 					return new ArrayList<AtomicRequest>(0);
 				else
-					list = query.getAtomicRequests();
+					list = new ArrayList<>(query.getAtomicRequests());
 				return list;
 			}
 		};
@@ -162,7 +161,8 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 				public void handle(UpdateEvent<Query> arg0) {
 					if (arg0.getOldObject().equals(query))
 						getTable().setEntries(
-								arg0.getNewObject().getAtomicRequests());
+								new ArrayList<>(arg0.getNewObject()
+										.getAtomicRequests()));
 				}
 			};
 			ChangeHandler.getInstance(Query.class).addEventListener(

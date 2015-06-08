@@ -21,88 +21,43 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  */
 
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.transaction.TransactionManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.data.neo4j.repository.GraphRepository;
+import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.stereotype.Service;
 
 import com.github.bfour.fpjcommons.services.DatalayerException;
-import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
-import com.github.bfour.fpjcommons.services.CRUD.DataIteratorWrapper;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 
 @Service
 @Configurable
-public class Neo4JQueryDAO implements QueryDAO {
+public class Neo4JQueryDAO extends AbstractNeo4JDAO<Query> implements QueryDAO {
 
 	@Autowired
 	private Neo4JQueryDAODelegate delegate;
+	
+	@Autowired
+	private Neo4jTemplate neoTemplate;
 
 	public Neo4JQueryDAO() {
-	}
-
-	public Neo4JQueryDAODelegate getDelegate() {
-		return delegate;
-	}
-
-	public void setDelegate(Neo4JQueryDAODelegate delegate) {
-		this.delegate = delegate;
 	}
 
 	@Override
 	public Query getByQueuePosition(int position) throws DatalayerException {
 		return delegate.findByQueuePosition(position);
 	}
+
+	@Override
+	protected GraphRepository<Query> getDelegate() {
+		return delegate;
+	}
 	
 	@Override
-	public List<Query> getAll() throws DatalayerException {
-		Iterable<Query> iter = delegate.findAll();
-		List<Query> tags = new ArrayList<Query>();
-		for (Query tag : iter)
-			tags.add(tag);
-		return tags;
-	}
-
-	@Override
-	public DataIterator<Query> getAllByStream() throws DatalayerException {
-		return new DataIteratorWrapper<Query>(delegate.findAll().iterator());
-	}
-
-	@Override
-	public Query get(Query obj) throws DatalayerException {
-		if (obj.getID() == null)
-			return null;
-		return delegate.findOne(obj.getID());
-	}
-
-	@Override
-	public void delete(Query obj) throws DatalayerException {
-		delegate.delete(obj.getID());
-	}
-
-	@Override
-	public Query create(Query obj) throws DatalayerException {
-		return delegate.save(obj);
-	}
-
-	@Override
-	public Query update(Query oldObj, Query newObj) throws DatalayerException {
-		return delegate.save(newObj);
-	}
-
-	@Override
-	public long getNewID() throws DatalayerException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public boolean exists(Query obj) throws DatalayerException {
-		if (obj.getID() == null)
-			return false;
-		return (delegate.findOne(obj.getID()) != null);
+	protected TransactionManager getTxManager() {
+		return neoTemplate.getGraphDatabase().getTransactionManager();
 	}
 
 }

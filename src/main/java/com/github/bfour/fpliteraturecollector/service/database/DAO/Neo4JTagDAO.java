@@ -20,24 +20,37 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  * -///////////////////////////////-
  */
 
+import javax.transaction.TransactionManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.data.neo4j.repository.GraphRepository;
+import org.springframework.data.neo4j.support.Neo4jTemplate;
+import org.springframework.stereotype.Service;
 
 import com.github.bfour.fpliteraturecollector.domain.Tag;
 
+@Service
 @Configurable
 public class Neo4JTagDAO extends AbstractNeo4JDAO<Tag> implements TagDAO {
 
 	@Autowired
-	static Neo4JTagDAODelegate delegate;
-
-	public interface Neo4JTagDAODelegate extends GraphRepository<Tag> {
-	}
+	private Neo4JTagDAODelegate delegate;
+	
+	@Autowired
+	private Neo4jTemplate neoTemplate;
 
 	public Neo4JTagDAO() {
-		super(delegate);
+	}
+
+	@Override
+	protected GraphRepository<Tag> getDelegate() {
+		return delegate;
+	}
+	
+	@Override
+	protected TransactionManager getTxManager() {
+		return neoTemplate.getGraphDatabase().getTransactionManager();
 	}
 
 }

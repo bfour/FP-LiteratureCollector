@@ -24,6 +24,7 @@ package com.github.bfour.fpliteraturecollector.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -148,12 +149,12 @@ public class QueryEditPanel extends EntityEditPanel<Query, QueryBuilder> {
 			public List<AtomicRequest> getValue(QueryBuilder object) {
 				if (object.getAtomicRequests() == null)
 					return new ArrayList<AtomicRequest>(0);
-				return object.getAtomicRequests();
+				return new ArrayList<>(object.getAtomicRequests());
 			}
 
 			@Override
 			public void setValue(QueryBuilder object, List<AtomicRequest> value) {
-				object.setAtomicRequests(value);
+				object.setAtomicRequests(new HashSet<>(value));
 			}
 		};
 		getMappers().add(atomicReqMapper);

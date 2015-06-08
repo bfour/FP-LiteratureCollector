@@ -44,25 +44,25 @@ public class Application {
 
 	public static void main(String[] args) {
 
-		// https://vvirlan.wordpress.com/2014/12/10/solved-caused-by-java-awt-headlessexception-when-trying-to-create-a-swingawt-frame-from-spring-boot/
-		SpringApplicationBuilder builder = new SpringApplicationBuilder(
-				Application.class);
-		builder.headless(false);
-		ConfigurableApplicationContext context = builder.run(args);
-
 		try {
 
+			// https://vvirlan.wordpress.com/2014/12/10/solved-caused-by-java-awt-headlessexception-when-trying-to-create-a-swingawt-frame-from-spring-boot/
+			SpringApplicationBuilder builder = new SpringApplicationBuilder(
+					Application.class);
+			builder.headless(false);
+			ConfigurableApplicationContext context = builder.run(args);
+			
 			// ConfigurableApplicationContext context;
 			// context = new ClassPathXmlApplicationContext("SpringConfig.xml");
 
 			// Neo4jResource myBean = context.getBean(Neo4jResource.class);
 			// myBean.functionThatUsesTheRepo();
 
-//			ServiceManager servMan = ServiceManager
-//					.getInstance(ServiceManagerMode.TEST);
+			// ServiceManager servMan = ServiceManager
+			// .getInstance(ServiceManagerMode.TEST);
 			ServiceManager servMan = context.getBean(ServiceManager.class);
-			context.getAutowireCapableBeanFactory().autowireBeanProperties(servMan,
-	                  AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, true); 
+			context.getAutowireCapableBeanFactory().autowireBeanProperties(
+					servMan, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, true);
 
 			FPJGUIManager.getInstance().initialize();
 

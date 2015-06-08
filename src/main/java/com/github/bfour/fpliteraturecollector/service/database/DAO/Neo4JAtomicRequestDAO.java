@@ -20,26 +20,38 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  * -///////////////////////////////-
  */
 
+import javax.transaction.TransactionManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.data.neo4j.repository.GraphRepository;
+import org.springframework.data.neo4j.support.Neo4jTemplate;
+import org.springframework.stereotype.Service;
 
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 
+@Service
 @Configurable
 public class Neo4JAtomicRequestDAO extends AbstractNeo4JDAO<AtomicRequest>
 		implements AtomicRequestDAO {
 
 	@Autowired
-	static Neo4JAtomicRequestDAODelegate delegate;
-
-	public interface Neo4JAtomicRequestDAODelegate extends
-			GraphRepository<AtomicRequest> {
-	}
+	private Neo4JAtomicRequestDAODelegate delegate;
+	
+	@Autowired
+	private Neo4jTemplate neoTemplate;
 
 	public Neo4JAtomicRequestDAO() {
-		super(delegate);
+	}
+
+	@Override
+	protected GraphRepository<AtomicRequest> getDelegate() {
+		return delegate;
+	}
+
+	@Override
+	protected TransactionManager getTxManager() {
+		return neoTemplate.getGraphDatabase().getTransactionManager();
 	}
 
 }

@@ -21,26 +21,28 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  */
 
 
+import javax.transaction.TransactionManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.data.neo4j.repository.GraphRepository;
+import org.springframework.data.neo4j.support.Neo4jTemplate;
+import org.springframework.stereotype.Service;
 
 import com.github.bfour.fpliteraturecollector.domain.Author;
 
+@Service
 @Configurable
 public class Neo4JAuthorDAO extends AbstractNeo4JDAO<Author> implements
 		AuthorDAO {
 
 	@Autowired
-	static Neo4JAuthorDAODelegate delegate;
-
-	public interface Neo4JAuthorDAODelegate extends GraphRepository<Author> {
-		Author findByGScholarID(String gScholarID);
-		Author findByMsAcademicID(String msAcademicID);
-	}
+	private Neo4JAuthorDAODelegate delegate;
+	
+	@Autowired
+	private Neo4jTemplate neoTemplate;
 
 	public Neo4JAuthorDAO() {
-		super(delegate);
 	}
 
 	@Override
@@ -57,6 +59,16 @@ public class Neo4JAuthorDAO extends AbstractNeo4JDAO<Author> implements
 	public boolean hasMaxOneAdjacentLiterature(Author author) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	protected GraphRepository<Author> getDelegate() {
+		return delegate;
+	}
+
+	@Override
+	protected TransactionManager getTxManager() {
+		return neoTemplate.getGraphDatabase().getTransactionManager();
 	}
 
 }

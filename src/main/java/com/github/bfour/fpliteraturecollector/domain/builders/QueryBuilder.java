@@ -20,7 +20,7 @@ package com.github.bfour.fpliteraturecollector.domain.builders;
  * -///////////////////////////////-
  */
 
-import java.util.List;
+import java.util.Set;
 
 import com.github.bfour.fpjcommons.lang.Builder;
 import com.github.bfour.fpjcommons.model.EntityBuilder;
@@ -32,7 +32,7 @@ public class QueryBuilder extends EntityBuilder<Query> implements
 		Builder<Query> {
 
 	private String name;
-	private List<AtomicRequest> atomicRequests;
+	private Set<AtomicRequest> atomicRequests;
 	private Integer queuePosition;
 	private QueryStatus status;
 
@@ -68,11 +68,11 @@ public class QueryBuilder extends EntityBuilder<Query> implements
 		return this;
 	}
 
-	public List<AtomicRequest> getAtomicRequests() {
+	public Set<AtomicRequest> getAtomicRequests() {
 		return atomicRequests;
 	}
 
-	public QueryBuilder setAtomicRequests(List<AtomicRequest> atomicRequests) {
+	public QueryBuilder setAtomicRequests(Set<AtomicRequest> atomicRequests) {
 		this.atomicRequests = atomicRequests;
 		return this;
 	}

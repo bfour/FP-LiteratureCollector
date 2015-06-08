@@ -56,7 +56,7 @@ import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JTagDAO;
 
 
 @Service
-@Configurable(preConstruction=true)
+@Configurable
 public class ServiceManager {
 
 	public static enum ServiceManagerMode {
@@ -73,6 +73,14 @@ public class ServiceManager {
 	private QueryService queryServ;
 	private CrawlerService crawlServ;
 	
+	@Autowired
+	private Neo4JAuthorDAO authDAO;
+	@Autowired
+	private Neo4JTagDAO tagDAO;
+	@Autowired
+	private Neo4JLiteratureDAO literatureDAO;
+	@Autowired
+	private Neo4JAtomicRequestDAO atomReqDAO;
 	@Autowired
 	private Neo4JQueryDAO queryDAO;
 
@@ -110,11 +118,6 @@ public class ServiceManager {
 //				graphService.setRemoteDatabase("localhost", "cat", "root", "meow");
 //			}
 
-			this.authServ = DefaultAuthorService.getInstance(new Neo4JAuthorDAO(), true);
-			this.tagServ = DefaultTagService.getInstance(new Neo4JTagDAO(), true);
-			this.litServ = DefaultLiteratureService.getInstance(new Neo4JLiteratureDAO(), true, this.authServ, this.tagServ);
-			this.atomReqServ = DefaultAtomicRequestService.getInstance(new Neo4JAtomicRequestDAO(), true, this.litServ, this.authServ, this.tagServ);
-//			this.queryServ = DefaultQueryService.getInstance(queryDAO, true, this.atomReqServ);
 			this.crawlServ = CrawlerService.getInstance();
 			
 		} else {
@@ -124,14 +127,17 @@ public class ServiceManager {
 	}
 
 	public AuthorService getAuthorService() {
+		if (authServ == null) authServ = DefaultAuthorService.getInstance(authDAO, true);
 		return authServ;
 	}
 
 	public TagService getTagService() {
+		if (tagServ == null) tagServ = DefaultTagService.getInstance(tagDAO, true);
 		return tagServ;
 	}
 	
 	public LiteratureService getLiteratureService() {
+		if (litServ == null) litServ = DefaultLiteratureService.getInstance(literatureDAO, true, getAuthorService(), getTagService());
 		return litServ;
 	}
 

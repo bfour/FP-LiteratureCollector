@@ -22,6 +22,7 @@ package com.github.bfour.fpliteraturecollector.service.crawlers;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.SwingWorker;
@@ -89,10 +90,11 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 										.setProcessed(true).setResults(results)
 										.getObject());
 						qServ.update(topRequest.getA(), new QueryBuilder(
-								topRequest.getA()).setAtomicRequests(atomReqs)
+								topRequest.getA()).setAtomicRequests(new HashSet<>(atomReqs))
 								.getObject());
 
 					} catch (Exception e) {
+						e.printStackTrace();
 						LOGGER.error(e);
 						List<AtomicRequest> atomReqs = new ArrayList<>(
 								topRequest.getA().getAtomicRequests());
@@ -103,11 +105,12 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 										.setProcessingError(e.getMessage())
 										.getObject());
 						qServ.update(topRequest.getA(), new QueryBuilder(
-								topRequest.getA()).setAtomicRequests(atomReqs)
+								topRequest.getA()).setAtomicRequests(new HashSet<>(atomReqs))
 								.getObject());
 					}
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				LOGGER.error(e);
 				errors.add(e);
 			}

@@ -20,9 +20,15 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  * -///////////////////////////////-
  */
 
-
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 
 import org.springframework.data.neo4j.repository.GraphRepository;
 
@@ -34,46 +40,117 @@ import com.github.bfour.fpliteraturecollector.domain.Entity;
 
 public abstract class AbstractNeo4JDAO<T extends Entity> implements CRUDDAO<T> {
 
-	private GraphRepository<T> delegate;
-
-	public AbstractNeo4JDAO(GraphRepository<T> delegate) {
-		this.delegate = delegate;
+	public AbstractNeo4JDAO() {
 	}
+
+	protected abstract GraphRepository<T> getDelegate();
+
+	protected abstract TransactionManager getTxManager();
 
 	@Override
 	public List<T> getAll() throws DatalayerException {
-		Iterable<T> iter = delegate.findAll();
+		// return getDelegate().findAll().as(List.class);
 		List<T> tags = new ArrayList<T>();
-		for (T tag : iter)
-			tags.add(tag);
+		try {
+			getTxManager().begin();
+			Iterable<T> iter = getDelegate().findAll();
+			for (T tag : iter)
+				tags.add(tag);
+			getTxManager().commit();
+		} catch (IllegalStateException | SecurityException
+				| HeuristicMixedException | HeuristicRollbackException
+				| RollbackException | SystemException | NotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new DatalayerException(e);
+		}
 		return tags;
 	}
 
 	@Override
 	public DataIterator<T> getAllByStream() throws DatalayerException {
-		return new DataIteratorWrapper<T>(delegate.findAll().iterator());
+		// return new
+		// DataIteratorWrapper<T>(getDelegate().findAll().iterator());
+		return new DataIteratorWrapper<T>(getAll().iterator()); // TODO (low) improve (issues with transactions)
 	}
 
 	@Override
 	public T get(T obj) throws DatalayerException {
 		if (obj.getID() == null)
 			return null;
-		return delegate.findOne(obj.getID());
+		return getDelegate().findOne(obj.getID());
 	}
 
 	@Override
 	public void delete(T obj) throws DatalayerException {
-		delegate.delete(obj.getID());
+		try {
+			getTxManager().begin();
+			getDelegate().delete(obj.getID());
+			getTxManager().commit();
+		} catch (NotSupportedException | SystemException
+				| IllegalStateException | SecurityException | HeuristicMixedException | HeuristicRollbackException | RollbackException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				getTxManager().rollback();
+			} catch (IllegalStateException | SecurityException
+					| SystemException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				throw new DatalayerException(e);
+			}
+			throw new DatalayerException(e);
+		}
 	}
 
 	@Override
 	public T create(T obj) throws DatalayerException {
-		return delegate.save(obj);
+		try {
+			getTxManager().begin();
+			T newObj = getDelegate().save(obj);
+			getTxManager().commit();
+			return newObj;
+		} catch (NotSupportedException | SystemException
+				| IllegalStateException | SecurityException
+				| HeuristicMixedException | HeuristicRollbackException
+				| RollbackException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				getTxManager().rollback();
+			} catch (IllegalStateException | SecurityException
+					| SystemException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				throw new DatalayerException(e);
+			}
+			throw new DatalayerException(e);
+		}
 	}
 
 	@Override
 	public T update(T oldObj, T newObj) throws DatalayerException {
-		return delegate.save(newObj);
+		try {
+			getTxManager().begin();
+			T updatedObj = getDelegate().save(newObj);
+			getTxManager().commit();
+			return updatedObj;
+		} catch (NotSupportedException | SystemException
+				| IllegalStateException | SecurityException
+				| HeuristicMixedException | HeuristicRollbackException
+				| RollbackException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				getTxManager().rollback();
+			} catch (IllegalStateException | SecurityException
+					| SystemException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				throw new DatalayerException(e);
+			}
+			throw new DatalayerException(e);
+		}
 	}
 
 	@Override
@@ -86,7 +163,7 @@ public abstract class AbstractNeo4JDAO<T extends Entity> implements CRUDDAO<T> {
 	public boolean exists(T obj) throws DatalayerException {
 		if (obj.getID() == null)
 			return false;
-		return (delegate.findOne(obj.getID()) != null);
+		return (getDelegate().findOne(obj.getID()) != null);
 	}
 
 }

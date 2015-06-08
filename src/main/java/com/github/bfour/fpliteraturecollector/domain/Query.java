@@ -21,11 +21,12 @@ package com.github.bfour.fpliteraturecollector.domain;
  */
 
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import javax.swing.ImageIcon;
 
 import org.neo4j.graphdb.Direction;
+import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
@@ -58,13 +59,14 @@ public class Query extends Entity {
 	}
 
 	protected String name;
+	@Fetch
 	@RelatedTo(type = "ATOMIC_REQUESTS", direction = Direction.OUTGOING)
-	protected List<AtomicRequest> atomicRequests;
+	protected Set<AtomicRequest> atomicRequests;
 	protected Integer queuePosition;
 	protected QueryStatus status;
 
 	public Query(Long iD, Date creationTime, Date lastChangeTime, String name,
-			List<AtomicRequest> atomicRequests, Integer queuePosition,
+			Set<AtomicRequest> atomicRequests, Integer queuePosition,
 			QueryStatus status) {
 		super(iD, creationTime, lastChangeTime);
 		this.name = name;
@@ -73,7 +75,7 @@ public class Query extends Entity {
 		this.status = status;
 	}
 
-	public Query(String name, List<AtomicRequest> atomicRequests,
+	public Query(String name, Set<AtomicRequest> atomicRequests,
 			Integer queuePosition, QueryStatus status) {
 		super();
 		this.name = name;
@@ -90,7 +92,7 @@ public class Query extends Entity {
 		return name;
 	}
 
-	public List<AtomicRequest> getAtomicRequests() {
+	public Set<AtomicRequest> getAtomicRequests() {
 		return atomicRequests;
 	}
 

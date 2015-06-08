@@ -28,12 +28,17 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.core.TypeRepresentationStrategy;
 import org.springframework.data.neo4j.support.typerepresentation.NoopRelationshipTypeRepresentationStrategy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlerToStringConverter;
+import com.github.bfour.fpliteraturecollector.service.crawlers.StringToCrawlerConverter;
 
 // tag::config[]
 @EnableTransactionManagement
@@ -57,4 +62,14 @@ public class MyNeo4jConfiguration extends Neo4jConfiguration {
     public TypeRepresentationStrategy<Relationship> relationshipTypeRepresentationStrategy() throws Exception {
         return new NoopRelationshipTypeRepresentationStrategy();
     }
+    
+    @Bean
+    protected ConversionService neo4jConversionService() throws Exception {
+        ConversionService conversionService = super.neo4jConversionService();
+        ConverterRegistry registry = (ConverterRegistry) conversionService;
+        registry.addConverter(new StringToCrawlerConverter());
+        registry.addConverter(new CrawlerToStringConverter());
+        return conversionService;
+    }
+    
 }	

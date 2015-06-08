@@ -120,6 +120,7 @@ public class DefaultQueryService extends EventCreatingCRUDService<Query>
 		qBuilder.setQueuePosition(predecessor.getQueuePosition());
 		predBuilder.setQueuePosition(query.getQueuePosition());
 
+		// TODO (high) wrap in transaction
 		update(predecessor, predBuilder.getObject());
 		return update(query, qBuilder.getObject());
 
