@@ -22,8 +22,11 @@ package com.github.bfour.fpliteraturecollector.application;
 
 import javax.swing.JOptionPane;
 
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import com.github.bfour.fpjgui.FPJGUIManager;
 import com.github.bfour.fpliteraturecollector.gui.MainWindow;
@@ -35,20 +38,31 @@ import com.github.bfour.fpliteraturecollector.service.ServiceManager.ServiceMana
 
 // TODO letzter Schritt: Output nur distinct; CSV generieren
 
+//@Configuration
+@Import(MyNeo4jConfiguration.class)
 public class Application {
 
 	public static void main(String[] args) {
-		
+
+		// https://vvirlan.wordpress.com/2014/12/10/solved-caused-by-java-awt-headlessexception-when-trying-to-create-a-swingawt-frame-from-spring-boot/
+		SpringApplicationBuilder builder = new SpringApplicationBuilder(
+				Application.class);
+		builder.headless(false);
+		ConfigurableApplicationContext context = builder.run(args);
+
 		try {
 
-			ConfigurableApplicationContext context;
-			context = new ClassPathXmlApplicationContext("SpringConfig.xml");
+			// ConfigurableApplicationContext context;
+			// context = new ClassPathXmlApplicationContext("SpringConfig.xml");
 
-//			Neo4jResource myBean = context.getBean(Neo4jResource.class);
-//			myBean.functionThatUsesTheRepo();
-			
-			ServiceManager servMan = ServiceManager
-					.getInstance(ServiceManagerMode.TEST);
+			// Neo4jResource myBean = context.getBean(Neo4jResource.class);
+			// myBean.functionThatUsesTheRepo();
+
+//			ServiceManager servMan = ServiceManager
+//					.getInstance(ServiceManagerMode.TEST);
+			ServiceManager servMan = context.getBean(ServiceManager.class);
+			context.getAutowireCapableBeanFactory().autowireBeanProperties(servMan,
+	                  AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, true); 
 
 			FPJGUIManager.getInstance().initialize();
 

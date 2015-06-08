@@ -33,7 +33,7 @@ public class Neo4JTagDAO extends AbstractNeo4JDAO<Tag> implements TagDAO {
 	@Autowired
 	static Neo4JTagDAODelegate delegate;
 
-	private interface Neo4JTagDAODelegate extends GraphRepository<Tag> {
+	public interface Neo4JTagDAODelegate extends GraphRepository<Tag> {
 	}
 
 	public Neo4JTagDAO() {

@@ -42,6 +42,10 @@ package com.github.bfour.fpliteraturecollector.service;
  * *
  */
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Service;
+
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlerService;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JAtomicRequestDAO;
@@ -50,9 +54,9 @@ import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JLiteratu
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JQueryDAO;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JTagDAO;
 
-/**
- * TODO add comments
- */
+
+@Service
+@Configurable(preConstruction=true)
 public class ServiceManager {
 
 	public static enum ServiceManagerMode {
@@ -68,7 +72,14 @@ public class ServiceManager {
 	private AtomicRequestService atomReqServ;
 	private QueryService queryServ;
 	private CrawlerService crawlServ;
+	
+	@Autowired
+	private Neo4JQueryDAO queryDAO;
 
+	public ServiceManager() throws ServiceException {
+		this(ServiceManagerMode.TEST);
+	}
+	
 	private ServiceManager(ServiceManagerMode mode) throws ServiceException {
 		initialize(mode);
 	}
@@ -103,7 +114,7 @@ public class ServiceManager {
 			this.tagServ = DefaultTagService.getInstance(new Neo4JTagDAO(), true);
 			this.litServ = DefaultLiteratureService.getInstance(new Neo4JLiteratureDAO(), true, this.authServ, this.tagServ);
 			this.atomReqServ = DefaultAtomicRequestService.getInstance(new Neo4JAtomicRequestDAO(), true, this.litServ, this.authServ, this.tagServ);
-			this.queryServ = DefaultQueryService.getInstance(new Neo4JQueryDAO(), true, this.atomReqServ);
+//			this.queryServ = DefaultQueryService.getInstance(queryDAO, true, this.atomReqServ);
 			this.crawlServ = CrawlerService.getInstance();
 			
 		} else {
@@ -129,6 +140,7 @@ public class ServiceManager {
 	}
 	
 	public QueryService getQueryService() {
+		if (queryServ == null) queryServ = DefaultQueryService.getInstance(queryDAO, true, getAtomicRequestService());
 		return queryServ;
 	}
 	

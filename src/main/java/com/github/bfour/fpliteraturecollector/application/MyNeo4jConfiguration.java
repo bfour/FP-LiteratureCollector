@@ -22,36 +22,39 @@ package com.github.bfour.fpliteraturecollector.application;
 
 
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
+import org.springframework.data.neo4j.core.TypeRepresentationStrategy;
+import org.springframework.data.neo4j.support.typerepresentation.NoopRelationshipTypeRepresentationStrategy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+// tag::config[]
 @EnableTransactionManagement
-// @Import(RepositoryRestMvcConfiguration.class)
+//@Import(RepositoryRestMvcConfiguration.class)
 @EnableScheduling
-// @EnableAutoConfiguration
-@ComponentScan(basePackages = { "com.github.bfour.fpliteraturecollector.service" })
+@EnableAutoConfiguration
+@ComponentScan(basePackages = {"com.github.bfour.fpliteraturecollector"})
 @Configuration
-@EnableNeo4jRepositories(basePackages = "com.github.bfour.fpliteraturecollector.service")
+@EnableNeo4jRepositories(basePackages = "com.github.bfour.fpliteraturecollector")
 public class MyNeo4jConfiguration extends Neo4jConfiguration {
-	public MyNeo4jConfiguration() {
-		setBasePackage("com.github.bfour.fpliteraturecollector.domain");
-	}
+    public MyNeo4jConfiguration() {
+        setBasePackage("com.github.bfour.fpliteraturecollector.domain");
+    }
 
-	@Bean
-	public GraphDatabaseService graphDatabaseService() {
-		return new GraphDatabaseFactory().newEmbeddedDatabase("testDB");
-	}
+    @Bean
+    public GraphDatabaseService graphDatabaseService() {
+    	return new GraphDatabaseFactory().newEmbeddedDatabase("testDB");
+    }
 
-//	@Override
-//	public TypeRepresentationStrategy<Relationship> relationshipTypeRepresentationStrategy()
-//			throws Exception {
-//		return new NoopRelationshipTypeRepresentationStrategy();
-//	}
-	
-}
+    @Override
+    public TypeRepresentationStrategy<Relationship> relationshipTypeRepresentationStrategy() throws Exception {
+        return new NoopRelationshipTypeRepresentationStrategy();
+    }
+}	

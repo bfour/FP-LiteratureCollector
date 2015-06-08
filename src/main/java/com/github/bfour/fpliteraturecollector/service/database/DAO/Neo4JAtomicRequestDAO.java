@@ -22,17 +22,19 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.data.neo4j.repository.GraphRepository;
 
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 
+@Configurable
 public class Neo4JAtomicRequestDAO extends AbstractNeo4JDAO<AtomicRequest>
 		implements AtomicRequestDAO {
 
 	@Autowired
 	static Neo4JAtomicRequestDAODelegate delegate;
 
-	private interface Neo4JAtomicRequestDAODelegate extends
+	public interface Neo4JAtomicRequestDAODelegate extends
 			GraphRepository<AtomicRequest> {
 	}
 

@@ -22,17 +22,19 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.data.neo4j.repository.GraphRepository;
 
 import com.github.bfour.fpliteraturecollector.domain.Author;
 
+@Configurable
 public class Neo4JAuthorDAO extends AbstractNeo4JDAO<Author> implements
 		AuthorDAO {
 
 	@Autowired
 	static Neo4JAuthorDAODelegate delegate;
 
-	private interface Neo4JAuthorDAODelegate extends GraphRepository<Author> {
+	public interface Neo4JAuthorDAODelegate extends GraphRepository<Author> {
 		Author findByGScholarID(String gScholarID);
 		Author findByMsAcademicID(String msAcademicID);
 	}
