@@ -34,10 +34,10 @@ package org.epop.dataprovider.googlescholar;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -173,7 +173,6 @@ public class GoogleScholarProvider extends DataProvider {
 			} while (charsRead > 0);
 			doc = Jsoup.parse(builder.toString());
 		} catch (IOException e) {
-			System.out.println("Grossi problemi");
 			e.printStackTrace();
 		} // for (Document doc : docs) {
 
@@ -214,7 +213,7 @@ public class GoogleScholarProvider extends DataProvider {
 
 				// authors
 				List<Author> authors = getAuthorsFromHTMLSection(namesHTML);
-				litBuilder.setAuthors(authors);
+				litBuilder.setAuthors(new HashSet<>(authors));
 
 				// publication
 				String[] commaSplit = publicationHTML.split(", ");

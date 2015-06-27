@@ -21,7 +21,6 @@ package com.github.bfour.fpliteraturecollector.domain.builders;
  */
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Set;
 
 import com.github.bfour.fpjcommons.lang.Builder;
@@ -37,7 +36,7 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 
 	private String title;
 	private LiteratureType type;
-	private List<Author> authors;
+	private Set<Author> authors;
 	private String DOI;
 	private ISBN ISBN;
 	private Integer year;
@@ -104,11 +103,11 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		return this;
 	}
 
-	public List<Author> getAuthors() {
+	public Set<Author> getAuthors() {
 		return authors;
 	}
 
-	public LiteratureBuilder setAuthors(List<Author> authors) {
+	public LiteratureBuilder setAuthors(Set<Author> authors) {
 		this.authors = authors;
 		return this;
 	}

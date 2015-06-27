@@ -147,7 +147,7 @@ public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature>
 				"Authors", new FPJGUITableFieldGetter<Literature>() {
 					@Override
 					public String get(Literature item) {
-						List<Author> authors = item.getAuthors();
+						Set<Author> authors = item.getAuthors();
 						if (authors == null)
 							return "";
 						StringBuilder builder = new StringBuilder();

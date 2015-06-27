@@ -24,7 +24,6 @@ package com.github.bfour.fpliteraturecollector.service.crawlers;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.epop.dataprovider.DataProvider;
 import org.epop.dataprovider.DataUnavailableException;
@@ -45,7 +44,7 @@ public class Crawler {
 		this.engines = Arrays.asList(engines);
 	}
 
-	public Set<Literature> process(AtomicRequest atomReq)
+	public List<Literature> process(AtomicRequest atomReq)
 			throws DataUnavailableException, DatalayerException,
 			URISyntaxException {
 		return provider.runQuery(atomReq.getSearchString(),

@@ -93,7 +93,7 @@ public class LiteratureTest {
 			throws ServiceException, DatalayerException {
 
 		List<Literature> literatureList = TestDataCreator
-				.createLiteratureSet1(authServ);
+				.createLiteratureList1(authServ);
 
 		for (Literature lit : literatureList)
 			literatureList

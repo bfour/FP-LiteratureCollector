@@ -23,7 +23,6 @@ package com.github.bfour.fpliteraturecollector.service.crawlers;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.SwingWorker;
 
@@ -83,11 +82,11 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 										QueryStatus.CRAWLING).getObject());
 
 						// get results and update
-						Set<Literature> results = crawler.process(topRequest
+						List<Literature> results = crawler.process(topRequest
 								.getB());
 						AtomicRequest newAtomReq = new AtomicRequestBuilder(
 								topRequest.getB()).setProcessed(true)
-								.setResults(results).getObject();
+								.setResults(new HashSet<>(results)).getObject();
 						atomReqServ.update(topRequest.getB(), newAtomReq);
 
 						List<AtomicRequest> atomReqs = new ArrayList<>(

@@ -54,7 +54,6 @@ import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JLiteratu
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JQueryDAO;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JTagDAO;
 
-
 @Service
 @Configurable
 public class ServiceManager {
@@ -72,7 +71,7 @@ public class ServiceManager {
 	private AtomicRequestService atomReqServ;
 	private QueryService queryServ;
 	private CrawlerService crawlServ;
-	
+
 	@Autowired
 	private Neo4JAuthorDAO authDAO;
 	@Autowired
@@ -87,7 +86,7 @@ public class ServiceManager {
 	public ServiceManager() throws ServiceException {
 		this(ServiceManagerMode.TEST);
 	}
-	
+
 	private ServiceManager(ServiceManagerMode mode) throws ServiceException {
 		initialize(mode);
 	}
@@ -98,58 +97,70 @@ public class ServiceManager {
 			instance = new ServiceManager(mode);
 		return instance;
 	}
-	
+
 	private void initialize(ServiceManagerMode mode) throws ServiceException {
-		
+
 		modeMemory = mode;
-		
+
 		if (mode == ServiceManagerMode.DEFAULT
-				|| mode == ServiceManagerMode.TEST 
+				|| mode == ServiceManagerMode.TEST
 				|| mode == ServiceManagerMode.REMOTE_TEST) {
 
-//			if (mode == ServiceManagerMode.DEFAULT) {
-//				graphService.setLocalDatabase("database");
-////				graphService.setRemoteDatabase("localhost", "litcoll", "meow", "meow");
-//			} else if (mode == ServiceManagerMode.TEST) {
-//				graphService.setLocalDatabase("junitTestDatabase");
-//				graphService.dropCurrentDB();
-//				graphService.setLocalDatabase("junitTestDatabase");
-//			} else if (mode == ServiceManagerMode.REMOTE_TEST) {
-//				graphService.setRemoteDatabase("localhost", "cat", "root", "meow");
-//			}
+			// if (mode == ServiceManagerMode.DEFAULT) {
+			// graphService.setLocalDatabase("database");
+			// // graphService.setRemoteDatabase("localhost", "litcoll", "meow",
+			// "meow");
+			// } else if (mode == ServiceManagerMode.TEST) {
+			// graphService.setLocalDatabase("junitTestDatabase");
+			// graphService.dropCurrentDB();
+			// graphService.setLocalDatabase("junitTestDatabase");
+			// } else if (mode == ServiceManagerMode.REMOTE_TEST) {
+			// graphService.setRemoteDatabase("localhost", "cat", "root",
+			// "meow");
+			// }
 
 			this.crawlServ = CrawlerService.getInstance();
-			
+
 		} else {
 			throw new ServiceException("invalid service manager mode: " + mode);
 		}
-		
+
 	}
 
 	public AuthorService getAuthorService() {
-		if (authServ == null) authServ = DefaultAuthorService.getInstance(authDAO, true);
+		if (authServ == null)
+			authServ = DefaultAuthorService.getInstance(authDAO, true);
 		return authServ;
 	}
 
 	public TagService getTagService() {
-		if (tagServ == null) tagServ = DefaultTagService.getInstance(tagDAO, true);
+		if (tagServ == null)
+			tagServ = DefaultTagService.getInstance(tagDAO, true);
 		return tagServ;
 	}
-	
+
 	public LiteratureService getLiteratureService() {
-		if (litServ == null) litServ = DefaultLiteratureService.getInstance(literatureDAO, true, getAuthorService(), getTagService());
+		if (litServ == null)
+			litServ = DefaultLiteratureService.getInstance(literatureDAO, true,
+					getAuthorService(), getTagService());
 		return litServ;
 	}
 
 	public AtomicRequestService getAtomicRequestService() {
+		if (atomReqServ == null)
+			atomReqServ = DefaultAtomicRequestService.getInstance(atomReqDAO,
+					true, getLiteratureService(), getAuthorService(),
+					getTagService());
 		return atomReqServ;
 	}
-	
+
 	public QueryService getQueryService() {
-		if (queryServ == null) queryServ = DefaultQueryService.getInstance(queryDAO, true, getAtomicRequestService());
+		if (queryServ == null)
+			queryServ = DefaultQueryService.getInstance(queryDAO, true,
+					getAtomicRequestService());
 		return queryServ;
 	}
-	
+
 	public CrawlerService getCrawlerService() {
 		return crawlServ;
 	}
@@ -158,16 +169,16 @@ public class ServiceManager {
 	 * Deletes all user data and re-initializes.
 	 */
 	public void resetAllData() throws ServiceException {
-//		graphService.deleteAllDataInCurrentDB();
+		// graphService.deleteAllDataInCurrentDB();
 	}
-	
+
 	public void dropAndReinitDatabase() throws ServiceException {
-//		graphService.dropCurrentDB();
+		// graphService.dropCurrentDB();
 		initialize(modeMemory);
 	}
 
 	public void close() {
-//		graphService.shutdown();
+		// graphService.shutdown();
 	}
 
 }

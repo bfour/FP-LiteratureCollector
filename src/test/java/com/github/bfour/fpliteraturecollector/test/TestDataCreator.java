@@ -22,6 +22,7 @@ package com.github.bfour.fpliteraturecollector.test;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class TestDataCreator {
 		return authorList;
 	}
 
-	public static List<Literature> createLiteratureSet1(AuthorService authServ)
+	public static List<Literature> createLiteratureList1(AuthorService authServ)
 			throws ServiceException {
 
 		List<Author> authorList1 = new ArrayList<>(2);
@@ -90,19 +91,19 @@ public class TestDataCreator {
 
 		LiteratureBuilder litBuilder = new LiteratureBuilder();
 		litBuilder.setTitle("Psychological Disorders in Bikini Bottom");
-		litBuilder.setAuthors(authorList1);
+		litBuilder.setAuthors(new HashSet<>(authorList1));
 		literatureList.add(litBuilder.getObject());
 
 		LiteratureBuilder litBuilder2 = new LiteratureBuilder();
 		litBuilder2.setTitle("Mariette Pathy Allen: Transcuba");
-		litBuilder2.setAuthors(authorList2);
+		litBuilder2.setAuthors(new HashSet<>(authorList2));
 		litBuilder2.setISBN(new ISBN("978-0988983137"));
 		literatureList.add(litBuilder2.getObject());
 
 		LiteratureBuilder litBuilder3 = new LiteratureBuilder();
 		litBuilder3
 				.setTitle("LDL Receptor-Related Protein 5 (LRP5) Affects Bone Accrual and Eye Development");
-		litBuilder3.setAuthors(authorList4);
+		litBuilder3.setAuthors(new HashSet<>(authorList4));
 		litBuilder3.setDOI("10.1016/S0092-8674(01)00571-2");
 		literatureList.add(litBuilder3.getObject());
 

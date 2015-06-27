@@ -192,7 +192,7 @@ public class LiteraturePanel extends
 				authorToggle) {
 			@Override
 			public String getValue(LiteratureBuilder object) {
-				List<Author> authors = object.getAuthors();
+				Set<Author> authors = object.getAuthors();
 				if (authors == null)
 					return "";
 				StringBuilder builder = new StringBuilder();

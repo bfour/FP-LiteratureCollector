@@ -22,10 +22,10 @@ package com.github.bfour.fpliteraturecollector.domain;
 
 import java.nio.file.Path;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 import org.neo4j.graphdb.Direction;
+import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 import org.springframework.data.neo4j.support.index.IndexType;
@@ -60,8 +60,9 @@ public class Literature extends Entity {
 	
 	protected LiteratureType type;
 	
+	@Fetch
 	@RelatedTo(type="AUTHORS", direction = Direction.OUTGOING)
-	protected List<Author> authors;
+	protected Set<Author> authors;
 	
 	protected String DOI;
 	
@@ -87,7 +88,7 @@ public class Literature extends Entity {
 	protected Set<Tag> tags;
 
 	public Literature(Long iD, Date creationTime, Date lastChangeTime,
-			String title, LiteratureType type, List<Author> authors,
+			String title, LiteratureType type, Set<Author> authors,
 			String DOI, ISBN ISBN, Integer year, String publicationContext,
 			String publisher, String websiteURL, String fulltextURL,
 			Path fulltextFilePath, Integer gScholarNumCitations, Set<Tag> tags) {
@@ -107,7 +108,7 @@ public class Literature extends Entity {
 		this.tags = tags;
 	}
 	
-	public Literature(String title, LiteratureType type, List<Author> authors,
+	public Literature(String title, LiteratureType type, Set<Author> authors,
 			String DOI, ISBN ISBN, Integer year, String publicationContext,
 			String publisher, String websiteURL, String fulltextURL,
 			Path fulltextFilePath, Integer gScholarNumCitations, Set<Tag> tags) {
@@ -139,7 +140,7 @@ public class Literature extends Entity {
 		return type;
 	}
 
-	public List<Author> getAuthors() {
+	public Set<Author> getAuthors() {
 		return authors;
 	}
 

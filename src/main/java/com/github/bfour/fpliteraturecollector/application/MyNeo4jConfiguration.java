@@ -37,6 +37,8 @@ import org.springframework.data.neo4j.support.typerepresentation.NoopRelationshi
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.github.bfour.fpliteraturecollector.service.PathToStringConverter;
+import com.github.bfour.fpliteraturecollector.service.StringToPathConverter;
 import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlerToStringConverter;
 import com.github.bfour.fpliteraturecollector.service.crawlers.StringToCrawlerConverter;
 
@@ -69,6 +71,8 @@ public class MyNeo4jConfiguration extends Neo4jConfiguration {
         ConverterRegistry registry = (ConverterRegistry) conversionService;
         registry.addConverter(new StringToCrawlerConverter());
         registry.addConverter(new CrawlerToStringConverter());
+        registry.addConverter(new StringToPathConverter());
+        registry.addConverter(new PathToStringConverter());
         return conversionService;
     }
     

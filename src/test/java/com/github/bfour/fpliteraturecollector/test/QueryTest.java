@@ -215,8 +215,8 @@ public class QueryTest {
 	public void createAndRemoveLiteraturesAndTestDatabaseClean()
 			throws ServiceException, DatalayerException {
 
-		Set<Literature> literatureList = TestDataCreator
-				.createLiteratureSet1(authServ);
+		List<Literature> literatureList = TestDataCreator
+				.createLiteratureList1(authServ);
 
 		for (Literature tag : literatureList)
 			literatureList
@@ -229,15 +229,16 @@ public class QueryTest {
 		}
 
 		// create AtomicRequests
+		Set<Literature> literatureSet = new HashSet<>(literatureList);
 		List<AtomicRequest> atomReqs = new ArrayList<AtomicRequest>(3);
 		atomReqs.add(new AtomicRequest(crawlServ.getAvailableCrawlers()
-				.iterator().next(), "LDL", 2, literatureList, true, null));
+				.iterator().next(), "LDL", 2, literatureSet, true, null));
 		atomReqs.add(new AtomicRequest(crawlServ.getAvailableCrawlers()
 				.iterator().next(), "another test &%$$ öäüß ß é Á _:_::___' ",
-				1, literatureList, true, null));
+				1, literatureSet, true, null));
 		atomReqs.add(new AtomicRequest(crawlServ.getAvailableCrawlers()
 				.iterator().next(), ":-) 1861", 0,
-				new ArrayList<Literature>(0), true, null));
+				new HashSet<Literature>(0), true, null));
 		for (AtomicRequest atomReq : atomReqs)
 			atomReqs.set(atomReqs.indexOf(atomReq), atomReqServ.create(atomReq));
 
