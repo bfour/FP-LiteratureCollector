@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.util.List;
+import java.util.Set;
 
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
@@ -64,13 +64,13 @@ public abstract class DataProvider {
 	 * @throws URISyntaxException 
 	 * @throws MalformedURLException 
 	 */
-	public final List<Literature> runQuery(String htmlParams, int pageTurnLimit)
+	public final Set<Literature> runQuery(String htmlParams, int pageTurnLimit)
 			throws DataUnavailableException, DatalayerException, URISyntaxException {
 		try {
 			Reader r = getHTMLDoc(htmlParams, pageTurnLimit);
 			if (r == null)
 				throw new DataUnavailableException("cannot connect");
-			List<Literature> result = parsePage(r);
+			Set<Literature> result = parsePage(r);
 			if (result == null)
 				throw new DataUnavailableException(
 						"parser failed to parse file");
@@ -86,7 +86,7 @@ public abstract class DataProvider {
 			throws URISyntaxException, MalformedURLException, IOException;
 
 	// parse it - return null in case of error
-	protected abstract List<Literature> parsePage(Reader r)
+	protected abstract Set<Literature> parsePage(Reader r)
 			throws DatalayerException;
 
 }

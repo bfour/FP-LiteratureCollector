@@ -53,7 +53,7 @@ public class TestDataCreator {
 		return authorList;
 	}
 
-	public static List<Literature> createLiteratureList1(AuthorService authServ)
+	public static List<Literature> createLiteratureSet1(AuthorService authServ)
 			throws ServiceException {
 
 		List<Author> authorList1 = new ArrayList<>(2);

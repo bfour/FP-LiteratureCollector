@@ -20,10 +20,10 @@ package com.github.bfour.fpliteraturecollector.service.crawlers;
  * -///////////////////////////////-
  */
 
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.SwingWorker;
 
@@ -42,6 +42,7 @@ import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 import com.github.bfour.fpliteraturecollector.domain.builders.AtomicRequestBuilder;
 import com.github.bfour.fpliteraturecollector.domain.builders.QueryBuilder;
+import com.github.bfour.fpliteraturecollector.service.AtomicRequestService;
 import com.github.bfour.fpliteraturecollector.service.QueryService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.abstraction.BackgroundWorker;
@@ -50,15 +51,16 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 
 	private class CrawlerWorker extends SwingWorker<Void, Void> {
 
-		private final Logger LOGGER = Logger
-				.getLogger(CrawlerWorker.class);
+		private final Logger LOGGER = Logger.getLogger(CrawlerWorker.class);
 
 		private QueryService qServ;
+		private AtomicRequestService atomReqServ;
 		private List<Exception> errors;
 		private Crawler crawler;
 
 		public CrawlerWorker(ServiceManager servMan, Crawler crawler) {
 			this.qServ = servMan.getQueryService();
+			this.atomReqServ = servMan.getAtomicRequestService();
 			this.errors = new ArrayList<Exception>();
 			this.crawler = crawler;
 		}
@@ -81,17 +83,23 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 										QueryStatus.CRAWLING).getObject());
 
 						// get results and update
-						List<Literature> results = crawler.process(topRequest
+						Set<Literature> results = crawler.process(topRequest
 								.getB());
+						AtomicRequest newAtomReq = new AtomicRequestBuilder(
+								topRequest.getB()).setProcessed(true)
+								.setResults(results).getObject();
+						atomReqServ.update(topRequest.getB(), newAtomReq);
+
 						List<AtomicRequest> atomReqs = new ArrayList<>(
 								topRequest.getA().getAtomicRequests());
 						atomReqs.set(atomReqs.indexOf(topRequest.getB()),
-								new AtomicRequestBuilder(topRequest.getB())
-										.setProcessed(true).setResults(results)
+								newAtomReq);
+						qServ.update(
+								topRequest.getA(),
+								new QueryBuilder(topRequest.getA())
+										.setAtomicRequests(
+												new HashSet<>(atomReqs))
 										.getObject());
-						qServ.update(topRequest.getA(), new QueryBuilder(
-								topRequest.getA()).setAtomicRequests(new HashSet<>(atomReqs))
-								.getObject());
 
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -104,9 +112,12 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 										.setProcessed(true)
 										.setProcessingError(e.getMessage())
 										.getObject());
-						qServ.update(topRequest.getA(), new QueryBuilder(
-								topRequest.getA()).setAtomicRequests(new HashSet<>(atomReqs))
-								.getObject());
+						qServ.update(
+								topRequest.getA(),
+								new QueryBuilder(topRequest.getA())
+										.setAtomicRequests(
+												new HashSet<>(atomReqs))
+										.getObject());
 					}
 				}
 			} catch (Exception e) {

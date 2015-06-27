@@ -21,7 +21,7 @@ package com.github.bfour.fpliteraturecollector.domain.builders;
  */
 
 
-import java.util.List;
+import java.util.Set;
 
 import com.github.bfour.fpjcommons.lang.Builder;
 import com.github.bfour.fpjcommons.model.EntityBuilder;
@@ -35,7 +35,7 @@ public class AtomicRequestBuilder extends EntityBuilder<AtomicRequest>
 	private Crawler crawler;
 	private String searchString;
 	private Integer maxPageTurns;
-	private List<Literature> results;
+	private Set<Literature> results;
 	private boolean processed;
 	private String processingError;
 
@@ -93,11 +93,11 @@ public class AtomicRequestBuilder extends EntityBuilder<AtomicRequest>
 		return this;
 	}
 
-	public List<Literature> getResults() {
+	public Set<Literature> getResults() {
 		return results;
 	}
 
-	public AtomicRequestBuilder setResults(List<Literature> results) {
+	public AtomicRequestBuilder setResults(Set<Literature> results) {
 		this.results = results;
 		return this;
 	}

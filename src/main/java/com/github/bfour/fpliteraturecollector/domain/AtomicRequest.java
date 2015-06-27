@@ -1,7 +1,7 @@
 package com.github.bfour.fpliteraturecollector.domain;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import org.neo4j.graphdb.Direction;
 import org.springframework.data.neo4j.annotation.RelatedTo;
@@ -38,7 +38,7 @@ public class AtomicRequest extends Entity {
 	private Integer maxPageTurns;
 
 	@RelatedTo(type = "RESULTS", direction = Direction.OUTGOING)
-	private List<Literature> results;
+	private Set<Literature> results;
 
 	private boolean processed;
 
@@ -46,7 +46,7 @@ public class AtomicRequest extends Entity {
 
 	public AtomicRequest(Long iD, Date creationTime, Date lastChangeTime,
 			Crawler crawler, String searchString, Integer maxPageTurns,
-			List<Literature> results, boolean processed, String processingError) {
+			Set<Literature> results, boolean processed, String processingError) {
 		super(iD, creationTime, lastChangeTime);
 		this.crawler = crawler;
 		this.searchString = searchString;
@@ -57,7 +57,7 @@ public class AtomicRequest extends Entity {
 	}
 
 	public AtomicRequest(Crawler crawler, String searchString,
-			Integer maxPageTurns, List<Literature> results, boolean processed,
+			Integer maxPageTurns, Set<Literature> results, boolean processed,
 			String processingError) {
 		this.crawler = crawler;
 		this.searchString = searchString;
@@ -82,7 +82,7 @@ public class AtomicRequest extends Entity {
 		return maxPageTurns;
 	}
 
-	public List<Literature> getResults() {
+	public Set<Literature> getResults() {
 		return results;
 	}
 

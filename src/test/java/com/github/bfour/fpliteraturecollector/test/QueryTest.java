@@ -215,8 +215,8 @@ public class QueryTest {
 	public void createAndRemoveLiteraturesAndTestDatabaseClean()
 			throws ServiceException, DatalayerException {
 
-		List<Literature> literatureList = TestDataCreator
-				.createLiteratureList1(authServ);
+		Set<Literature> literatureList = TestDataCreator
+				.createLiteratureSet1(authServ);
 
 		for (Literature tag : literatureList)
 			literatureList
