@@ -39,7 +39,7 @@ import com.github.bfour.fpliteraturecollector.service.ServiceManager.ServiceMana
 // TODO letzter Schritt: Output nur distinct; CSV generieren
 
 //@Configuration
-@Import(MyNeo4jConfiguration.class)
+@Import(FPLCNeo4jConfiguration.class)
 public class Application {
 
 	public static void main(String[] args) {

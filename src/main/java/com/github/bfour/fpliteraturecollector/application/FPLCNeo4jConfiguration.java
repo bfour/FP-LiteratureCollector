@@ -37,10 +37,12 @@ import org.springframework.data.neo4j.support.typerepresentation.NoopRelationshi
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.github.bfour.fpliteraturecollector.service.PathToStringConverter;
-import com.github.bfour.fpliteraturecollector.service.StringToPathConverter;
-import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlerToStringConverter;
-import com.github.bfour.fpliteraturecollector.service.crawlers.StringToCrawlerConverter;
+import com.github.bfour.fpliteraturecollector.service.converters.ColorToStringConverter;
+import com.github.bfour.fpliteraturecollector.service.converters.CrawlerToStringConverter;
+import com.github.bfour.fpliteraturecollector.service.converters.PathToStringConverter;
+import com.github.bfour.fpliteraturecollector.service.converters.StringToColorConverter;
+import com.github.bfour.fpliteraturecollector.service.converters.StringToCrawlerConverter;
+import com.github.bfour.fpliteraturecollector.service.converters.StringToPathConverter;
 
 // tag::config[]
 @EnableTransactionManagement
@@ -50,8 +52,8 @@ import com.github.bfour.fpliteraturecollector.service.crawlers.StringToCrawlerCo
 @ComponentScan(basePackages = {"com.github.bfour.fpliteraturecollector"})
 @Configuration
 @EnableNeo4jRepositories(basePackages = "com.github.bfour.fpliteraturecollector")
-public class MyNeo4jConfiguration extends Neo4jConfiguration {
-    public MyNeo4jConfiguration() {
+public class FPLCNeo4jConfiguration extends Neo4jConfiguration {
+    public FPLCNeo4jConfiguration() {
         setBasePackage("com.github.bfour.fpliteraturecollector.domain");
     }
 
@@ -73,6 +75,8 @@ public class MyNeo4jConfiguration extends Neo4jConfiguration {
         registry.addConverter(new CrawlerToStringConverter());
         registry.addConverter(new StringToPathConverter());
         registry.addConverter(new PathToStringConverter());
+        registry.addConverter(new StringToColorConverter());
+        registry.addConverter(new ColorToStringConverter());
         return conversionService;
     }
     

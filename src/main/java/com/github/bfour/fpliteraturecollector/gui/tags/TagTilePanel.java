@@ -20,10 +20,10 @@ package com.github.bfour.fpliteraturecollector.gui.tags;
  * -///////////////////////////////-
  */
 
-
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
 
 import javax.swing.JLabel;
 
@@ -55,18 +55,21 @@ public class TagTilePanel extends FPJGUITilePanel<Tag> {
 		setPanelGetter(new Getter<Tag, JXPanel>() {
 			@Override
 			public JXPanel get(final Tag input) {
+
 				JXPanel panel = new JXPanel(new MigLayout("insets 4", "[]",
 						"[]"));
 				panel.setOpaque(true);
 				panel.setBackground(input.getColour());
-				// adjust text colour
+
 				JLabel nameLabel = new JLabel(input.getName());
+				nameLabel.setFont(nameLabel.getFont().deriveFont(11f));
 				int colourSum = input.getColour().getRed()
 						+ input.getColour().getGreen()
 						+ input.getColour().getBlue();
 				if (colourSum <= 382)
 					nameLabel.setForeground(Color.WHITE);
 				panel.add(nameLabel);
+
 				if (enableDelete) {
 					FPJGUIButton removeButton = FPJGUIButtonFactory
 							.createButton(ButtonFormats.NAKED);
@@ -79,12 +82,26 @@ public class TagTilePanel extends FPJGUITilePanel<Tag> {
 					});
 					panel.add(removeButton);
 				}
+
 				return panel;
+
 			}
 		});
 
 		// this.deleteListeners = new LinkedList<>();
 
+	}
+
+	@Override
+	public void addEntry(Tag entry) {
+		if (!containsEntry(entry))
+			super.addEntry(entry);
+	}
+
+	@Override
+	public void addEntries(Collection<? extends Tag> entries) {
+		for (Tag entry : entries)
+			addEntry(entry);
 	}
 
 	// private void handleDelete(Tag tag) {

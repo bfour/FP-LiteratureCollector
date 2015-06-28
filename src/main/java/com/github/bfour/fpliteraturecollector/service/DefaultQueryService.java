@@ -65,7 +65,7 @@ public class DefaultQueryService extends EventCreatingCRUDService<Query>
 	public synchronized Query update(Query oldEntity, Query newEntity)
 			throws ServiceException {
 		checkIntegrity(newEntity);
-		return super.update(oldEntity, newEntity);
+		return super.update(oldEntity, setStatus(newEntity));
 	}
 
 	@Override
@@ -108,6 +108,10 @@ public class DefaultQueryService extends EventCreatingCRUDService<Query>
 	@Override
 	public synchronized Query queueUp(Query query) throws ServiceException {
 
+		if (query.getStatus() == QueryStatus.FINISHED
+				|| query.getStatus() == QueryStatus.FINISHED_WITH_ERROR)
+			return query;
+
 		Query predecessor = getByQueuePosition(query.getQueuePosition() - 1);
 		if (predecessor == null) {
 			// no predecessor, we're already at beginning of queue do nothing
@@ -129,6 +133,10 @@ public class DefaultQueryService extends EventCreatingCRUDService<Query>
 	@Override
 	public synchronized Query queueDown(Query query) throws ServiceException {
 
+		if (query.getStatus() == QueryStatus.FINISHED
+				|| query.getStatus() == QueryStatus.FINISHED_WITH_ERROR)
+			return query;
+
 		Query successor = getByQueuePosition(query.getQueuePosition() + 1);
 		if (successor == null) {
 			// no successor, we're already at end of queue do nothing
@@ -148,15 +156,16 @@ public class DefaultQueryService extends EventCreatingCRUDService<Query>
 
 	@Override
 	public synchronized Query queue(Query query) throws ServiceException {
-		if (query.getStatus() == QueryStatus.IDLE
-				|| query.getStatus() == QueryStatus.FINISHED_WITH_ERROR
-				|| query.getStatus() == QueryStatus.QUEUED) {
-			Query newQuery = new QueryBuilder(query)
-					.setQueuePosition(getMaxQueuePosition() + 1)
-					.setStatus(QueryStatus.QUEUED).getObject();
-			return update(query, newQuery);
-		}
-		return query;
+
+		if (query.getStatus() == QueryStatus.FINISHED
+				|| query.getStatus() == QueryStatus.FINISHED_WITH_ERROR)
+			return query;
+
+		Query newQuery = new QueryBuilder(query)
+				.setQueuePosition(getMaxQueuePosition() + 1)
+				.setStatus(QueryStatus.QUEUED).getObject();
+		return update(query, newQuery);
+
 	}
 
 	@Override
@@ -169,7 +178,6 @@ public class DefaultQueryService extends EventCreatingCRUDService<Query>
 	public synchronized Query unqueue(Query query) throws ServiceException {
 		Query newQuery = new QueryBuilder(query).setQueuePosition(null)
 				.getObject();
-		newQuery = setInitialStatus(newQuery);
 		return update(query, newQuery);
 	}
 
@@ -231,39 +239,53 @@ public class DefaultQueryService extends EventCreatingCRUDService<Query>
 	@Override
 	public void setAllIdleOrFinished() throws ServiceException {
 		for (Query q : getAll()) {
-			update(q, setInitialStatus(q));
+			if (q.getStatus() == QueryStatus.FINISHED
+					|| q.getStatus() == QueryStatus.FINISHED_WITH_ERROR)
+				continue;
+			update(q, new QueryBuilder(q).setStatus(QueryStatus.IDLE)
+					.getObject());
 		}
 	}
 
 	private Query setStatus(Query q) {
-		if (q.getStatus() != null)
+
+		if (q.getStatus() == QueryStatus.CRAWLING)
 			return q;
 
+		QueryStatus status = null;
+
 		boolean hasError = false;
+		boolean hasUnprocessed = false;
 		for (AtomicRequest atomReq : q.getAtomicRequests()) {
 			if (!atomReq.isProcessed())
-				return new QueryBuilder(q).setStatus(QueryStatus.IDLE)
-						.getObject();
+				hasUnprocessed = true;
 			if (atomReq.getProcessingError() != null)
 				hasError = true;
 		}
 
-		if (hasError)
-			return new QueryBuilder(q).setStatus(
-					QueryStatus.FINISHED_WITH_ERROR).getObject();
+		if (hasUnprocessed && q.getQueuePosition() == null)
+			status = QueryStatus.IDLE;
+		else if (hasUnprocessed && q.getQueuePosition() != null) {
+			status = QueryStatus.QUEUED;
+		} else if (hasError)
+			status = QueryStatus.FINISHED_WITH_ERROR;
 		else
-			return new QueryBuilder(q).setStatus(QueryStatus.FINISHED)
-					.getObject();
+			status = QueryStatus.FINISHED;
+
+		return new QueryBuilder(q).setStatus(status).getObject();
 
 	}
 
-	private Query setInitialStatus(Query q) {
-		if (q.getStatus() != null
-				&& (q.getStatus() == QueryStatus.FINISHED || q.getStatus() == QueryStatus.FINISHED_WITH_ERROR)) {
-			// return new QueryBuilder(q).setStatus(q.getStatus()).getObject();
-			return q;
-		}
-		return new QueryBuilder(q).setStatus(QueryStatus.IDLE).getObject();
+	@Override
+	public Query setCrawling(Query q) throws ServiceException {
+		return update(q, new QueryBuilder(q).setStatus(QueryStatus.CRAWLING)
+				.getObject());
+	}
+
+	@Override
+	public Query setNotCrawling(Query q) throws ServiceException {
+		return update(q, new QueryBuilder(q).setStatus(QueryStatus.IDLE)
+				.getObject());
 	}
 
 }

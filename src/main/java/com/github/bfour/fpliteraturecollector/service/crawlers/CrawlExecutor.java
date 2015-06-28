@@ -38,7 +38,6 @@ import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Query;
-import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 import com.github.bfour.fpliteraturecollector.domain.builders.AtomicRequestBuilder;
 import com.github.bfour.fpliteraturecollector.domain.builders.QueryBuilder;
 import com.github.bfour.fpliteraturecollector.service.AtomicRequestService;
@@ -76,10 +75,7 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 					try {
 
 						// set crawling
-						qServ.update(
-								topRequest.getA(),
-								new QueryBuilder(topRequest.getA()).setStatus(
-										QueryStatus.CRAWLING).getObject());
+						qServ.setCrawling(topRequest.getA());
 
 						// get results and update
 						List<Literature> results = crawler.process(topRequest
@@ -93,12 +89,10 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 								topRequest.getA().getAtomicRequests());
 						atomReqs.set(atomReqs.indexOf(topRequest.getB()),
 								newAtomReq);
-						qServ.update(
-								topRequest.getA(),
-								new QueryBuilder(topRequest.getA())
-										.setAtomicRequests(
-												new HashSet<>(atomReqs))
-										.getObject());
+
+						qServ.setNotCrawling(new QueryBuilder(topRequest.getA())
+								.setAtomicRequests(new HashSet<>(atomReqs))
+								.getObject());
 
 					} catch (Exception e) {
 						e.printStackTrace();

@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.gui.authors;
  * -///////////////////////////////-
  */
 
-
 import net.miginfocom.swing.MigLayout;
 
 import com.github.bfour.fpjcommons.lang.BuilderFactory;
@@ -38,6 +37,8 @@ import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 
 	private static final long serialVersionUID = -6108218045598314837L;
+	private FPJGUILabelPanel msAcademicLabelPanel;
+	private FPJGUILabelPanel gScholarIDLabelPanel;
 
 	/**
 	 * Create the panel.
@@ -94,6 +95,26 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 				new FPJGUILabelPanel("Last Name(s)", lastNameToggle),
 				"cell 0 2,growx");
 
+		// gScholarID
+		FPJGUIMultilineLabel gScholarIDField = new FPJGUIMultilineLabel();
+		FPJGUIMultilineLabel gScholarIDLabel = new FPJGUIMultilineLabel();
+		ToggleEditFormComponent<String> gScholarIDToggle = new ToggleEditFormComponent<String>(
+				gScholarIDLabel, gScholarIDField);
+		registerToggleComponent(gScholarIDToggle);
+		gScholarIDLabelPanel = new FPJGUILabelPanel("Google Scholar ID",
+				gScholarIDToggle);
+		getContentPane().add(gScholarIDLabelPanel, "cell 0 3,growx");
+
+		// msAcademicID
+		FPJGUIMultilineLabel msAcademicIDField = new FPJGUIMultilineLabel();
+		FPJGUIMultilineLabel msAcademicIDLabel = new FPJGUIMultilineLabel();
+		ToggleEditFormComponent<String> msAcademicIDToggle = new ToggleEditFormComponent<String>(
+				msAcademicIDLabel, msAcademicIDField);
+		registerToggleComponent(msAcademicIDToggle);
+		msAcademicLabelPanel = new FPJGUILabelPanel("Microsoft Academic ID",
+				msAcademicIDToggle);
+		getContentPane().add(msAcademicLabelPanel, "cell 0 4,growx");
+
 		// mappings
 		ObjectGraphicalValueContainerMapper<AuthorBuilder, String> IDMapper = new ObjectGraphicalValueContainerMapper<AuthorBuilder, String>(
 				IDLabel) {
@@ -140,5 +161,38 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 		};
 		getMappers().add(lastNameMapper);
 
+		ObjectGraphicalValueContainerMapper<AuthorBuilder, String> gScholarIDMapper = new ObjectGraphicalValueContainerMapper<AuthorBuilder, String>(
+				gScholarIDToggle) {
+			@Override
+			public String getValue(AuthorBuilder object) {
+				if (object.getgScholarID() == null)
+					return "not defined";
+				return object.getgScholarID();
+			}
+
+			@Override
+			public void setValue(AuthorBuilder object, String value) {
+				object.setgScholarID(value);
+			}
+		};
+		getMappers().add(gScholarIDMapper);
+
+		ObjectGraphicalValueContainerMapper<AuthorBuilder, String> msAcademicIDMapper = new ObjectGraphicalValueContainerMapper<AuthorBuilder, String>(
+				msAcademicIDToggle) {
+			@Override
+			public String getValue(AuthorBuilder object) {
+				if (object.getMsAcademicID() == null)
+					return "not defined";
+				return object.getMsAcademicID();
+			}
+
+			@Override
+			public void setValue(AuthorBuilder object, String value) {
+				object.setMsAcademicID(value);
+			}
+		};
+		getMappers().add(msAcademicIDMapper);
+
 	}
+
 }

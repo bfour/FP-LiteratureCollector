@@ -50,6 +50,7 @@ public enum Icons {
 	CROSS_12("classpath:icons/cross_12.png"),
 	
 	ADD("classpath:icons/add.png"),
+	ADD_16("classpath:icons/add_16.png"),
 	ADD_24("classpath:icons/add_24.png"),
 	
 	PLAY("classpath:icons/control_play_blue.png"),

@@ -84,6 +84,7 @@ public class Literature extends Entity {
 
 	protected Integer gScholarNumCitations;
 
+	@Fetch
 	@RelatedTo(type="TAGS", direction = Direction.OUTGOING)
 	protected Set<Tag> tags;
 

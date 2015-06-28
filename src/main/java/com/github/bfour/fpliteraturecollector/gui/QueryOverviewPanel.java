@@ -49,6 +49,9 @@ import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ListLikeValueContainer;
+import com.github.bfour.fpjgui.components.FPJGUIButton;
+import com.github.bfour.fpjgui.components.FPJGUIButton.ButtonFormats;
+import com.github.bfour.fpjgui.components.FPJGUIButton.FPJGUIButtonFactory;
 import com.github.bfour.fpjgui.components.PlainToolbar;
 import com.github.bfour.fpjgui.design.PanelDecorator;
 import com.github.bfour.fpliteraturecollector.domain.Query;
@@ -61,6 +64,7 @@ import com.github.bfour.fpliteraturecollector.service.abstraction.BackgroundWork
 import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlExecutor;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.mortennobel.imagescaling.AdvancedResizeOp;
 
 public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		FeedbackListener, ListLikeValueContainer<Query> {
@@ -112,6 +116,18 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		finishedPanel.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
 		container.add(finishedPanel, "growx, wrap");
 
+		// create interface
+		FPJGUIButton createButton = FPJGUIButtonFactory.createButton(ButtonFormats.LINK);
+		createButton.setText("Create a new query");
+		createButton.setIcon(Icons.ADD_16.getIcon());
+		createButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				createNew();
+			}
+		});
+		createPanel.add(createButton, "alignx center, wrap");
+		
 		// bottom toolbar
 		PlainToolbar toolbar = new PlainToolbar(true);
 		add(toolbar, "cell 0 1, growx");
@@ -303,21 +319,8 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 
 	@Override
 	public synchronized void updateEntry(Query oldQuery, Query newQuery) {
-		// check if queue position has changed
-		// Integer currentPos = componentQueryMap.get(
-		// componentQueryMap.inverse().get(oldQuery)).getQueuePosition();
-		// Integer newPos = newQuery.getQueuePosition();
-		// if ((currentPos == null && newPos != null)
-		// || !currentPos.equals(newPos)) {
 		deleteEntry(oldQuery);
 		addEntry(newQuery);
-		// return;
-		// } else {
-		// updateBorderColor(componentQueryMap.inverse().get(oldQuery),
-		// newQuery);
-		// }
-		// pos has not changed, update panel information
-		// componentQueryMap.inverse().get(oldQuery).setEntity(newQuery);
 	}
 
 	private void updateBorderColor(QueryPanel queryPanel, Query query) {

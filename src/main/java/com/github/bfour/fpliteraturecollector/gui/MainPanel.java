@@ -61,11 +61,11 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		// toolbar
 		PlainToolbar toolbar = new PlainToolbar(true);
 
-		JButton createQueryButton = new JButton("Create query",
-				Icons.ADD.getIcon());
-		createQueryButton.setIconTextGap(6);
-		createQueryButton.setMargin(new Insets(4, 16, 4, 16));
-		toolbar.add(createQueryButton);
+		// JButton createQueryButton = new JButton("Create query",
+		// Icons.ADD.getIcon());
+		// createQueryButton.setIconTextGap(6);
+		// createQueryButton.setMargin(new Insets(4, 16, 4, 16));
+		// toolbar.add(createQueryButton);
 
 		JButton browseAuthorsButton = new JButton("Authors",
 				Icons.PERSON_GROUP.getIcon());
@@ -73,18 +73,18 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		browseAuthorsButton.setMargin(new Insets(4, 16, 4, 16));
 		toolbar.add(browseAuthorsButton);
 		
-		JButton tagsButton = new JButton("Tags",
-				Icons.TAG_32.getIcon());
-		tagsButton.setIconTextGap(6);
-		tagsButton.setMargin(new Insets(4, 16, 4, 16));
-		toolbar.add(tagsButton);		
-
 		JButton browseLiteratureButton = new JButton("Literature",
 				Icons.BOOKS.getIcon());
 		browseLiteratureButton.setIconTextGap(6);
 		browseLiteratureButton.setMargin(new Insets(4, 16, 4, 16));
 		toolbar.add(browseLiteratureButton);
 
+		JButton tagsButton = new JButton("Tags",
+				Icons.TAG_32.getIcon());
+		tagsButton.setIconTextGap(6);
+		tagsButton.setMargin(new Insets(4, 16, 4, 16));
+		toolbar.add(tagsButton);
+		
 		JButton duplicatesButton = new JButton("Manage duplicates",
 				Icons.DUPLICATE.getIcon());
 		duplicatesButton.setIconTextGap(6);
@@ -106,12 +106,12 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		queryOverviewPanel.addFeedbackListener(this);
 
 		// logic
-		createQueryButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				queryOverviewPanel.createNew();
-			}
-		});
+		// createQueryButton.addActionListener(new ActionListener() {
+		// @Override
+		// public void actionPerformed(ActionEvent e) {
+		// queryOverviewPanel.createNew();
+		// }
+		// });
 
 		browseAuthorsButton.addActionListener(new ActionListener() {
 			@Override

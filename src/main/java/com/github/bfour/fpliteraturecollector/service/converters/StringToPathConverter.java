@@ -1,4 +1,4 @@
-package com.github.bfour.fpliteraturecollector.service;
+package com.github.bfour.fpliteraturecollector.service.converters;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

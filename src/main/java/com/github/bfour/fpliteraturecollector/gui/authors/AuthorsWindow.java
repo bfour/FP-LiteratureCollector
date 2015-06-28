@@ -72,7 +72,7 @@ public class AuthorsWindow extends JFrame implements FeedbackListener {
 		PanelDecorator.decorateWithDropShadow(litPanel);
 		litPanel.setCRUDButtonsVisible(false);
 		litPanel.addFeedbackListener(this);
-		contentPane.add(litPanel, "cell 1 0, growy, w 186:268, h 468:");
+		contentPane.add(litPanel, "cell 1 0, growy, w 186:268, h 268:");
 		
 		litLookPanel.addCreateAction(new ActionListener() {
 			@Override
