@@ -23,6 +23,7 @@ package com.github.bfour.fpliteraturecollector.service.crawlers;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.SwingWorker;
 
@@ -36,11 +37,15 @@ import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
+import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.domain.builders.AtomicRequestBuilder;
+import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 import com.github.bfour.fpliteraturecollector.domain.builders.QueryBuilder;
 import com.github.bfour.fpliteraturecollector.service.AtomicRequestService;
+import com.github.bfour.fpliteraturecollector.service.AuthorService;
+import com.github.bfour.fpliteraturecollector.service.LiteratureService;
 import com.github.bfour.fpliteraturecollector.service.QueryService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.abstraction.BackgroundWorker;
@@ -53,12 +58,16 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 
 		private QueryService qServ;
 		private AtomicRequestService atomReqServ;
+		private AuthorService authServ;
+		private LiteratureService litServ;
 		private List<Exception> errors;
 		private Crawler crawler;
 
 		public CrawlerWorker(ServiceManager servMan, Crawler crawler) {
 			this.qServ = servMan.getQueryService();
 			this.atomReqServ = servMan.getAtomicRequestService();
+			this.litServ = servMan.getLiteratureService();
+			this.authServ = servMan.getAuthorService();
 			this.errors = new ArrayList<Exception>();
 			this.crawler = crawler;
 		}
@@ -80,6 +89,32 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 						// get results and update
 						List<Literature> results = crawler.process(topRequest
 								.getB());
+
+						List<Literature> persistedResults = new ArrayList<Literature>(
+								results.size());
+						for (Literature lit : results) {
+							Set<Author> persistedAuthors = new HashSet<>(lit
+									.getAuthors().size());
+							for (Author auth : lit.getAuthors()) {
+								if (!authServ.exists(auth)) {
+									Author createdAuth = authServ.create(auth);
+									persistedAuthors.add(createdAuth);
+								} else {
+									persistedAuthors.add(auth);
+								}
+							}
+							lit = new LiteratureBuilder(lit).setAuthors(
+									persistedAuthors).getObject();
+							if (!litServ.exists(lit)) {
+								Literature createdLit = litServ.create(lit);
+								persistedResults.add(createdLit);
+							} else {
+								persistedResults.add(lit);
+							}
+						}
+						
+						results = persistedResults;
+
 						AtomicRequest newAtomReq = new AtomicRequestBuilder(
 								topRequest.getB()).setProcessed(true)
 								.setResults(new HashSet<>(results)).getObject();

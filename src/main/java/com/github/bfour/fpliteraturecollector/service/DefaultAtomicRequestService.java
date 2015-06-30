@@ -27,7 +27,8 @@ import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.AtomicRequestDAO;
 
 public class DefaultAtomicRequestService extends
-		EventCreatingCRUDService<AtomicRequest> implements AtomicRequestService {
+		EventCreatingCRUDService<AtomicRequest> implements
+		AtomicRequestService {
 
 	private static DefaultAtomicRequestService instance;
 	private LiteratureService litServ;
@@ -47,7 +48,7 @@ public class DefaultAtomicRequestService extends
 					forceCreateNewInstance, litServ, authServ, tagServ);
 		return instance;
 	}
-
+	
 	@Override
 	public AtomicRequest create(AtomicRequest entity) throws ServiceException {
 		checkIntegrity(entity);
