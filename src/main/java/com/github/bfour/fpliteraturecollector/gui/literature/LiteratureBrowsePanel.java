@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.gui.literature;
  * -///////////////////////////////-
  */
 
-
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -84,18 +83,24 @@ public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature>
 			public void actionPerformed(ActionEvent e) {
 				List<Tag> tags = taggingPanel.getTags();
 				LiteratureService litServ = servMan.getLiteratureService();
+				int successCounter = 0;
 				for (Literature selectedLit : getValue()) {
 					Literature newLiterature = new LiteratureBuilder(
 							selectedLit).setTags(new HashSet<Tag>(tags))
 							.getObject();
 					try {
 						litServ.update(selectedLit, newLiterature);
+						successCounter++;
 					} catch (ServiceException e1) {
 						fireFeedback(new Feedback(LiteratureBrowsePanel.this,
 								"Sorry, failed to set tags for " + selectedLit,
 								e1.getMessage(), FeedbackType.ERROR));
 					}
 				}
+				fireFeedback(new Feedback(LiteratureBrowsePanel.this,
+						"Tags for " + successCounter
+								+ " literature entries set.",
+						FeedbackType.SUCCESS));
 				tagPopover.hidePopup();
 			}
 		});
