@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.gui;
  * -///////////////////////////////-
  */
 
-
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -38,6 +37,8 @@ import org.jdesktop.swingx.JXPanel;
 
 import com.github.bfour.fpjcommons.lang.Tuple;
 import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpjgui.abstraction.EntityFilter;
+import com.github.bfour.fpjgui.abstraction.EntityFilterPipeline;
 import com.github.bfour.fpjgui.abstraction.GUIOption;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
@@ -45,9 +46,12 @@ import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
 import com.github.bfour.fpjgui.components.FPJGUILabel;
 import com.github.bfour.fpjgui.components.PlainToolbar;
 import com.github.bfour.fpjgui.util.DefaultActionInterfacingHandler;
+import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
+import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
+import com.github.bfour.fpliteraturecollector.gui.literature.LiteratureWindow;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
 public class QueryPanel extends JXPanel implements FeedbackProvider {
@@ -61,6 +65,7 @@ public class QueryPanel extends JXPanel implements FeedbackProvider {
 	private FPJGUILabel<ImageIcon> statusIconLabel;
 	private FPJGUILabel<String> statusLabel;
 
+	private JButton litButton;
 	private JButton stopButton;
 	private JButton editButton;
 	private JButton deleteButton;
@@ -94,6 +99,11 @@ public class QueryPanel extends JXPanel implements FeedbackProvider {
 		PlainToolbar toolbar = new PlainToolbar(true);
 		add(toolbar, "cell 2 0");
 
+		litButton = new JButton("Literature", Icons.BOOKS_20.getIcon());
+		litButton.setIconTextGap(4);
+		litButton.setMargin(new Insets(1, 4, 2, 4));
+		toolbar.add(litButton);
+
 		stopButton = new JButton("Stop", Icons.STOP_20.getIcon());
 		stopButton.setIconTextGap(4);
 		stopButton.setMargin(new Insets(1, 4, 2, 4));
@@ -121,6 +131,24 @@ public class QueryPanel extends JXPanel implements FeedbackProvider {
 		toolbar.add(queueDownButton);
 
 		// logic
+		litButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				LiteratureWindow litWindow = new LiteratureWindow(servMan, new EntityFilterPipeline<Literature>(new EntityFilter<Literature>() {
+					@Override
+					public boolean include(Literature entity) {
+						// TODO optimize
+						for (AtomicRequest atomReq : query.getAtomicRequests())
+							for (Literature lit : atomReq.getResults())
+								if (lit.equals(entity))
+									return true;
+						return false;
+					}
+				}));
+				litWindow.setVisible(true);
+			}
+		});
+
 		deleteButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

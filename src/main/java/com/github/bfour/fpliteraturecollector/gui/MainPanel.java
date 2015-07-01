@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.gui;
  * -///////////////////////////////-
  */
 
-
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,6 +45,7 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 
 	private static final long serialVersionUID = 1144467669251836304L;
 	private FeedbackProviderProxy feedbackProxy;
+	private LiteratureWindow litWindow;
 
 	/**
 	 * Create the panel.
@@ -72,19 +72,18 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		browseAuthorsButton.setIconTextGap(6);
 		browseAuthorsButton.setMargin(new Insets(4, 16, 4, 16));
 		toolbar.add(browseAuthorsButton);
-		
+
 		JButton browseLiteratureButton = new JButton("Literature",
 				Icons.BOOKS.getIcon());
 		browseLiteratureButton.setIconTextGap(6);
 		browseLiteratureButton.setMargin(new Insets(4, 16, 4, 16));
 		toolbar.add(browseLiteratureButton);
 
-		JButton tagsButton = new JButton("Tags",
-				Icons.TAG_32.getIcon());
+		JButton tagsButton = new JButton("Tags", Icons.TAG_32.getIcon());
 		tagsButton.setIconTextGap(6);
 		tagsButton.setMargin(new Insets(4, 16, 4, 16));
 		toolbar.add(tagsButton);
-		
+
 		JButton duplicatesButton = new JButton("Manage duplicates",
 				Icons.DUPLICATE.getIcon());
 		duplicatesButton.setIconTextGap(6);
@@ -119,18 +118,20 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 				AuthorsWindow.getInstance(serviceManager).setVisible(true);
 			}
 		});
-		
+
 		tagsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				TagsWindow.getInstance(serviceManager).setVisible(true);
 			}
-		});		
+		});
 
 		browseLiteratureButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				LiteratureWindow.getInstance(serviceManager).setVisible(true);
+				if (litWindow == null)
+					litWindow = new LiteratureWindow(serviceManager);
+				litWindow.setVisible(true);
 			}
 		});
 

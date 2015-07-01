@@ -41,6 +41,7 @@ public enum Icons {
 			
 	PERSON_GROUP("classpath:icons/group.png"),
 	BOOKS("classpath:icons/books.png"),
+	BOOKS_20("classpath:icons/books_20.png"),
 	DUPLICATE("classpath:icons/column_double.png"),
 	CONFIG("classpath:icons/setting_tools_32.png"),
 	

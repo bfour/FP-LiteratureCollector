@@ -64,11 +64,15 @@ public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature>
 
 	private static final long serialVersionUID = 4500980555674670335L;
 
-	/**
-	 * Create the panel.
-	 */
 	public LiteratureBrowsePanel(final ServiceManager servMan) {
+		this(servMan, new EntityFilterPipeline<Literature>());
+	}
 
+	public LiteratureBrowsePanel(final ServiceManager servMan,
+			EntityFilterPipeline<Literature> filters) {
+
+		this.setFilters(filters);
+		
 		final TaggingPanel taggingPanel = new TaggingPanel(servMan);
 		final FPJGUIPopover tagPopover = new FPJGUIPopover(taggingPanel);
 
