@@ -281,6 +281,11 @@
 			<version>0.0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>com.github.bfour.fp-jpersist</groupId>
+			<artifactId>fp-jpersist</artifactId>
+			<version>0.0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>com.github.bfour.fp-jgui</groupId>
 			<artifactId>fp-jgui</artifactId>
 			<version>0.0.3-SNAPSHOT</version>

@@ -4,6 +4,8 @@ import java.util.Date;
 
 import org.springframework.data.neo4j.annotation.Indexed;
 
+import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
+
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
  * FP-LiteratureCollector
@@ -24,7 +26,7 @@ import org.springframework.data.neo4j.annotation.Indexed;
  * -///////////////////////////////-
  */
 
-public class Author extends Entity {
+public class Author extends Neo4JEntity {
 
 	protected String firstName;
 	protected String lastName;

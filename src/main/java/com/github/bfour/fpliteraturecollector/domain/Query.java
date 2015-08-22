@@ -29,9 +29,10 @@ import org.neo4j.graphdb.Direction;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
+import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 
-public class Query extends Entity {
+public class Query extends Neo4JEntity {
 
 	public static enum QueryStatus {
 		CRAWLING("crawling", com.github.bfour.fpjgui.design.Icons.BUSY_16.getIcon()), 

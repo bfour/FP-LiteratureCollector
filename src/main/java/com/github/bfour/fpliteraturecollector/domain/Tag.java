@@ -23,7 +23,9 @@ package com.github.bfour.fpliteraturecollector.domain;
 import java.awt.Color;
 import java.util.Date;
 
-public class Tag extends Entity {
+import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
+
+public class Tag extends Neo4JEntity {
 
 	private String name;
 	private Color colour;

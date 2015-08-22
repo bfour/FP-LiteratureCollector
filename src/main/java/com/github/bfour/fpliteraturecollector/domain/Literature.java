@@ -30,7 +30,9 @@ import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 import org.springframework.data.neo4j.support.index.IndexType;
 
-public class Literature extends Entity {
+import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
+
+public class Literature extends Neo4JEntity {
 
 	public static enum LiteratureType {
 		UNKNOWN("unknown"), BOOK("book"), DISSERTATION("dissertation"), JOURNAL_PAPER(
