@@ -30,7 +30,7 @@ import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.stereotype.Service;
 
 import com.github.bfour.fpjcommons.services.DatalayerException;
-import com.github.bfour.fpjpersist.neo4j.AbstractNeo4JDAO;
+import com.github.bfour.fpjpersist.neo4j.service.AbstractNeo4JDAO;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 
 @Service

@@ -37,12 +37,12 @@ import org.springframework.data.neo4j.support.typerepresentation.NoopRelationshi
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.github.bfour.fpliteraturecollector.service.converters.ColorToStringConverter;
+import com.github.bfour.fpjpersist.neo4j.service.converters.ColorToStringConverter;
+import com.github.bfour.fpjpersist.neo4j.service.converters.PathToStringConverter;
+import com.github.bfour.fpjpersist.neo4j.service.converters.StringToColorConverter;
+import com.github.bfour.fpjpersist.neo4j.service.converters.StringToPathConverter;
 import com.github.bfour.fpliteraturecollector.service.converters.CrawlerToStringConverter;
-import com.github.bfour.fpliteraturecollector.service.converters.PathToStringConverter;
-import com.github.bfour.fpliteraturecollector.service.converters.StringToColorConverter;
 import com.github.bfour.fpliteraturecollector.service.converters.StringToCrawlerConverter;
-import com.github.bfour.fpliteraturecollector.service.converters.StringToPathConverter;
 
 // tag::config[]
 @EnableTransactionManagement
