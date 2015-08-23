@@ -51,13 +51,13 @@ import com.github.bfour.fpjgui.components.SearchComboBox;
 import com.github.bfour.fpjgui.components.ToggleEditFormComponent;
 import com.github.bfour.fpjgui.components.composite.EntityBrowsePanel;
 import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
+import com.github.bfour.fpjguiextended.tagging.TagTilePanel;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.ISBN;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
-import com.github.bfour.fpliteraturecollector.gui.tags.TagTilePanel;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
 public class LiteraturePanel extends
@@ -72,18 +72,19 @@ public class LiteraturePanel extends
 	 */
 	public LiteraturePanel(ServiceManager servMan) {
 
-		super(new BuilderFactory<Literature, LiteratureBuilder>() {
-			@Override
-			public LiteratureBuilder getBuilder() {
-				return new LiteratureBuilder();
-			}
+		super(Literature.class,
+				new BuilderFactory<Literature, LiteratureBuilder>() {
+					@Override
+					public LiteratureBuilder getBuilder() {
+						return new LiteratureBuilder();
+					}
 
-			@Override
-			public LiteratureBuilder getBuilder(Literature entity) {
-				return new LiteratureBuilder(entity);
-			}
+					@Override
+					public LiteratureBuilder getBuilder(Literature entity) {
+						return new LiteratureBuilder(entity);
+					}
 
-		}, servMan.getLiteratureService());
+				}, servMan.getLiteratureService());
 
 		getContentPane().setLayout(
 				new MigLayout("insets 0, w 60:80:100", "[grow]", "[]"));
@@ -163,8 +164,8 @@ public class LiteraturePanel extends
 				"growx,wrap");
 
 		// tags
-		TagTilePanel tagLabel = new TagTilePanel(false);
-		TagTilePanel tagField = new TagTilePanel(false);
+		TagTilePanel<Tag> tagLabel = new TagTilePanel<>(false);
+		TagTilePanel<Tag> tagField = new TagTilePanel<>(false);
 		ToggleEditFormComponent<List<Tag>> tagToggle = new ToggleEditFormComponent<List<Tag>>(
 				tagLabel, tagField);
 		registerToggleComponent(tagToggle);

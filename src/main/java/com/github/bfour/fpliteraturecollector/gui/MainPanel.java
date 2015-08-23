@@ -29,15 +29,18 @@ import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
+import com.github.bfour.fpjcommons.utils.Getter;
 import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
 import com.github.bfour.fpjgui.components.PlainToolbar;
+import com.github.bfour.fpjguiextended.tagging.TagsWindow;
+import com.github.bfour.fpliteraturecollector.domain.Tag;
+import com.github.bfour.fpliteraturecollector.domain.builders.TagBuilder;
 import com.github.bfour.fpliteraturecollector.gui.authors.AuthorsWindow;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 import com.github.bfour.fpliteraturecollector.gui.literature.LiteratureWindow;
-import com.github.bfour.fpliteraturecollector.gui.tags.TagsWindow;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
 public class MainPanel extends JPanel implements FeedbackProvider,
@@ -122,7 +125,17 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		tagsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				TagsWindow.getInstance(serviceManager).setVisible(true);
+				TagsWindow.getInstance(Tag.class,
+						serviceManager.getTagService(),
+						new Getter<Tag, TagBuilder>() {
+							@Override
+							public TagBuilder get(Tag input) {
+								if (input == null)
+									return new TagBuilder();
+								else
+									return new TagBuilder(input);
+							}
+						}).setVisible(true);
 			}
 		});
 

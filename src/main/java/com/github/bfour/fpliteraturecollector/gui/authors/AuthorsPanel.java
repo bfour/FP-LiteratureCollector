@@ -45,7 +45,7 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 	 */
 	public AuthorsPanel(ServiceManager servMan) {
 
-		super(new BuilderFactory<Author, AuthorBuilder>() {
+		super(Author.class, new BuilderFactory<Author, AuthorBuilder>() {
 			@Override
 			public AuthorBuilder getBuilder() {
 				return new AuthorBuilder();

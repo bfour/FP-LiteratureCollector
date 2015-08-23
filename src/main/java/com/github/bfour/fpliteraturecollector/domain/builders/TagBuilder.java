@@ -20,31 +20,40 @@ package com.github.bfour.fpliteraturecollector.domain.builders;
  * -///////////////////////////////-
  */
 
-
 import java.awt.Color;
 
-import com.github.bfour.fpjcommons.lang.Builder;
-import com.github.bfour.fpjcommons.model.EntityBuilder;
+import com.github.bfour.fpjcommons.utils.Getter;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
 
-public class TagBuilder extends EntityBuilder<Tag> implements Builder<Tag> {
+public class TagBuilder extends
+		com.github.bfour.fpjguiextended.tagging.TagBuilder<Tag> {
 
+	private static Getter<com.github.bfour.fpjguiextended.tagging.Tag, Tag> tagGetter = new Getter<com.github.bfour.fpjguiextended.tagging.Tag, Tag>() {
+		@Override
+		public Tag get(com.github.bfour.fpjguiextended.tagging.Tag input) {
+			return new Tag(input.getID(), input.getCreationTime(),
+					input.getLastChangeTime(), input.getName(),
+					input.getColour());
+		}
+	};
 	private String name;
 	private Color colour;
 
 	public TagBuilder() {
-		super();
+		super(tagGetter);
 	}
 
 	public TagBuilder(Tag tag) {
-		
+
+		super(tagGetter, tag);
+
 		setID(tag.getID());
 		setCreationTime(tag.getCreationTime());
-		setLastChangeTime(tag.getLastChangeTime());		
-		
+		setLastChangeTime(tag.getLastChangeTime());
+
 		setName(tag.getName());
 		setColour(tag.getColour());
-		
+
 	}
 
 	@Override
@@ -53,18 +62,22 @@ public class TagBuilder extends EntityBuilder<Tag> implements Builder<Tag> {
 				getName(), getColour());
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	@Override
 	public Color getColour() {
 		return colour;
 	}
 
+	@Override
 	public void setColour(Color colour) {
 		this.colour = colour;
 	}

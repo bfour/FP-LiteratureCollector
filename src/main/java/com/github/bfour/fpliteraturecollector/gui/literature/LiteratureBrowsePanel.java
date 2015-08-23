@@ -51,11 +51,11 @@ import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGett
 import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
 import com.github.bfour.fpjgui.design.Lengths;
 import com.github.bfour.fpjgui.util.DefaultActionInterfacingHandler;
+import com.github.bfour.fpjguiextended.tagging.TaggingPanel;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
-import com.github.bfour.fpliteraturecollector.gui.TaggingPanel;
 import com.github.bfour.fpliteraturecollector.service.LiteratureService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
@@ -72,8 +72,9 @@ public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature>
 			EntityFilterPipeline<Literature> filters) {
 
 		this.setFilters(filters);
-		
-		final TaggingPanel taggingPanel = new TaggingPanel(servMan);
+
+		final TaggingPanel<Tag, Literature> taggingPanel = new TaggingPanel<>(
+				Tag.class, servMan.getTagService());
 		final FPJGUIPopover tagPopover = new FPJGUIPopover(taggingPanel);
 
 		taggingPanel.addCancelListener(new ActionListener() {

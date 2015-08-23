@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.gui;
  * -///////////////////////////////-
  */
 
-
 import java.awt.Dimension;
 import java.util.Iterator;
 import java.util.List;
@@ -61,77 +60,80 @@ public class AtomicRequestPanel extends
 	public AtomicRequestPanel(final ServiceManager servMan,
 			final FPJGUITable<AtomicRequest> table) {
 
-		super(new BuilderFactory<AtomicRequest, AtomicRequestBuilder>() {
-			@Override
-			public AtomicRequestBuilder getBuilder() {
-				return new AtomicRequestBuilder();
-			}
-
-			@Override
-			public AtomicRequestBuilder getBuilder(AtomicRequest entity) {
-				return new AtomicRequestBuilder(entity);
-			}
-
-		}, new CRUDService<AtomicRequest>() {
-
-			@Override
-			public AtomicRequest create(AtomicRequest a) {
-				table.addEntry(a);
-				return a;
-			}
-
-			@Override
-			public void delete(AtomicRequest a) throws ServiceException {
-				table.deleteEntry(a);
-			}
-
-			@Override
-			public boolean exists(AtomicRequest a) throws ServiceException {
-				return table.containsEntry(a);
-			}
-
-			@Override
-			public DataIterator<AtomicRequest> getAllByStream()
-					throws ServiceException {
-				final Iterator<AtomicRequest> iter = table.getEntries()
-						.iterator();
-				return new DataIterator<AtomicRequest>() {
+		super(AtomicRequest.class,
+				new BuilderFactory<AtomicRequest, AtomicRequestBuilder>() {
 					@Override
-					public boolean hasNext() throws DatalayerException {
-						return iter.hasNext();
+					public AtomicRequestBuilder getBuilder() {
+						return new AtomicRequestBuilder();
 					}
 
 					@Override
-					public AtomicRequest next() throws DatalayerException {
-						return iter.next();
+					public AtomicRequestBuilder getBuilder(AtomicRequest entity) {
+						return new AtomicRequestBuilder(entity);
+					}
+
+				}, new CRUDService<AtomicRequest>() {
+
+					@Override
+					public AtomicRequest create(AtomicRequest a) {
+						table.addEntry(a);
+						return a;
 					}
 
 					@Override
-					public void remove() throws DatalayerException {
-						iter.remove();
+					public void delete(AtomicRequest a) throws ServiceException {
+						table.deleteEntry(a);
 					}
-				};
-			}
 
-			@Override
-			public List<AtomicRequest> getAll() throws ServiceException {
-				return table.getEntries();
-			}
+					@Override
+					public boolean exists(AtomicRequest a)
+							throws ServiceException {
+						return table.containsEntry(a);
+					}
 
-			@Override
-			public AtomicRequest get(AtomicRequest arg0)
-					throws ServiceException {
-				List<AtomicRequest> list = table.getEntries();
-				return list.get(list.indexOf(arg0));
-			}
+					@Override
+					public DataIterator<AtomicRequest> getAllByStream()
+							throws ServiceException {
+						final Iterator<AtomicRequest> iter = table.getEntries()
+								.iterator();
+						return new DataIterator<AtomicRequest>() {
+							@Override
+							public boolean hasNext() throws DatalayerException {
+								return iter.hasNext();
+							}
 
-			@Override
-			public AtomicRequest update(AtomicRequest oldEntry,
-					AtomicRequest newEntry) throws ServiceException {
-				table.updateEntry(oldEntry, newEntry);
-				return newEntry;
-			}
-		});
+							@Override
+							public AtomicRequest next()
+									throws DatalayerException {
+								return iter.next();
+							}
+
+							@Override
+							public void remove() throws DatalayerException {
+								iter.remove();
+							}
+						};
+					}
+
+					@Override
+					public List<AtomicRequest> getAll() throws ServiceException {
+						return table.getEntries();
+					}
+
+					@Override
+					public AtomicRequest get(AtomicRequest arg0)
+							throws ServiceException {
+						List<AtomicRequest> list = table.getEntries();
+						return list.get(list.indexOf(arg0));
+					}
+
+					@Override
+					public AtomicRequest update(AtomicRequest oldEntry,
+							AtomicRequest newEntry) throws ServiceException {
+						table.updateEntry(oldEntry, newEntry);
+						return newEntry;
+					}
+				});
 
 		setCRUDButtonsVisible(false);
 
@@ -220,7 +222,9 @@ public class AtomicRequestPanel extends
 		ToggleEditFormComponent<String> requestStringToggle = new ToggleEditFormComponent<String>(
 				requestStringLabel, requestStringField);
 		registerToggleComponent(requestStringToggle);
-		getContentPane().add(new FPJGUILabelPanel("Request string", requestStringToggle), "cell 0 2,grow");
+		getContentPane().add(
+				new FPJGUILabelPanel("Request string", requestStringToggle),
+				"cell 0 2,grow");
 
 		// mappings
 		ObjectGraphicalValueContainerMapper<AtomicRequestBuilder, Crawler> crawlerMapper = new ObjectGraphicalValueContainerMapper<AtomicRequestBuilder, Crawler>(

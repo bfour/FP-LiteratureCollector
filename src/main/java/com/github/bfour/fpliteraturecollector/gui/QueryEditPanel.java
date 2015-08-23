@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.gui;
  * -///////////////////////////////-
  */
 
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -53,7 +52,7 @@ public class QueryEditPanel extends EntityEditPanel<Query, QueryBuilder> {
 	 */
 	public QueryEditPanel(ServiceManager servMan, Query query) {
 
-		super(new BuilderFactory<Query, QueryBuilder>() {
+		super(Query.class, new BuilderFactory<Query, QueryBuilder>() {
 			@Override
 			public QueryBuilder getBuilder() {
 				return new QueryBuilder();
@@ -122,7 +121,7 @@ public class QueryEditPanel extends EntityEditPanel<Query, QueryBuilder> {
 				atomReqPanel.edit();
 			}
 		});
-		
+
 		// automatically set AtomicRequest in edit/view panel on selection
 		// change
 		atomReqBrowsePanel

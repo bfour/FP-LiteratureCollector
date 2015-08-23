@@ -25,7 +25,8 @@ import java.util.Date;
 
 import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
 
-public class Tag extends Neo4JEntity {
+public class Tag extends Neo4JEntity implements
+		com.github.bfour.fpjguiextended.tagging.Tag {
 
 	private String name;
 	private Color colour;
@@ -47,10 +48,12 @@ public class Tag extends Neo4JEntity {
 
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
-
+	
+	@Override
 	public Color getColour() {
 		return colour;
 	}
