@@ -36,7 +36,6 @@ import net.miginfocom.swing.MigLayout;
 
 import com.github.bfour.fpjcommons.lang.BuilderFactory;
 import com.github.bfour.fpjcommons.utils.Getter;
-import com.github.bfour.fpjgui.abstraction.EntityEditPanel;
 import com.github.bfour.fpjgui.abstraction.EntityLoader;
 import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
 import com.github.bfour.fpjgui.abstraction.feedback.Feedback.FeedbackType;
@@ -50,6 +49,7 @@ import com.github.bfour.fpjgui.components.FPJGUIMultilineLabel;
 import com.github.bfour.fpjgui.components.SearchComboBox;
 import com.github.bfour.fpjgui.components.ToggleEditFormComponent;
 import com.github.bfour.fpjgui.components.composite.EntityBrowsePanel;
+import com.github.bfour.fpjgui.components.composite.EntityEditPanel;
 import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
 import com.github.bfour.fpjguiextended.tagging.TagTilePanel;
 import com.github.bfour.fpliteraturecollector.domain.Author;

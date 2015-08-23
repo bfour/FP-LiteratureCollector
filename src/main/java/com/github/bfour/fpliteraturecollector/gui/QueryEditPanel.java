@@ -33,9 +33,9 @@ import net.miginfocom.swing.MigLayout;
 import org.jdesktop.swingx.JXPanel;
 
 import com.github.bfour.fpjcommons.lang.BuilderFactory;
-import com.github.bfour.fpjgui.abstraction.EntityEditPanel;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
 import com.github.bfour.fpjgui.components.FPJGUITextField;
+import com.github.bfour.fpjgui.components.composite.EntityEditPanel;
 import com.github.bfour.fpjgui.design.Colors;
 import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
