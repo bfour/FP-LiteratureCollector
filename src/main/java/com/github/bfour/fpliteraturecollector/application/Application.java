@@ -25,13 +25,11 @@ import javax.swing.JOptionPane;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import com.github.bfour.fpjgui.FPJGUIManager;
 import com.github.bfour.fpliteraturecollector.gui.MainWindow;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
-import com.github.bfour.fpliteraturecollector.service.ServiceManager.ServiceManagerMode;
 
 // TODO import mit einfacher text-file
 // TODO evtl. request-generator tool (Kombinations-Tool)

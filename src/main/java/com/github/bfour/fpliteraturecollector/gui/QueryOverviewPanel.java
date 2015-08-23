@@ -53,10 +53,10 @@ import com.github.bfour.fpjgui.components.FPJGUIButton;
 import com.github.bfour.fpjgui.components.FPJGUIButton.ButtonFormats;
 import com.github.bfour.fpjgui.components.FPJGUIButton.FPJGUIButtonFactory;
 import com.github.bfour.fpjgui.components.PlainToolbar;
+import com.github.bfour.fpjgui.components.ScrollableJPanel;
 import com.github.bfour.fpjgui.design.PanelDecorator;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
-import com.github.bfour.fpliteraturecollector.gui.components.ScrollableJPanel;
 import com.github.bfour.fpliteraturecollector.gui.design.Colors;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
@@ -64,7 +64,6 @@ import com.github.bfour.fpliteraturecollector.service.abstraction.BackgroundWork
 import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlExecutor;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.mortennobel.imagescaling.AdvancedResizeOp;
 
 public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		FeedbackListener, ListLikeValueContainer<Query> {

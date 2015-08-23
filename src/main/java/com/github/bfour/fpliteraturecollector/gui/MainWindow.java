@@ -31,8 +31,6 @@ import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
 import com.github.bfour.fpjgui.abstraction.feedback.StaticLocationFeedbackNotificationSpawner;
 import com.github.bfour.fpjgui.design.Icons;
-import com.github.bfour.fpjsearch.SearchActionListener;
-import com.github.bfour.fpjsearch.SearchEvent;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
 /**
@@ -40,8 +38,7 @@ import com.github.bfour.fpliteraturecollector.service.ServiceManager;
  * @author Florian Pollak
  *
  */
-public class MainWindow extends JFrame implements SearchActionListener,
-		FeedbackListener {
+public class MainWindow extends JFrame implements FeedbackListener {
 
 	private static final long serialVersionUID = 9057132203074048466L;
 	private static MainWindow instance;
@@ -108,10 +105,6 @@ public class MainWindow extends JFrame implements SearchActionListener,
 	 */
 	public void setFocus() {
 		mainPanel.requestFocusInWindow();
-	}
-
-	@Override
-	public void searchPerformed(SearchEvent search) {
 	}
 
 	/**

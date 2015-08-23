@@ -49,8 +49,8 @@ import com.github.bfour.fpliteraturecollector.service.converters.StringToCrawler
 //@Import(RepositoryRestMvcConfiguration.class)
 @EnableScheduling
 @EnableAutoConfiguration
-@ComponentScan(basePackages = {"com.github.bfour.fpliteraturecollector"})
 @Configuration
+@ComponentScan(basePackages = {"com.github.bfour.fpliteraturecollector"})
 @EnableNeo4jRepositories(basePackages = "com.github.bfour.fpliteraturecollector")
 public class FPLCNeo4jConfiguration extends Neo4jConfiguration {
     public FPLCNeo4jConfiguration() {
