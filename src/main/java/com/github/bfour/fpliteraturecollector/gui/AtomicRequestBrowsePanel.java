@@ -41,7 +41,6 @@ import com.github.bfour.fpjcommons.events.CreateEvent;
 import com.github.bfour.fpjcommons.events.DeleteEvent;
 import com.github.bfour.fpjcommons.events.UpdateEvent;
 import com.github.bfour.fpjgui.abstraction.EntityLoader;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
 import com.github.bfour.fpjgui.components.composite.EntityBrowsePanel;
 import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGetter;
 import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
@@ -54,8 +53,7 @@ import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 /**
  * This class deals with the presentation of a list of AtomicRequests
  */
-public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
-		implements FeedbackProvider {
+public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest> {
 
 	private static final long serialVersionUID = 1584008979044088377L;
 
@@ -72,6 +70,8 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 	 */
 	public AtomicRequestBrowsePanel(final ServiceManager servMan,
 			final Query query) {
+
+		super(AtomicRequest.class, servMan.getAtomicRequestService(), false);
 
 		// show default buttons for CRUD options
 		setDeleteEntityEnabled(true);
@@ -101,26 +101,24 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 				}, true, 30, 30, "requestStrings", false);
 		getTable().addColumn(requestStringColumn);
 
-		this.table.setPreferredColumnWidth(crawlerColumn, 100);
-		this.table.setPreferredColumnWidth(requestStringColumn, 400);
+		getTable().setPreferredColumnWidth(crawlerColumn, 100);
+		getTable().setPreferredColumnWidth(requestStringColumn, 400);
 
-		this.table.setMinimumColumnWidth(crawlerColumn, 100);
-		this.table.setMinimumColumnWidth(requestStringColumn, 200);
+		getTable().setMinimumColumnWidth(crawlerColumn, 100);
+		getTable().setMinimumColumnWidth(requestStringColumn, 200);
 
 		// ==== loader ====
-		this.loader = new EntityLoader<AtomicRequest>() {
+		setLoader(new EntityLoader<AtomicRequest>() {
 			@Override
 			public List<AtomicRequest> get() {
-				List<AtomicRequest> list = new ArrayList<>();
-				if (query == null)
-					return new ArrayList<AtomicRequest>(0);
-				else
-					list = new ArrayList<>(query.getAtomicRequests());
-				return list;
+				if (query != null)
+					return new ArrayList<>(query.getAtomicRequests());
+				return new ArrayList<>(0);
 			}
-		};
+		});
 
 		// hook up table with change event system
+		setChangeEventSystemEnabled(false); // disable default handlers
 		if (query == null) {
 			// no query specified --> this browse panel is for a new query -->
 			// do not register for any changes
@@ -189,18 +187,18 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 								| InstantiationException
 								| InvocationTargetException
 								| NoSuchMethodException e1) {
-							source = deleteButton;
+							source = getDeleteButton();
 						}
 					}
 				} else {
-					source = deleteButton;
+					source = getDeleteButton();
 				}
 				if (query == null) {
-					getTable().deleteEntry(table.getSelectedItem());
+					getTable().deleteEntry(getTable().getSelectedItem());
 				} else {
 					DefaultActionInterfacingHandler.getInstance()
-							.requestDeleteFromList(source, feedbackProxy,
-									table.getSelectedItem(), eServ);
+							.requestDeleteFromList(source, getFeedbackProxy(),
+									getTable().getSelectedItem(), eServ);
 				}
 			}
 		};

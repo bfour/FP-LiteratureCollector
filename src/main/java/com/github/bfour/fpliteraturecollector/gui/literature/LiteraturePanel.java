@@ -111,7 +111,8 @@ public class LiteraturePanel extends
 				"growx,wrap");
 
 		// type
-		EntityBrowsePanel<LiteratureType> litTypeBrowsePanel = new EntityBrowsePanel<LiteratureType>();
+		EntityBrowsePanel<LiteratureType> litTypeBrowsePanel = new EntityBrowsePanel<LiteratureType>(
+				LiteratureType.class);
 		litTypeBrowsePanel
 				.setLoader(new EntityLoader<Literature.LiteratureType>() {
 					private final List<LiteratureType> list = new ArrayList<LiteratureType>(

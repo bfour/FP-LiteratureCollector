@@ -20,28 +20,19 @@ package com.github.bfour.fpliteraturecollector.gui.literature;
  * -///////////////////////////////-
  */
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.JMenuItem;
 import javax.swing.ListSelectionModel;
 
-import org.apache.commons.beanutils.BeanUtils;
-
-import com.github.bfour.fpjcommons.events.ChangeHandler;
 import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjgui.abstraction.DefaultListLikeChangeListener;
 import com.github.bfour.fpjgui.abstraction.EntityFilterPipeline;
-import com.github.bfour.fpjgui.abstraction.EntityLoader;
 import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
 import com.github.bfour.fpjgui.abstraction.feedback.Feedback.FeedbackType;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
 import com.github.bfour.fpjgui.components.FPJGUIButton;
 import com.github.bfour.fpjgui.components.FPJGUIButton.ButtonFormats;
 import com.github.bfour.fpjgui.components.FPJGUIButton.FPJGUIButtonFactory;
@@ -50,7 +41,6 @@ import com.github.bfour.fpjgui.components.composite.EntityBrowsePanel;
 import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGetter;
 import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
 import com.github.bfour.fpjgui.design.Lengths;
-import com.github.bfour.fpjgui.util.DefaultActionInterfacingHandler;
 import com.github.bfour.fpjguiextended.tagging.TaggingPanel;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
@@ -59,8 +49,7 @@ import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 import com.github.bfour.fpliteraturecollector.service.LiteratureService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
-public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature>
-		implements FeedbackProvider {
+public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature> {
 
 	private static final long serialVersionUID = 4500980555674670335L;
 
@@ -71,7 +60,9 @@ public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature>
 	public LiteratureBrowsePanel(final ServiceManager servMan,
 			EntityFilterPipeline<Literature> filters) {
 
-		this.setFilters(filters);
+		super(Literature.class, servMan.getLiteratureService(), true);
+
+		setFilters(filters);
 
 		final TaggingPanel<Tag, Literature> taggingPanel = new TaggingPanel<>(
 				Tag.class, servMan.getTagService());
@@ -97,12 +88,13 @@ public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature>
 						litServ.update(selectedLit, newLiterature);
 						successCounter++;
 					} catch (ServiceException e1) {
-						fireFeedback(new Feedback(LiteratureBrowsePanel.this,
+						feedbackBroadcasted(new Feedback(
+								LiteratureBrowsePanel.this,
 								"Sorry, failed to set tags for " + selectedLit,
 								e1.getMessage(), FeedbackType.ERROR));
 					}
 				}
-				fireFeedback(new Feedback(LiteratureBrowsePanel.this,
+				feedbackBroadcasted(new Feedback(LiteratureBrowsePanel.this,
 						"Tags for " + successCounter
 								+ " literature entries set.",
 						FeedbackType.SUCCESS));
@@ -121,7 +113,7 @@ public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature>
 				"Tag",
 				com.github.bfour.fpliteraturecollector.gui.design.Icons.TAG_16
 						.getIcon());
-		mainPanel.add(tagButton, "cell 0 2");
+		getMainPanel().add(tagButton, "cell 0 2");
 		tagButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -170,68 +162,11 @@ public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature>
 				}, true, 30, 30, "authors", false);
 		getTable().addColumn(authorsColumn);
 
-		this.table.setPreferredColumnWidth(titleColumn, 200);
-		this.table.setPreferredColumnWidth(authorsColumn, 40);
+		getTable().setPreferredColumnWidth(titleColumn, 200);
+		getTable().setPreferredColumnWidth(authorsColumn, 40);
 
-		this.table.setMinimumColumnWidth(titleColumn, 100);
-		this.table.setMinimumColumnWidth(authorsColumn, 40);
-
-		// ==== loader ====
-		this.loader = new EntityLoader<Literature>() {
-			@Override
-			public List<Literature> get() {
-				List<Literature> list = new ArrayList<>();
-				try {
-					list = servMan.getLiteratureService().getAll();
-				} catch (ServiceException e) {
-					feedbackProxy
-							.feedbackBroadcasted(new Feedback(
-									LiteratureBrowsePanel.this,
-									"Sorry, failed to get literature from LiteratureService.",
-									FeedbackType.ERROR));
-				}
-				return list;
-			}
-		};
-
-		// hook up table with change event system
-		DefaultListLikeChangeListener<Literature> changeListener = new DefaultListLikeChangeListener<Literature>(
-				getTable(), new EntityFilterPipeline<Literature>());
-		ChangeHandler.getInstance(Literature.class).addEventListener(
-				changeListener);
-
-		// load initial data
-		load();
-
-		// set button actions
-		ActionListener deleteListener = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				LiteratureService custServ = servMan.getLiteratureService();
-				Component source;
-				// TODO (high) clean up mess (maybe set back to delete button as
-				// source only)
-				if (e.getSource() != null && e.getSource() instanceof Component) {
-					source = (Component) e.getSource();
-					if (source instanceof JMenuItem) {
-						try {
-							source = (Component) BeanUtils.cloneBean(source);
-						} catch (IllegalAccessException
-								| InstantiationException
-								| InvocationTargetException
-								| NoSuchMethodException e1) {
-							source = deleteButton;
-						}
-					}
-				} else {
-					source = deleteButton;
-				}
-				DefaultActionInterfacingHandler.getInstance()
-						.requestDeleteFromList(source, feedbackProxy,
-								table.getSelectedItem(), custServ);
-			}
-		};
-		addDeleteAction(deleteListener);
+		getTable().setMinimumColumnWidth(titleColumn, 100);
+		getTable().setMinimumColumnWidth(authorsColumn, 40);
 
 	}
 }

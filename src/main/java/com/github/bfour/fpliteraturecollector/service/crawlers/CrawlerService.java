@@ -21,13 +21,19 @@ package com.github.bfour.fpliteraturecollector.service.crawlers;
  */
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
+import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpjcommons.services.CRUD.CRUDService;
+import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
+import com.github.bfour.fpjcommons.services.CRUD.DataIteratorWrapper;
 import com.github.bfour.fpliteraturecollector.service.crawlers.epop.EpopScholarCrawler;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-public class CrawlerService {
+public class CrawlerService implements CRUDService<Crawler> {
 
 	private static CrawlerService instance;
 	private BiMap<String,Crawler> identifierInstanceMap;
@@ -52,6 +58,44 @@ public class CrawlerService {
 	
 	public String getIdentifierForCrawler(Crawler crawler) {
 		return identifierInstanceMap.inverse().get(crawler);
+	}
+	
+	@Override
+	public List<Crawler> getAll() throws ServiceException {
+		return new ArrayList<>(getAvailableCrawlers());
+	}
+
+	@Override
+	public DataIterator<Crawler> getAllByStream() throws ServiceException {
+		return new DataIteratorWrapper<Crawler>(getAll().iterator());
+	}
+
+	@Override
+	public Crawler get(Crawler entity) throws ServiceException {
+		return entity;
+	}
+
+	@Override
+	public Crawler create(Crawler entity) throws ServiceException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void delete(Crawler entity) throws ServiceException {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public Crawler update(Crawler oldEntity, Crawler newEntity)
+			throws ServiceException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean exists(Crawler entity) throws ServiceException {
+		return identifierInstanceMap.containsKey(entity);
 	}
 	
 }
