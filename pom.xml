@@ -276,6 +276,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.0</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.github.bfour.fp-jcommons</groupId>
 			<artifactId>fp-jcommons</artifactId>
 			<version>0.0.3-SNAPSHOT</version>
@@ -294,14 +300,8 @@
 			<groupId>com.github.bfour.fp-jguiextended</groupId>
 			<artifactId>fp-jguiextended</artifactId>
 			<version>0.0.3-SNAPSHOT</version>
-		</dependency>		
-
-		<dependency>
-			<groupId>org.python</groupId>
-			<artifactId>jython</artifactId>
-			<version>2.5.3</version>
 		</dependency>
-
+		
 	</dependencies>
 
 	<dependencyManagement>

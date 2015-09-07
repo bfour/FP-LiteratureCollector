@@ -44,7 +44,7 @@ import com.github.bfour.fpjgui.abstraction.EntityLoader;
 import com.github.bfour.fpjgui.components.composite.EntityBrowsePanel;
 import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGetter;
 import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
-import com.github.bfour.fpjgui.util.DefaultActionInterfacingHandler;
+import com.github.bfour.fpjgui.util.DefaultActionInterfaceHandler;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.service.AtomicRequestService;
@@ -196,7 +196,7 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest> {
 				if (query == null) {
 					getTable().deleteEntry(getTable().getSelectedItem());
 				} else {
-					DefaultActionInterfacingHandler.getInstance()
+					DefaultActionInterfaceHandler.getInstance()
 							.requestDeleteFromList(source, getFeedbackProxy(),
 									getTable().getSelectedItem(), eServ);
 				}

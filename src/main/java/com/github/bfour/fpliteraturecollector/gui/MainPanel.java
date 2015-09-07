@@ -35,6 +35,7 @@ import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
 import com.github.bfour.fpjgui.components.PlainToolbar;
+import com.github.bfour.fpjgui.layout.Orientation;
 import com.github.bfour.fpjguiextended.tagging.TagsWindow;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.domain.builders.TagBuilder;
@@ -62,7 +63,7 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		setLayout(new MigLayout("insets 0", "[grow]", "[]20[grow]"));
 
 		// toolbar
-		PlainToolbar toolbar = new PlainToolbar(true);
+		PlainToolbar toolbar = new PlainToolbar(Orientation.CENTERED);
 
 		// JButton createQueryButton = new JButton("Create query",
 		// Icons.ADD.getIcon());

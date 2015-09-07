@@ -45,7 +45,8 @@ import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
 import com.github.bfour.fpjgui.components.FPJGUILabel;
 import com.github.bfour.fpjgui.components.PlainToolbar;
-import com.github.bfour.fpjgui.util.DefaultActionInterfacingHandler;
+import com.github.bfour.fpjgui.layout.Orientation;
+import com.github.bfour.fpjgui.util.DefaultActionInterfaceHandler;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Query;
@@ -96,7 +97,7 @@ public class QueryPanel extends JXPanel implements FeedbackProvider {
 		// add(horizontalGlue, "cell 2 0");
 
 		// toolbar
-		PlainToolbar toolbar = new PlainToolbar(true);
+		PlainToolbar toolbar = new PlainToolbar(Orientation.LEADING);
 		add(toolbar, "cell 2 0");
 
 		litButton = new JButton("Literature", Icons.BOOKS_20.getIcon());
@@ -134,17 +135,21 @@ public class QueryPanel extends JXPanel implements FeedbackProvider {
 		litButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				LiteratureWindow litWindow = new LiteratureWindow(servMan, new EntityFilterPipeline<Literature>(new EntityFilter<Literature>() {
-					@Override
-					public boolean include(Literature entity) {
-						// TODO optimize
-						for (AtomicRequest atomReq : query.getAtomicRequests())
-							for (Literature lit : atomReq.getResults())
-								if (lit.equals(entity))
-									return true;
-						return false;
-					}
-				}));
+				LiteratureWindow litWindow = new LiteratureWindow(servMan,
+						new EntityFilterPipeline<Literature>(
+								new EntityFilter<Literature>() {
+									@Override
+									public boolean include(Literature entity) {
+										// TODO optimize
+										for (AtomicRequest atomReq : query
+												.getAtomicRequests())
+											for (Literature lit : atomReq
+													.getResults())
+												if (lit.equals(entity))
+													return true;
+										return false;
+									}
+								}));
 				litWindow.setVisible(true);
 			}
 		});
@@ -186,7 +191,7 @@ public class QueryPanel extends JXPanel implements FeedbackProvider {
 							}
 						}, "Sorry, failed to cancel.")));
 
-				DefaultActionInterfacingHandler
+				DefaultActionInterfaceHandler
 						.getInstance()
 						.abstractDialogueBasedAction(
 								deleteButton,

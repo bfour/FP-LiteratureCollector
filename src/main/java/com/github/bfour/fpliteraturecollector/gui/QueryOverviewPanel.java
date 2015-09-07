@@ -55,6 +55,7 @@ import com.github.bfour.fpjgui.components.FPJGUIButton.FPJGUIButtonFactory;
 import com.github.bfour.fpjgui.components.PlainToolbar;
 import com.github.bfour.fpjgui.components.ScrollableJPanel;
 import com.github.bfour.fpjgui.design.PanelDecorator;
+import com.github.bfour.fpjgui.layout.Orientation;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 import com.github.bfour.fpliteraturecollector.gui.design.Colors;
@@ -128,7 +129,7 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		createPanel.add(createButton, "alignx center, wrap");
 		
 		// bottom toolbar
-		PlainToolbar toolbar = new PlainToolbar(true);
+		PlainToolbar toolbar = new PlainToolbar(Orientation.CENTERED);
 		add(toolbar, "cell 0 1, growx");
 
 		final JButton stopButton = new JButton("Stop", Icons.STOP_24.getIcon());
