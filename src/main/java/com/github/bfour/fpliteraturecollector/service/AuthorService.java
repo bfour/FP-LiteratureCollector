@@ -20,14 +20,18 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
-
 import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.CRUDService;
+import com.github.bfour.fpjcommons.services.CRUD.BidirectionalCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 
-public interface AuthorService extends CRUDService<Author> {
+public interface AuthorService extends BidirectionalCRUDService<Author> {
 
 	public Author getByGScholarID(String gScholarID) throws ServiceException;
-	public Author getByMsAcademicID(String msAcademicID) throws ServiceException;
-	
+
+	public Author getByMsAcademicID(String msAcademicID)
+			throws ServiceException;
+
+	void deleteIfMaxOneAdjacentLiterature(Author author)
+			throws ServiceException;
+
 }

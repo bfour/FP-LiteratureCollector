@@ -21,28 +21,25 @@ package com.github.bfour.fpliteraturecollector.service;
  */
 
 import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.EventCreatingEntityCRUDService;
+import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Author;
-import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
-import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBAuthorDAO;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.AuthorDAO;
 
-public class DefaultAuthorService extends
-		EventCreatingEntityCRUDService<Author, OrientDBAuthorDAO> implements
-		AuthorService {
+public class DefaultAuthorService extends EventCreatingCRUDService<Author>
+		implements AuthorService {
 
 	private static DefaultAuthorService instance;
+	private AuthorDAO DAO;
 
-	private DefaultAuthorService(OrientDBGraphService graphService,
-			boolean forceCreateNewInstance) {
-		super(OrientDBAuthorDAO.getInstance(graphService,
-				forceCreateNewInstance));
+	private DefaultAuthorService(AuthorDAO DAO, boolean forceCreateNewInstance) {
+		super(DAO);
+		this.DAO = DAO;
 	}
 
-	public static DefaultAuthorService getInstance(
-			OrientDBGraphService graphService, boolean forceCreateNewInstance) {
+	public static DefaultAuthorService getInstance(AuthorDAO DAO,
+			boolean forceCreateNewInstance) {
 		if (instance == null || forceCreateNewInstance)
-			instance = new DefaultAuthorService(graphService,
-					forceCreateNewInstance);
+			instance = new DefaultAuthorService(DAO, forceCreateNewInstance);
 		return instance;
 	}
 
@@ -70,13 +67,21 @@ public class DefaultAuthorService extends
 
 	@Override
 	public Author getByGScholarID(String gScholarID) throws ServiceException {
-		return getDAO().getByGScholarID(gScholarID);
+		return DAO.getByGScholarID(gScholarID);
 	}
 
 	@Override
 	public Author getByMsAcademicID(String msAcademicID)
 			throws ServiceException {
-		return getDAO().getByMsAcademicID(msAcademicID);
+		return DAO.getByMsAcademicID(msAcademicID);
+	}
+
+	@Override
+	public void deleteIfMaxOneAdjacentLiterature(Author author)
+			throws ServiceException {
+		if (DAO.hasMaxOneAdjacentLiterature(author)) {
+			super.delete(author);
+		}
 	}
 
 }

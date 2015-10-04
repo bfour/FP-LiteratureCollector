@@ -20,19 +20,21 @@ package com.github.bfour.fpliteraturecollector.domain.builders;
  * -///////////////////////////////-
  */
 
-import java.util.List;
+import java.util.Set;
 
 import com.github.bfour.fpjcommons.lang.Builder;
 import com.github.bfour.fpjcommons.model.EntityBuilder;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Query;
+import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 
 public class QueryBuilder extends EntityBuilder<Query> implements
 		Builder<Query> {
 
 	private String name;
-	private List<AtomicRequest> atomicRequests;
+	private Set<AtomicRequest> atomicRequests;
 	private Integer queuePosition;
+	private QueryStatus status;
 
 	public QueryBuilder() {
 		super();
@@ -47,37 +49,50 @@ public class QueryBuilder extends EntityBuilder<Query> implements
 		setName(q.getName());
 		setAtomicRequests(q.getAtomicRequests());
 		setQueuePosition(q.getQueuePosition());
+		setStatus(q.getStatus());
 
 	}
 
 	@Override
 	public Query getObject() {
 		return new Query(getID(), getCreationTime(), getLastChangeTime(),
-				getName(), getAtomicRequests(), getQueuePosition());
+				getName(), getAtomicRequests(), getQueuePosition(), getStatus());
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
+	public QueryBuilder setName(String name) {
 		this.name = name;
+		return this;
 	}
 
-	public List<AtomicRequest> getAtomicRequests() {
+	public Set<AtomicRequest> getAtomicRequests() {
 		return atomicRequests;
 	}
 
-	public void setAtomicRequests(List<AtomicRequest> atomicRequests) {
+	public QueryBuilder setAtomicRequests(Set<AtomicRequest> atomicRequests) {
 		this.atomicRequests = atomicRequests;
+		return this;
 	}
 
 	public Integer getQueuePosition() {
 		return queuePosition;
 	}
 
-	public void setQueuePosition(Integer queuePosition) {
+	public QueryBuilder setQueuePosition(Integer queuePosition) {
 		this.queuePosition = queuePosition;
+		return this;
+	}
+
+	public QueryStatus getStatus() {
+		return status;
+	}
+
+	public QueryBuilder setStatus(QueryStatus status) {
+		this.status = status;
+		return this;
 	}
 
 }

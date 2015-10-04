@@ -21,54 +21,43 @@ package com.github.bfour.fpliteraturecollector.service;
  */
 
 import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.EventCreatingEntityCRUDService;
+import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
-import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
-import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBLiteratureDAO;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.LiteratureDAO;
 
 public class DefaultLiteratureService extends
-		EventCreatingEntityCRUDService<Literature, OrientDBLiteratureDAO>
-		implements LiteratureService {
+		EventCreatingCRUDService<Literature> implements LiteratureService {
 
 	private static DefaultLiteratureService instance;
 	private AuthorService authServ;
+	private LiteratureDAO DAO;
 
-	private DefaultLiteratureService(OrientDBGraphService graphService,
-			boolean forceCreateNewInstance, AuthorService authServ) {
-		super(OrientDBLiteratureDAO.getInstance(graphService,
-				forceCreateNewInstance));
+	private DefaultLiteratureService(LiteratureDAO DAO,
+			boolean forceCreateNewInstance, AuthorService authServ,
+			TagService tagServ) {
+		super(DAO);
+		this.DAO = DAO;
 		this.authServ = authServ;
 	}
 
-	public static DefaultLiteratureService getInstance(
-			OrientDBGraphService graphService, boolean forceCreateNewInstance,
-			AuthorService authServ) {
+	public static DefaultLiteratureService getInstance(LiteratureDAO DAO,
+			boolean forceCreateNewInstance, AuthorService authServ,
+			TagService tagServ) {
 		if (instance == null || forceCreateNewInstance)
-			instance = new DefaultLiteratureService(graphService,
-					forceCreateNewInstance, authServ);
+			instance = new DefaultLiteratureService(DAO,
+					forceCreateNewInstance, authServ, tagServ);
 		return instance;
 	}
 
 	@Override
-	public Literature create(Literature entity) throws ServiceException {
-		if (entity.getAuthors() != null)
-			for (Author auth : entity.getAuthors()) {
-				if (!authServ.exists(auth))
-					authServ.create(auth);
-			}
-		return super.create(entity);
-	}
-
-	@Override
-	public Literature update(Literature oldEntity, Literature newEntity)
+	public void deleteCascadeIfMaxOneAdjacentAtomicRequest(Literature literature)
 			throws ServiceException {
-		if (newEntity.getAuthors() != null)
-			for (Author auth : newEntity.getAuthors()) {
-				if (!authServ.exists(auth))
-					authServ.create(auth);
-			}
-		return super.update(oldEntity, newEntity);
+		if (DAO.hasMaxOneAdjacentAtomicRequest(literature)) {
+			for (Author author : literature.getAuthors())
+				authServ.deleteIfMaxOneAdjacentLiterature(author);
+			super.delete(literature);
+		}
 	}
 
 }

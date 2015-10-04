@@ -20,35 +20,48 @@ package com.github.bfour.fpliteraturecollector.domain;
  * -///////////////////////////////-
  */
 
-
 import java.awt.Color;
 import java.util.Date;
 
-import com.github.bfour.fpjcommons.model.Entity;
+import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
+import com.github.bfour.fpjsearch.fpjsearch.Searchable;
 
-public class Tag extends Entity {
+public class Tag extends Neo4JEntity implements
+		com.github.bfour.fpjguiextended.tagging.Tag, Searchable {
 
-	private String name;	
+	private String name;
 	private Color colour;
-	
-	public Tag(long ID, Date creationTime, Date lastChangeTime, String name, Color colour) {
+
+	public Tag(Long ID, Date creationTime, Date lastChangeTime, String name,
+			Color colour) {
 		super(ID, creationTime, lastChangeTime);
 		this.name = name;
 		this.colour = colour;
 	}
-	
+
 	public Tag(String name, Color colour) {
 		super();
 		this.name = name;
 		this.colour = colour;
 	}
 
+	public Tag() {
+
+	}
+
+	@Override
 	public String getName() {
 		return name;
 	}
-
+	
+	@Override
 	public Color getColour() {
 		return colour;
 	}
-	
+
+	@Override
+	public String toString() {
+		return name;
+	}
+
 }

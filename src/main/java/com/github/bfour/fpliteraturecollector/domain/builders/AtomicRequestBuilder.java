@@ -1,6 +1,27 @@
 package com.github.bfour.fpliteraturecollector.domain.builders;
 
-import java.util.List;
+/*
+ * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
+ * FP-LiteratureCollector
+ * =================================
+ * Copyright (C) 2015 Florian Pollak
+ * =================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -///////////////////////////////-
+ */
+
+
+import java.util.Set;
 
 import com.github.bfour.fpjcommons.lang.Builder;
 import com.github.bfour.fpjcommons.model.EntityBuilder;
@@ -13,47 +34,90 @@ public class AtomicRequestBuilder extends EntityBuilder<AtomicRequest>
 
 	private Crawler crawler;
 	private String searchString;
-	private List<Literature> results;
+	private Integer maxPageTurns;
+	private Set<Literature> results;
+	private boolean processed;
+	private String processingError;
 
 	public AtomicRequestBuilder() {
 		super();
 	}
-	
+
 	public AtomicRequestBuilder(AtomicRequest a) {
+
+		setID(a.getID());
+		setCreationTime(a.getCreationTime());
+		setLastChangeTime(a.getLastChangeTime());
+
 		setCrawler(a.getCrawler());
 		setSearchString(a.getSearchString());
+		setMaxPageTurns(a.getMaxPageTurns());
 		setResults(a.getResults());
+		setProcessed(a.isProcessed());
+		setProcessingError(a.getProcessingError());
+
 	}
 
 	@Override
 	public AtomicRequest getObject() {
 		return new AtomicRequest(getID(), getCreationTime(),
 				getLastChangeTime(), getCrawler(), getSearchString(),
-				getResults());
+				getMaxPageTurns(), getResults(), isProcessed(),
+				getProcessingError());
 	}
 
 	public Crawler getCrawler() {
 		return crawler;
 	}
 
-	public void setCrawler(Crawler crawler) {
+	public AtomicRequestBuilder setCrawler(Crawler crawler) {
 		this.crawler = crawler;
+		return this;
 	}
 
 	public String getSearchString() {
 		return searchString;
 	}
 
-	public void setSearchString(String searchString) {
+	public AtomicRequestBuilder setSearchString(String searchString) {
 		this.searchString = searchString;
+		return this;
 	}
 
-	public List<Literature> getResults() {
+	public Integer getMaxPageTurns() {
+		return maxPageTurns;
+	}
+
+	public AtomicRequestBuilder setMaxPageTurns(Integer maxPageTurns) {
+		this.maxPageTurns = maxPageTurns;
+		return this;
+	}
+
+	public Set<Literature> getResults() {
 		return results;
 	}
 
-	public void setResults(List<Literature> results) {
+	public AtomicRequestBuilder setResults(Set<Literature> results) {
 		this.results = results;
+		return this;
+	}
+
+	public boolean isProcessed() {
+		return processed;
+	}
+
+	public AtomicRequestBuilder setProcessed(boolean processed) {
+		this.processed = processed;
+		return this;
+	}
+
+	public String getProcessingError() {
+		return processingError;
+	}
+
+	public AtomicRequestBuilder setProcessingError(String processingError) {
+		this.processingError = processingError;
+		return this;
 	}
 
 }

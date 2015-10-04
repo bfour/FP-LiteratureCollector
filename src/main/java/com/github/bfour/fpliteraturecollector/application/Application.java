@@ -20,48 +20,69 @@ package com.github.bfour.fpliteraturecollector.application;
  * -///////////////////////////////-
  */
 
-import javax.swing.JOptionPane;
+import java.io.IOException;
+
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Import;
 
 import com.github.bfour.fpjgui.FPJGUIManager;
+import com.github.bfour.fpjgui.components.ApplicationErrorDialogue;
 import com.github.bfour.fpliteraturecollector.gui.MainWindow;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
-import com.github.bfour.fpliteraturecollector.service.ServiceManager.ServiceManagerMode;
 
 // TODO import mit einfacher text-file
 // TODO evtl. request-generator tool (Kombinations-Tool)
 
 // TODO letzter Schritt: Output nur distinct; CSV generieren
 
+//@Configuration
+@Import(FPLCNeo4jConfiguration.class)
 public class Application {
+
+	private static final String BUG_REPORT_URL = "https://github.com/bfour/FP-LiteratureCollector/issues";
 
 	public static void main(String[] args) {
 
 		try {
 
-			ServiceManager servMan = ServiceManager
-					.getInstance(ServiceManagerMode.DEFAULT);
+			// https://vvirlan.wordpress.com/2014/12/10/solved-caused-by-java-awt-headlessexception-when-trying-to-create-a-swingawt-frame-from-spring-boot/
+			SpringApplicationBuilder builder = new SpringApplicationBuilder(
+					Application.class);
+			builder.headless(false);
+			ConfigurableApplicationContext context = builder.run(args);
+
+			// ConfigurableApplicationContext context;
+			// context = new ClassPathXmlApplicationContext("SpringConfig.xml");
+
+			// Neo4jResource myBean = context.getBean(Neo4jResource.class);
+			// myBean.functionThatUsesTheRepo();
+
+			// ServiceManager servMan = ServiceManager
+			// .getInstance(ServiceManagerMode.TEST);
+			ServiceManager servMan = context.getBean(ServiceManager.class);
+			context.getAutowireCapableBeanFactory().autowireBeanProperties(
+					servMan, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, true);
 
 			FPJGUIManager.getInstance().initialize();
 
 			MainWindow.getInstance(servMan).setVisible(true);
 
-			// new
-			// EpopScholarCrawler(servMan).start("q="+URLEncoder.encode("e-health wearable",
-			// "UTF-8"), 1);
-
+		} catch (BeanCreationException e) {
+			e.printStackTrace();
+			if (ExceptionUtils.getRootCause(e) instanceof IOException)
+				ApplicationErrorDialogue
+						.showMessage("Sorry, could not access the database.\n"
+								+ "This might be because it is currently in use or because there are insufficient access rights.\n"
+								+ "Try closing all running instances of this application and restart.");
+			else
+				ApplicationErrorDialogue.showDefaultMessage(e, BUG_REPORT_URL);
 		} catch (Exception e) {
 			e.printStackTrace();
-			JOptionPane
-					.showMessageDialog(
-							null,
-							"Sorry, the application cannot continue and will terminate.\n\n"
-									+ "This might be because the application is not configured properly or the database is unavailable.\n"
-									+ "Reinstalling the application might solve this problem.\n"
-									+ "Please report this to the developer at https://github.com/bfour/FP-LiteratureCollector/issues.\n\n"
-									+ "Details: "
-									+ (e.getMessage() == null ? e : e
-											.getMessage()), "Error",
-							JOptionPane.ERROR_MESSAGE);
+			ApplicationErrorDialogue.showDefaultMessage(e, BUG_REPORT_URL);
 		}
 
 	}

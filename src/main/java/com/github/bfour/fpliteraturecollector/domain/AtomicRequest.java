@@ -1,10 +1,13 @@
 package com.github.bfour.fpliteraturecollector.domain;
 
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
 
-import com.github.bfour.fpjcommons.model.Entity;
+import org.neo4j.graphdb.Direction;
+import org.springframework.data.neo4j.annotation.RelatedTo;
+
+import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
+import com.github.bfour.fpjsearch.fpjsearch.Searchable;
 import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
 
 /*
@@ -27,33 +30,46 @@ import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
  * -///////////////////////////////-
  */
 
-public class AtomicRequest extends Entity {
+public class AtomicRequest extends Neo4JEntity implements Searchable {
 
-	protected Crawler crawler;
-	protected String searchString;
-	protected List<Literature> results;
+	// @RelatedTo(type="CRAWLER", direction=Direction.OUTGOING)
+	private Crawler crawler;
+
+	private String searchString;
+
+	private Integer maxPageTurns;
+
+	@RelatedTo(type = "RESULTS", direction = Direction.OUTGOING)
+	private Set<Literature> results;
+
+	private boolean processed;
+
+	private String processingError;
 
 	public AtomicRequest(Long iD, Date creationTime, Date lastChangeTime,
-			Crawler crawler, String searchString, List<Literature> results) {
+			Crawler crawler, String searchString, Integer maxPageTurns,
+			Set<Literature> results, boolean processed, String processingError) {
 		super(iD, creationTime, lastChangeTime);
 		this.crawler = crawler;
 		this.searchString = searchString;
+		this.maxPageTurns = maxPageTurns;
 		this.results = results;
+		this.processed = processed;
+		this.processingError = processingError;
 	}
 
 	public AtomicRequest(Crawler crawler, String searchString,
-			List<Literature> results) {
+			Integer maxPageTurns, Set<Literature> results, boolean processed,
+			String processingError) {
 		this.crawler = crawler;
 		this.searchString = searchString;
+		this.maxPageTurns = maxPageTurns;
 		this.results = results;
-	}
-
-	public AtomicRequest(Crawler crawler, String searchString) {
-		this(crawler, searchString, new LinkedList<Literature>());
+		this.processed = processed;
+		this.processingError = processingError;
 	}
 
 	public AtomicRequest() {
-		super();
 	}
 
 	public Crawler getCrawler() {
@@ -64,8 +80,29 @@ public class AtomicRequest extends Entity {
 		return searchString;
 	}
 
-	public List<Literature> getResults() {
+	public Integer getMaxPageTurns() {
+		return maxPageTurns;
+	}
+
+	public Set<Literature> getResults() {
 		return results;
+	}
+
+	public boolean isProcessed() {
+		return processed;
+	}
+
+	public String getProcessingError() {
+		return processingError;
+	}
+
+	@Override
+	public String toString() {
+		if (getID() == null)
+			return getCrawler() + ": " + getSearchString();
+		else
+			return "#" + getID() + " (" + getCrawler() + ": "
+					+ getSearchString() + ")";
 	}
 
 }

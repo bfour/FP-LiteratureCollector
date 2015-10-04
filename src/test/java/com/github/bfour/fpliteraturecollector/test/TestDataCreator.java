@@ -1,6 +1,28 @@
 package com.github.bfour.fpliteraturecollector.test;
 
+/*
+ * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
+ * FP-LiteratureCollector
+ * =================================
+ * Copyright (C) 2015 Florian Pollak
+ * =================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -///////////////////////////////-
+ */
+
+
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -69,19 +91,19 @@ public class TestDataCreator {
 
 		LiteratureBuilder litBuilder = new LiteratureBuilder();
 		litBuilder.setTitle("Psychological Disorders in Bikini Bottom");
-		litBuilder.setAuthors(authorList1);
+		litBuilder.setAuthors(new HashSet<>(authorList1));
 		literatureList.add(litBuilder.getObject());
 
 		LiteratureBuilder litBuilder2 = new LiteratureBuilder();
 		litBuilder2.setTitle("Mariette Pathy Allen: Transcuba");
-		litBuilder2.setAuthors(authorList2);
+		litBuilder2.setAuthors(new HashSet<>(authorList2));
 		litBuilder2.setISBN(new ISBN("978-0988983137"));
 		literatureList.add(litBuilder2.getObject());
 
 		LiteratureBuilder litBuilder3 = new LiteratureBuilder();
 		litBuilder3
 				.setTitle("LDL Receptor-Related Protein 5 (LRP5) Affects Bone Accrual and Eye Development");
-		litBuilder3.setAuthors(authorList4);
+		litBuilder3.setAuthors(new HashSet<>(authorList4));
 		litBuilder3.setDOI("10.1016/S0092-8674(01)00571-2");
 		literatureList.add(litBuilder3.getObject());
 

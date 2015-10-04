@@ -10,12 +10,35 @@
  ******************************************************************************/
 package org.epop.dataprovider;
 
+/*
+ * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
+ * FP-LiteratureCollector
+ * =================================
+ * Copyright (C) 2015 Florian Pollak
+ * =================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -///////////////////////////////-
+ */
+
+
+import java.io.IOException;
 import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
-import com.github.bfour.fpliteraturecollector.service.AuthorService;
 
 /**
  * given a query return the data
@@ -37,30 +60,33 @@ public abstract class DataProvider {
 	 * @return the papers, never null
 	 * @throws DataUnavailableException
 	 * @throws DatalayerException
+	 * @throws  
+	 * @throws URISyntaxException 
+	 * @throws MalformedURLException 
 	 */
-	public final List<Literature> runQuery(String htmlParams,
-			int pageTurnLimit, AuthorService authServ)
-			throws DataUnavailableException, DatalayerException {
+	public final List<Literature> runQuery(String htmlParams, int pageTurnLimit)
+			throws DataUnavailableException, DatalayerException, URISyntaxException {
 		try {
 			Reader r = getHTMLDoc(htmlParams, pageTurnLimit);
 			if (r == null)
 				throw new DataUnavailableException("cannot connect");
-			List<Literature> result = parsePage(r, authServ);
+			List<Literature> result = parsePage(r);
 			if (result == null)
 				throw new DataUnavailableException(
 						"parser failed to parse file");
 			return result;
-		} catch (DataUnavailableException e) {
+		} catch (DataUnavailableException | IOException e) {
 			throw new DataUnavailableException(e.getMessage());
 		}
 
 	}
 
 	// get the HTM Document - return null in case of error
-	protected abstract Reader getHTMLDoc(String htmlParams, int pageTurnLimit);
+	protected abstract Reader getHTMLDoc(String htmlParams, int pageTurnLimit)
+			throws URISyntaxException, MalformedURLException, IOException;
 
 	// parse it - return null in case of error
-	protected abstract List<Literature> parsePage(Reader r,
-			AuthorService authServ) throws DatalayerException;
+	protected abstract List<Literature> parsePage(Reader r)
+			throws DatalayerException;
 
 }

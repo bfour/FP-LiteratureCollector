@@ -1,5 +1,12 @@
 package com.github.bfour.fpliteraturecollector.domain;
 
+import java.util.Date;
+
+import org.springframework.data.neo4j.annotation.Indexed;
+
+import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
+import com.github.bfour.fpjsearch.fpjsearch.Searchable;
+
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
  * FP-LiteratureCollector
@@ -20,15 +27,15 @@ package com.github.bfour.fpliteraturecollector.domain;
  * -///////////////////////////////-
  */
 
-import java.util.Date;
-
-import com.github.bfour.fpjcommons.model.Entity;
-
-public class Author extends Entity {
+public class Author extends Neo4JEntity implements Searchable {
 
 	protected String firstName;
 	protected String lastName;
+
+	@Indexed
 	protected String gScholarID;
+
+	@Indexed
 	protected String msAcademicID;
 
 	public Author(long iD, Date creationTime, Date lastChangeTime,
@@ -51,7 +58,6 @@ public class Author extends Entity {
 	}
 
 	public Author() {
-		super();
 	}
 
 	public String getFirstName() {

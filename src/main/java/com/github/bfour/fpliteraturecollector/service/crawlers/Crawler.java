@@ -1,136 +1,61 @@
 package com.github.bfour.fpliteraturecollector.service.crawlers;
 
-import java.util.LinkedList;
+/*
+ * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
+ * FP-LiteratureCollector
+ * =================================
+ * Copyright (C) 2015 Florian Pollak
+ * =================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -///////////////////////////////-
+ */
+
+
+import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 
+import org.epop.dataprovider.DataProvider;
+import org.epop.dataprovider.DataUnavailableException;
+
+import com.github.bfour.fpjcommons.services.DatalayerException;
+import com.github.bfour.fpjsearch.fpjsearch.Searchable;
+import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.SupportedSearchEngine;
 
-public abstract class Crawler {
 
-	public static interface FinishListener {
-		void receiveFinished();
+public class Crawler implements Searchable {
+
+	private DataProvider provider;
+	private List<SupportedSearchEngine> engines;
+
+	public Crawler(DataProvider provider, SupportedSearchEngine... engines) {
+		this.provider = provider;
+		this.engines = Arrays.asList(engines);
 	}
 
-	public static interface ProgressListener {
-		void receiveProgress(String progress);
+	public List<Literature> process(AtomicRequest atomReq)
+			throws DataUnavailableException, DatalayerException,
+			URISyntaxException {
+		return provider.runQuery(atomReq.getSearchString(),
+				atomReq.getMaxPageTurns());
 	}
 
-	public static interface ResultStreamListener {
-		void receiveResult(Literature literature);
+	@Override
+	public String toString() {
+		return CrawlerService.getInstance().getIdentifierForCrawler(this);
 	}
-
-	public static enum CrawlerState {
-
-		/**
-		 * Crawler has not yet been started (before first
-		 * {@link Crawler#start()} call)
-		 */
-		NOT_STARTED,
-
-		/**
-		 * Crawler is currently crawling ({@link Crawler#start()} has been
-		 * called)
-		 */
-		RUNNING,
-
-		// /**
-		// * Crawler has been suspended by calling {@link Crawler#suspend()}
-		// */
-		// SUSPENDED,
-
-		/**
-		 * crawling process has been aborted by calling {@link Crawler#abort()};
-		 * results may be incomplete
-		 */
-		ABORTED,
-
-		/**
-		 * crawling process has been finished
-		 */
-		FINISHED;
-
-	}
-
-	private List<ProgressListener> progressListeners = new LinkedList<>();
-	private List<ResultStreamListener> resultListeners = new LinkedList<>();
-	private List<FinishListener> finishListeners = new LinkedList<>();
-	private CrawlerState state = CrawlerState.NOT_STARTED;
-
-	/**
-	 * Start the crawling process.
-	 * 
-	 * @param htmlParams
-	 *            instructions for the Crawler; syntax specific to Crawler
-	 * @param maximum
-	 *            page turns on website to be crawled
-	 */
-	public abstract void start(String htmlParams, int maxPageTurns);
-
-	// /**
-	// * Pause the crawling process if possible.
-	// * @throws OperationNotSupportedException
-	// */
-	// public abstract void suspend() throws OperationNotSupportedException;
-
-	/**
-	 * Abort the crawling process. Won't do anything if the crawler hasn't been
-	 * started yet or is finished.
-	 */
-	public abstract void abort();
-
-	/**
-	 * Get the state in which the Crawler is currently in.
-	 * 
-	 * @return current state of the Crawler
-	 * @see {@link CrawlerState}
-	 */
-	public final synchronized CrawlerState getState() {
-		return state;
-	}
-
-	/**
-	 * Sets the state in which the Crawler is currently in.
-	 * 
-	 * @param state
-	 *            state to be set
-	 */
-	protected final synchronized void setState(CrawlerState state) {
-
-		// check if valid state transition
-		if (this.state == CrawlerState.NOT_STARTED
-				&& (state == CrawlerState.ABORTED || state == CrawlerState.FINISHED))
-			throw new InvalidStateTransitionException(
-					"cannot have transition from NOT_STARTED to ABORTED or FINISHED");
-
-		if ((this.state == CrawlerState.RUNNING
-				|| this.state == CrawlerState.ABORTED || this.state == CrawlerState.FINISHED)
-				&& state == CrawlerState.NOT_STARTED)
-			throw new InvalidStateTransitionException(
-					"cannot have transition from either RUNNING, ABORTED or FINISHED to NOT_STARTED");
-
-		if (this.state == CrawlerState.ABORTED
-				&& state == CrawlerState.FINISHED)
-			throw new InvalidStateTransitionException(
-					"cannot have transition from ABORTED to FINISHED");
-
-		if (this.state == CrawlerState.FINISHED
-				&& state == CrawlerState.ABORTED)
-			throw new InvalidStateTransitionException(
-					"cannot have transition from FINISHED to ABORTED");
-
-		// set state
-		this.state = state;
-
-	}
-
-	/**
-	 * Get error that occurred since the last call to
-	 * {@link Crawler#start(String)} if any.
-	 * 
-	 * @return
-	 */
-	public abstract Exception getError();
 
 	/**
 	 * Get the SupportedSearchEngines used by this Crawler. This information may
@@ -138,19 +63,8 @@ public abstract class Crawler {
 	 * 
 	 * @return SupportedSearchEngines used by this Crawler
 	 */
-	public abstract List<SupportedSearchEngine> getSearchEnginesBeingAccessed();
-
-	public synchronized void registerResultStreamListener(
-			ResultStreamListener listener) {
-		resultListeners.add(listener);
-	}
-
-	public synchronized void registerFinishListener(FinishListener listener) {
-		finishListeners.add(listener);
-	}
-
-	public synchronized void registerProgressListener(ProgressListener listener) {
-		progressListeners.add(listener);
+	public List<SupportedSearchEngine> getSearchEnginesBeingAccessed() {
+		return engines;
 	}
 
 }

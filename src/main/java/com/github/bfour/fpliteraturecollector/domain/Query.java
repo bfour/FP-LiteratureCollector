@@ -21,30 +21,68 @@ package com.github.bfour.fpliteraturecollector.domain;
  */
 
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
-import com.github.bfour.fpjcommons.model.Entity;
+import javax.swing.ImageIcon;
 
-public class Query extends Entity {
+import org.neo4j.graphdb.Direction;
+import org.springframework.data.neo4j.annotation.Fetch;
+import org.springframework.data.neo4j.annotation.RelatedTo;
+
+import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
+import com.github.bfour.fpliteraturecollector.gui.design.Icons;
+
+public class Query extends Neo4JEntity {
+
+	public static enum QueryStatus {
+		CRAWLING("crawling", com.github.bfour.fpjgui.design.Icons.BUSY_16.getIcon()), 
+		FINISHED("finished", Icons.FINISHED_20.getIcon()), 
+		FINISHED_WITH_ERROR("finished with error", Icons.FINISHED_WITH_ERROR_20.getIcon()), 
+		QUEUED("queued", Icons.QUEUED_20.getIcon()), 
+		IDLE("idle", Icons.IDLE_20.getIcon());
+
+		private String tellingName;
+		private ImageIcon icon;
+
+		QueryStatus(String tellingName, ImageIcon icon) {
+			this.tellingName = tellingName;
+			this.icon = icon;
+		}
+
+		public String getTellingName() {
+			return tellingName;
+		}
+
+		public ImageIcon getIcon() {
+			return icon;
+		}
+
+	}
 
 	protected String name;
-	protected List<AtomicRequest> atomicRequests;
+	@Fetch
+	@RelatedTo(type = "ATOMIC_REQUESTS", direction = Direction.OUTGOING)
+	protected Set<AtomicRequest> atomicRequests;
 	protected Integer queuePosition;
+	protected QueryStatus status;
 
-	public Query(long iD, Date creationTime, Date lastChangeTime, String name,
-			List<AtomicRequest> atomicRequests, Integer queuePosition) {
+	public Query(Long iD, Date creationTime, Date lastChangeTime, String name,
+			Set<AtomicRequest> atomicRequests, Integer queuePosition,
+			QueryStatus status) {
 		super(iD, creationTime, lastChangeTime);
 		this.name = name;
 		this.atomicRequests = atomicRequests;
 		this.queuePosition = queuePosition;
+		this.status = status;
 	}
 
-	public Query(String name, List<AtomicRequest> atomicRequests,
-			Integer queuePosition) {
+	public Query(String name, Set<AtomicRequest> atomicRequests,
+			Integer queuePosition, QueryStatus status) {
 		super();
 		this.name = name;
 		this.atomicRequests = atomicRequests;
 		this.queuePosition = queuePosition;
+		this.status = status;
 	}
 
 	public Query() {
@@ -55,12 +93,21 @@ public class Query extends Entity {
 		return name;
 	}
 
-	public List<AtomicRequest> getAtomicRequests() {
+	public Set<AtomicRequest> getAtomicRequests() {
 		return atomicRequests;
 	}
 
 	public Integer getQueuePosition() {
 		return queuePosition;
+	}
+
+	public QueryStatus getStatus() {
+		return status;
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 
 }

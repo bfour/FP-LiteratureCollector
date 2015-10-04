@@ -1,70 +1,35 @@
 package com.github.bfour.fpliteraturecollector.service.crawlers.epop;
 
-import java.util.List;
+/*
+ * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
+ * FP-LiteratureCollector
+ * =================================
+ * Copyright (C) 2015 Florian Pollak
+ * =================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -///////////////////////////////-
+ */
 
-import javax.swing.SwingWorker;
 
 import org.epop.dataprovider.googlescholar.GoogleScholarProvider;
 
-import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.SupportedSearchEngine;
-import com.github.bfour.fpliteraturecollector.service.AuthorService;
-import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
 
 public class EpopScholarCrawler extends Crawler {
 
-	private static class EpopScholarCrawlerWorker extends
-			SwingWorker<List<Literature>, Literature> {
-
-		private String htmlParams;
-		private int maxPageTurns;
-		private AuthorService authServ;
-
-		public EpopScholarCrawlerWorker(String htmlParams, int maxPageTurns, 
-				ServiceManager servMan) {
-			this.htmlParams = htmlParams;
-			this.maxPageTurns = maxPageTurns;
-			this.authServ = servMan.getAuthorService();
-		}
-
-		@Override
-		protected List<Literature> doInBackground() throws Exception {
-			GoogleScholarProvider provider = new GoogleScholarProvider();
-			List<Literature> literature = provider.runQuery(htmlParams, maxPageTurns,
-					authServ);
-			return literature;
-		}
-
-	}
-
-	private ServiceManager servMan;
-	
-	public EpopScholarCrawler(ServiceManager servMan) {
-		this.servMan = servMan;
-	}
-
-	@Override
-	public void start(String htmlParams, int maxPageTurns) {
-		new EpopScholarCrawlerWorker(htmlParams, maxPageTurns, servMan).execute();
-	}
-
-	@Override
-	public void abort() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Exception getError() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<SupportedSearchEngine> getSearchEnginesBeingAccessed() {
-		// TODO Auto-generated method stub
-		return null;
+	public EpopScholarCrawler() {
+		super(new GoogleScholarProvider(), SupportedSearchEngine.GOOGLE_SCHOLAR);
 	}
 
 }

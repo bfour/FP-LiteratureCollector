@@ -21,9 +21,12 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  */
 
 
+import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.CRUD.CRUDDAO;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 
 public interface QueryDAO extends CRUDDAO<Query> {
 
+	Query getByQueuePosition(int position) throws DatalayerException;
+	
 }
