@@ -24,9 +24,10 @@ import java.awt.Color;
 import java.util.Date;
 
 import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
+import com.github.bfour.fpjsearch.fpjsearch.Searchable;
 
 public class Tag extends Neo4JEntity implements
-		com.github.bfour.fpjguiextended.tagging.Tag {
+		com.github.bfour.fpjguiextended.tagging.Tag, Searchable {
 
 	private String name;
 	private Color colour;

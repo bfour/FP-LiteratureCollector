@@ -48,8 +48,8 @@ import com.github.bfour.fpjgui.components.FPJGUILabelPanel;
 import com.github.bfour.fpjgui.components.FPJGUIMultilineLabel;
 import com.github.bfour.fpjgui.components.SearchComboBox;
 import com.github.bfour.fpjgui.components.ToggleEditFormComponent;
-import com.github.bfour.fpjgui.components.composite.EntityBrowsePanel;
 import com.github.bfour.fpjgui.components.composite.EntityEditPanel;
+import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
 import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
 import com.github.bfour.fpjguiextended.tagging.TagTilePanel;
 import com.github.bfour.fpliteraturecollector.domain.Author;
@@ -111,7 +111,7 @@ public class LiteraturePanel extends
 				"growx,wrap");
 
 		// type
-		EntityBrowsePanel<LiteratureType> litTypeBrowsePanel = new EntityBrowsePanel<LiteratureType>(
+		EntityTableBrowsePanel<LiteratureType> litTypeBrowsePanel = new EntityTableBrowsePanel<LiteratureType>(
 				LiteratureType.class);
 		litTypeBrowsePanel
 				.setLoader(new EntityLoader<Literature.LiteratureType>() {

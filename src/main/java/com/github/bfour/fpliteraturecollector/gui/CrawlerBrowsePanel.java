@@ -25,14 +25,14 @@ import java.util.List;
 
 import com.github.bfour.fpjgui.abstraction.EntityLoader;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
-import com.github.bfour.fpjgui.components.composite.EntityBrowsePanel;
+import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
 import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGetter;
 import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
 
-public class CrawlerBrowsePanel extends EntityBrowsePanel<Crawler> implements
-		FeedbackProvider {
+public class CrawlerBrowsePanel extends EntityTableBrowsePanel<Crawler>
+		implements FeedbackProvider {
 
 	private static final long serialVersionUID = 4500980555674670335L;
 
@@ -57,10 +57,10 @@ public class CrawlerBrowsePanel extends EntityBrowsePanel<Crawler> implements
 								.getIdentifierForCrawler(item);
 					}
 				}, true, 30, 30, "name", false);
-		getTable().addColumn(nameColumn);
+		getListLikeContainer().addColumn(nameColumn);
 
-		getTable().setPreferredColumnWidth(nameColumn, 186);
-		getTable().setMinimumColumnWidth(nameColumn, 86);
+		getListLikeContainer().setPreferredColumnWidth(nameColumn, 186);
+		getListLikeContainer().setMinimumColumnWidth(nameColumn, 86);
 
 		// ==== loader ====
 		setLoader(new EntityLoader<Crawler>() {

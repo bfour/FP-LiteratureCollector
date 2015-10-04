@@ -40,8 +40,8 @@ import com.github.bfour.fpjgui.components.FPJGUIScrollableTextPane;
 import com.github.bfour.fpjgui.components.FPJGUITextField;
 import com.github.bfour.fpjgui.components.SearchComboBox;
 import com.github.bfour.fpjgui.components.ToggleEditFormComponent;
-import com.github.bfour.fpjgui.components.composite.EntityBrowsePanel;
 import com.github.bfour.fpjgui.components.composite.EntityEditPanel;
+import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
 import com.github.bfour.fpjgui.components.table.FPJGUITable;
 import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
@@ -141,7 +141,7 @@ public class AtomicRequestPanel extends
 				new MigLayout("insets 0", "[grow]", "[][][grow]"));
 
 		// crawler
-		EntityBrowsePanel<Crawler> crawlerBrowsePanel = new CrawlerBrowsePanel(
+		EntityTableBrowsePanel<Crawler> crawlerBrowsePanel = new CrawlerBrowsePanel(
 				servMan);
 		crawlerBrowsePanel.setDeleteEntityEnabled(false);
 		crawlerBrowsePanel.setCreateEntityEnabled(false);

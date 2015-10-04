@@ -5,6 +5,7 @@ import java.util.Date;
 import org.springframework.data.neo4j.annotation.Indexed;
 
 import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
+import com.github.bfour.fpjsearch.fpjsearch.Searchable;
 
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
@@ -26,7 +27,7 @@ import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
  * -///////////////////////////////-
  */
 
-public class Author extends Neo4JEntity {
+public class Author extends Neo4JEntity implements Searchable {
 
 	protected String firstName;
 	protected String lastName;
@@ -46,7 +47,7 @@ public class Author extends Neo4JEntity {
 		this.gScholarID = gScholarID;
 		this.msAcademicID = msAcademicID;
 	}
-	
+
 	public Author(String firstName, String lastName, String gScholarID,
 			String msAcademicID) {
 		super();

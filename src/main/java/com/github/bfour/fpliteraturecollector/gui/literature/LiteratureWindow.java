@@ -96,7 +96,7 @@ public class LiteratureWindow extends JFrame implements FeedbackListener {
 
 		// automatically set Literature in LiteraturePanel on selection change
 		// in LiteratureLookupPanel
-		litLookPanel.subscribeEntitySelectionChangeSubscriber(litPanel);
+		litLookPanel.subscribeSelectionChangeSubscriber(litPanel);
 
 		// pack
 		// pack();

@@ -20,15 +20,14 @@ package com.github.bfour.fpliteraturecollector.gui.authors;
  * -///////////////////////////////-
  */
 
-
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
-import com.github.bfour.fpjgui.components.composite.EntityBrowsePanel;
+import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
 import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGetter;
 import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
-public class AuthorsBrowsePanel extends EntityBrowsePanel<Author>
+public class AuthorsBrowsePanel extends EntityTableBrowsePanel<Author>
 		implements FeedbackProvider {
 
 	private static final long serialVersionUID = 4500980555674670335L;
@@ -39,7 +38,7 @@ public class AuthorsBrowsePanel extends EntityBrowsePanel<Author>
 	public AuthorsBrowsePanel(final ServiceManager servMan) {
 
 		super(Author.class, servMan.getAuthorService(), true);
-		
+
 		// show default buttons for CRUD options
 		setDeleteEntityEnabled(true);
 		setEditEntityEnabled(false);
@@ -53,8 +52,8 @@ public class AuthorsBrowsePanel extends EntityBrowsePanel<Author>
 						return item.getFirstName();
 					}
 				}, true, 30, 30, "firstName", false);
-		getTable().addColumn(firstNameColumn);
-		
+		getListLikeContainer().addColumn(firstNameColumn);
+
 		FPJGUITableColumn<Author> lastNameColumn = new FPJGUITableColumn<Author>(
 				"Last name(s)", new FPJGUITableFieldGetter<Author>() {
 					@Override
@@ -62,13 +61,13 @@ public class AuthorsBrowsePanel extends EntityBrowsePanel<Author>
 						return item.getLastName();
 					}
 				}, true, 30, 30, "lastName", false);
-		getTable().addColumn(lastNameColumn);
+		getListLikeContainer().addColumn(lastNameColumn);
 
-		getTable().setPreferredColumnWidth(firstNameColumn, 200);
-		getTable().setPreferredColumnWidth(lastNameColumn, 286);
+		getListLikeContainer().setPreferredColumnWidth(firstNameColumn, 200);
+		getListLikeContainer().setPreferredColumnWidth(lastNameColumn, 286);
 
-		getTable().setMinimumColumnWidth(firstNameColumn, 100);
-		getTable().setMinimumColumnWidth(lastNameColumn, 186);
+		getListLikeContainer().setMinimumColumnWidth(firstNameColumn, 100);
+		getListLikeContainer().setMinimumColumnWidth(lastNameColumn, 186);
 
 	}
 }

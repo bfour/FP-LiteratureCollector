@@ -7,6 +7,7 @@ import org.neo4j.graphdb.Direction;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
+import com.github.bfour.fpjsearch.fpjsearch.Searchable;
 import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
 
 /*
@@ -29,7 +30,7 @@ import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
  * -///////////////////////////////-
  */
 
-public class AtomicRequest extends Neo4JEntity {
+public class AtomicRequest extends Neo4JEntity implements Searchable {
 
 	// @RelatedTo(type="CRAWLER", direction=Direction.OUTGOING)
 	private Crawler crawler;

@@ -353,4 +353,16 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 	public void feedbackRevoked(Feedback arg0) {
 		feedbackProxy.feedbackRevoked(arg0);
 	}
+
+	@Override
+	public void deleteAllEntries() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Long getEntryCount() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -98,7 +98,7 @@ public class QueryEditPanel extends EntityEditPanel<Query, QueryBuilder> {
 		final AtomicRequestBrowsePanel atomReqBrowsePanel = new AtomicRequestBrowsePanel(
 				servMan, query);
 		final AtomicRequestPanel atomReqPanel = new AtomicRequestPanel(servMan,
-				atomReqBrowsePanel.getTable());
+				atomReqBrowsePanel.getListLikeContainer());
 
 		JXPanel atomicPanel = new JXPanel();
 		// PanelDecorator.decorateWithDropShadow(atomicPanel);
@@ -124,8 +124,7 @@ public class QueryEditPanel extends EntityEditPanel<Query, QueryBuilder> {
 
 		// automatically set AtomicRequest in edit/view panel on selection
 		// change
-		atomReqBrowsePanel
-				.subscribeEntitySelectionChangeSubscriber(atomReqPanel);
+		atomReqBrowsePanel.subscribeSelectionChangeSubscriber(atomReqPanel);
 
 		// mappings
 		ObjectGraphicalValueContainerMapper<QueryBuilder, String> nameMapper = new ObjectGraphicalValueContainerMapper<QueryBuilder, String>(

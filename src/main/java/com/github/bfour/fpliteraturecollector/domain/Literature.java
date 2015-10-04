@@ -31,10 +31,11 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 import org.springframework.data.neo4j.support.index.IndexType;
 
 import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
+import com.github.bfour.fpjsearch.fpjsearch.Searchable;
 
-public class Literature extends Neo4JEntity {
+public class Literature extends Neo4JEntity implements Searchable {
 
-	public static enum LiteratureType {
+	public static enum LiteratureType implements Searchable {
 		UNKNOWN("unknown"), BOOK("book"), DISSERTATION("dissertation"), JOURNAL_PAPER(
 				"journal paper"), CONFERENCE_PAPER("conference paper"), PATENT(
 				"patent"), BOOK_CHAPTER("book chapter"), WORKING_PAPER(
@@ -56,20 +57,20 @@ public class Literature extends Neo4JEntity {
 		}
 
 	}
-	
+
 	@Indexed(indexType = IndexType.FULLTEXT, indexName = "literatureTitle")
 	protected String title;
-	
+
 	protected LiteratureType type;
-	
+
 	@Fetch
-	@RelatedTo(type="AUTHORS", direction = Direction.OUTGOING)
+	@RelatedTo(type = "AUTHORS", direction = Direction.OUTGOING)
 	protected Set<Author> authors;
-	
+
 	protected String DOI;
-	
+
 	protected ISBN ISBN;
-	
+
 	protected Integer year;
 
 	/**
@@ -87,12 +88,12 @@ public class Literature extends Neo4JEntity {
 	protected Integer gScholarNumCitations;
 
 	@Fetch
-	@RelatedTo(type="TAGS", direction = Direction.OUTGOING)
+	@RelatedTo(type = "TAGS", direction = Direction.OUTGOING)
 	protected Set<Tag> tags;
 
 	public Literature(Long iD, Date creationTime, Date lastChangeTime,
-			String title, LiteratureType type, Set<Author> authors,
-			String DOI, ISBN ISBN, Integer year, String publicationContext,
+			String title, LiteratureType type, Set<Author> authors, String DOI,
+			ISBN ISBN, Integer year, String publicationContext,
 			String publisher, String websiteURL, String fulltextURL,
 			Path fulltextFilePath, Integer gScholarNumCitations, Set<Tag> tags) {
 		super(iD, creationTime, lastChangeTime);
@@ -110,7 +111,7 @@ public class Literature extends Neo4JEntity {
 		this.gScholarNumCitations = gScholarNumCitations;
 		this.tags = tags;
 	}
-	
+
 	public Literature(String title, LiteratureType type, Set<Author> authors,
 			String DOI, ISBN ISBN, Integer year, String publicationContext,
 			String publisher, String websiteURL, String fulltextURL,

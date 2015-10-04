@@ -41,7 +41,7 @@ import com.github.bfour.fpjcommons.events.CreateEvent;
 import com.github.bfour.fpjcommons.events.DeleteEvent;
 import com.github.bfour.fpjcommons.events.UpdateEvent;
 import com.github.bfour.fpjgui.abstraction.EntityLoader;
-import com.github.bfour.fpjgui.components.composite.EntityBrowsePanel;
+import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
 import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGetter;
 import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
 import com.github.bfour.fpjgui.util.DefaultActionInterfaceHandler;
@@ -53,7 +53,8 @@ import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 /**
  * This class deals with the presentation of a list of AtomicRequests
  */
-public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest> {
+public class AtomicRequestBrowsePanel extends
+		EntityTableBrowsePanel<AtomicRequest> {
 
 	private static final long serialVersionUID = 1584008979044088377L;
 
@@ -90,7 +91,7 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest> {
 								.getIdentifierForCrawler(item.getCrawler());
 					}
 				}, true, 30, 30, "crawler", false);
-		getTable().addColumn(crawlerColumn);
+		getListLikeContainer().addColumn(crawlerColumn);
 
 		FPJGUITableColumn<AtomicRequest> requestStringColumn = new FPJGUITableColumn<AtomicRequest>(
 				"Request String", new FPJGUITableFieldGetter<AtomicRequest>() {
@@ -99,13 +100,14 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest> {
 						return item.getSearchString();
 					}
 				}, true, 30, 30, "requestStrings", false);
-		getTable().addColumn(requestStringColumn);
+		getListLikeContainer().addColumn(requestStringColumn);
 
-		getTable().setPreferredColumnWidth(crawlerColumn, 100);
-		getTable().setPreferredColumnWidth(requestStringColumn, 400);
+		getListLikeContainer().setPreferredColumnWidth(crawlerColumn, 100);
+		getListLikeContainer()
+				.setPreferredColumnWidth(requestStringColumn, 400);
 
-		getTable().setMinimumColumnWidth(crawlerColumn, 100);
-		getTable().setMinimumColumnWidth(requestStringColumn, 200);
+		getListLikeContainer().setMinimumColumnWidth(crawlerColumn, 100);
+		getListLikeContainer().setMinimumColumnWidth(requestStringColumn, 200);
 
 		// ==== loader ====
 		setLoader(new EntityLoader<AtomicRequest>() {
@@ -133,7 +135,7 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest> {
 				@Override
 				public void handle(BatchDeleteEvent<Query> arg0) {
 					if (arg0.getAffectedObjects().contains(query))
-						getTable().clear();
+						getListLikeContainer().deleteAllEntries();
 				}
 
 				@Override
@@ -152,13 +154,13 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest> {
 				@Override
 				public void handle(DeleteEvent<Query> arg0) {
 					if (arg0.getDeletedObject().equals(query))
-						getTable().clear();
+						getListLikeContainer().deleteAllEntries();
 				}
 
 				@Override
 				public void handle(UpdateEvent<Query> arg0) {
 					if (arg0.getOldObject().equals(query))
-						getTable().setEntries(
+						getListLikeContainer().setEntries(
 								new ArrayList<>(arg0.getNewObject()
 										.getAtomicRequests()));
 				}
@@ -194,11 +196,13 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest> {
 					source = getDeleteButton();
 				}
 				if (query == null) {
-					getTable().deleteEntry(getTable().getSelectedItem());
+					getListLikeContainer().deleteEntry(
+							getListLikeContainer().getSelectedItem());
 				} else {
 					DefaultActionInterfaceHandler.getInstance()
 							.requestDeleteFromList(source, getFeedbackProxy(),
-									getTable().getSelectedItem(), eServ);
+									getListLikeContainer().getSelectedItem(),
+									eServ);
 				}
 			}
 		};
@@ -208,15 +212,15 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest> {
 
 	@Override
 	public List<AtomicRequest> getValue() {
-		return getTable().getEntries();
+		return getListLikeContainer().getEntries();
 	}
 
 	@Override
 	public void setValue(List<AtomicRequest> value) {
 		if (value == null)
-			getTable().setEntries(new ArrayList<AtomicRequest>(0));
+			getListLikeContainer().setEntries(new ArrayList<AtomicRequest>(0));
 		else
-			getTable().setEntries(value);
+			getListLikeContainer().setEntries(value);
 	}
 
 }

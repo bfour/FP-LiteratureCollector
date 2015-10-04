@@ -29,12 +29,13 @@ import org.epop.dataprovider.DataProvider;
 import org.epop.dataprovider.DataUnavailableException;
 
 import com.github.bfour.fpjcommons.services.DatalayerException;
+import com.github.bfour.fpjsearch.fpjsearch.Searchable;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.SupportedSearchEngine;
 
 
-public class Crawler {
+public class Crawler implements Searchable {
 
 	private DataProvider provider;
 	private List<SupportedSearchEngine> engines;

@@ -126,17 +126,16 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		tagsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				TagsWindow.getInstance(Tag.class,
-						serviceManager.getTagService(),
-						new Getter<Tag, TagBuilder>() {
-							@Override
-							public TagBuilder get(Tag input) {
-								if (input == null)
-									return new TagBuilder();
-								else
-									return new TagBuilder(input);
-							}
-						}).setVisible(true);
+				new TagsWindow<Tag, TagBuilder>(Tag.class, serviceManager
+						.getTagService(), new Getter<Tag, TagBuilder>() {
+					@Override
+					public TagBuilder get(Tag input) {
+						if (input == null)
+							return new TagBuilder();
+						else
+							return new TagBuilder(input);
+					}
+				}).setVisible(true);
 			}
 		});
 

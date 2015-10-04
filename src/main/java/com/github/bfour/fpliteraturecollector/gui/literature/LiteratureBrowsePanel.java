@@ -37,7 +37,7 @@ import com.github.bfour.fpjgui.components.FPJGUIButton;
 import com.github.bfour.fpjgui.components.FPJGUIButton.ButtonFormats;
 import com.github.bfour.fpjgui.components.FPJGUIButton.FPJGUIButtonFactory;
 import com.github.bfour.fpjgui.components.FPJGUIPopover;
-import com.github.bfour.fpjgui.components.composite.EntityBrowsePanel;
+import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
 import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGetter;
 import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
 import com.github.bfour.fpjgui.design.Lengths;
@@ -49,7 +49,7 @@ import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 import com.github.bfour.fpliteraturecollector.service.LiteratureService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
-public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature> {
+public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 
 	private static final long serialVersionUID = 4500980555674670335L;
 
@@ -132,7 +132,7 @@ public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature> {
 		});
 
 		// selection mode
-		getTable().getTable().setSelectionMode(
+		getListLikeContainer().setSelectionMode(
 				ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
 		// ==== columns ====
@@ -143,7 +143,7 @@ public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature> {
 						return item.getTitle();
 					}
 				}, true, 30, 30, "title", false);
-		getTable().addColumn(titleColumn);
+		getListLikeContainer().addColumn(titleColumn);
 
 		FPJGUITableColumn<Literature> authorsColumn = new FPJGUITableColumn<Literature>(
 				"Authors", new FPJGUITableFieldGetter<Literature>() {
@@ -160,13 +160,13 @@ public class LiteratureBrowsePanel extends EntityBrowsePanel<Literature> {
 						return builder.substring(0, builder.length() - 2);
 					}
 				}, true, 30, 30, "authors", false);
-		getTable().addColumn(authorsColumn);
+		getListLikeContainer().addColumn(authorsColumn);
 
-		getTable().setPreferredColumnWidth(titleColumn, 200);
-		getTable().setPreferredColumnWidth(authorsColumn, 40);
+		getListLikeContainer().setPreferredColumnWidth(titleColumn, 200);
+		getListLikeContainer().setPreferredColumnWidth(authorsColumn, 40);
 
-		getTable().setMinimumColumnWidth(titleColumn, 100);
-		getTable().setMinimumColumnWidth(authorsColumn, 40);
+		getListLikeContainer().setMinimumColumnWidth(titleColumn, 100);
+		getListLikeContainer().setMinimumColumnWidth(authorsColumn, 40);
 
 	}
 }
