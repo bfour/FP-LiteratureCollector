@@ -30,6 +30,7 @@ import com.github.bfour.fpjsearch.fpjsearch.Searchable;
 public class Author extends Neo4JEntity implements Searchable {
 
 	protected String firstName;
+	protected String middleName;
 	protected String lastName;
 
 	@Indexed
@@ -39,19 +40,21 @@ public class Author extends Neo4JEntity implements Searchable {
 	protected String msAcademicID;
 
 	public Author(long iD, Date creationTime, Date lastChangeTime,
-			String firstName, String lastName, String gScholarID,
-			String msAcademicID) {
+			String firstName, String middleName, String lastName,
+			String gScholarID, String msAcademicID) {
 		super(iD, creationTime, lastChangeTime);
 		this.firstName = firstName;
+		this.middleName = middleName;
 		this.lastName = lastName;
 		this.gScholarID = gScholarID;
 		this.msAcademicID = msAcademicID;
 	}
 
-	public Author(String firstName, String lastName, String gScholarID,
-			String msAcademicID) {
+	public Author(String firstName, String middleName, String lastName,
+			String gScholarID, String msAcademicID) {
 		super();
 		this.firstName = firstName;
+		this.middleName = middleName;
 		this.lastName = lastName;
 		this.gScholarID = gScholarID;
 		this.msAcademicID = msAcademicID;
@@ -62,6 +65,10 @@ public class Author extends Neo4JEntity implements Searchable {
 
 	public String getFirstName() {
 		return firstName;
+	}
+
+	public String getMiddleName() {
+		return middleName;
 	}
 
 	public String getLastName() {

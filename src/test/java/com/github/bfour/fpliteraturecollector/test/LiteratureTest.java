@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.test;
  * -///////////////////////////////-
  */
 
-
 import java.util.List;
 
 import org.junit.After;
@@ -32,6 +31,7 @@ import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
+import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 import com.github.bfour.fpliteraturecollector.service.AuthorService;
 import com.github.bfour.fpliteraturecollector.service.LiteratureService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
@@ -76,7 +76,7 @@ public class LiteratureTest {
 	public void deleteNonExistentLiteratureExpectNoChange()
 			throws ServiceException {
 		assert (litServ.getAll().isEmpty());
-		litServ.delete(new Literature());
+		litServ.delete(new LiteratureBuilder().getObject());
 		assert (litServ.getAll().isEmpty());
 	}
 
@@ -84,7 +84,8 @@ public class LiteratureTest {
 	public void updateNonExistentLiteratureExpectFailure()
 			throws ServiceException {
 		assert (litServ.getAll().isEmpty());
-		litServ.update(new Literature(), new Literature());
+		litServ.update(new LiteratureBuilder().getObject(),
+				new LiteratureBuilder().getObject());
 		assert (litServ.getAll().isEmpty());
 	}
 

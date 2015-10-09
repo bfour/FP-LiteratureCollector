@@ -41,16 +41,16 @@ public class TestDataCreator {
 
 	public static List<Author> createAuthorList1() {
 		List<Author> authorList = new LinkedList<Author>();
-		authorList.add(new Author("Tapio", "Saari", null, null));
-		authorList.add(new Author("T.", "Saari", null, null));
-		authorList.add(new Author("", "Saari", null, null));
-		authorList.add(new Author("Ilmari", "Sinivuokko", null, null));
-		authorList.add(new Author("Friðrik Reetta", "Wuopio", null, null));
-		authorList.add(new Author("Áki Brynhildur", "Jokela", null, null));
-		authorList.add(new Author("Alan", "Turing", null, null));
-		authorList.add(new Author("藤本", "雄大", null, null));
-		authorList.add(new Author("D", "Giansanti", "9VI8yUIAAAAJ", null));
-		authorList.add(new Author("Mojtaba", "Ghadiri", null, "47198206"));
+		authorList.add(new Author("Tapio", "M.", "Saari", null, null));
+		authorList.add(new Author("T.", "M.", "Saari", null, null));
+		authorList.add(new Author("", "", "Saari", null, null));
+		authorList.add(new Author("Ilmari", "", "Sinivuokko", null, null));
+		authorList.add(new Author("Friðrik Reetta", "", "Wuopio", null, null));
+		authorList.add(new Author("Áki Brynhildur", "", "Jokela", null, null));
+		authorList.add(new Author("Alan", "", "Turing", null, null));
+		authorList.add(new Author("藤本", "", "雄大", null, null));
+		authorList.add(new Author("D", "", "Giansanti", "9VI8yUIAAAAJ", null));
+		authorList.add(new Author("Mojtaba", "", "Ghadiri", null, "47198206"));
 		return authorList;
 	}
 
@@ -58,25 +58,25 @@ public class TestDataCreator {
 			throws ServiceException {
 
 		List<Author> authorList1 = new ArrayList<>(2);
-		authorList1.add(new Author("Bob", "Sponge", null, null));
-		authorList1.add(new Author("Patrick", "Star", null, null));
+		authorList1.add(new Author("Bob", "", "Sponge", null, null));
+		authorList1.add(new Author("Patrick", "", "Star", null, null));
 		for (Author person : authorList1)
 			authorList1.set(authorList1.indexOf(person),
 					authServ.create(person));
 
 		List<Author> authorList2 = new ArrayList<>(1);
-		authorList2.add(new Author("Mariela", "Castro Espín", null, null));
+		authorList2.add(new Author("Mariela", "", "Castro-Espín", null, null));
 		for (Author person : authorList2)
 			authorList2.set(authorList2.indexOf(person),
 					authServ.create(person));
 
 		List<Author> authorList3 = new ArrayList<>(5);
-		authorList3.add(new Author("Mariela", "Castro Espín", null, null));
-		authorList3.add(new Author("Raúl", "Castro", null, null));
-		authorList3.add(new Author("Fidel", "Castro", null, null));
+		authorList3.add(new Author("Mariela", "", "Castro Espín", null, null));
+		authorList3.add(new Author("Raúl", "", "Castro", null, null));
+		authorList3.add(new Author("Fidel", "", "Castro", null, null));
 		authorList3
-				.add(new Author("José Alberto", "Mujica Cordano", null, null));
-		authorList3.add(new Author("Cristina Fernández", "de Kirchner", null,
+				.add(new Author("José", "Alberto", "Mujica Cordano", null, null));
+		authorList3.add(new Author("Cristina", "Fernández", "de Kirchner", null,
 				null));
 		for (Author person : authorList3)
 			authorList3.set(authorList3.indexOf(person),

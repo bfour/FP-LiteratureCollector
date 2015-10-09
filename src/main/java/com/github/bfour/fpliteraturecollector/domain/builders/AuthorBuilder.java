@@ -50,6 +50,7 @@ public class AuthorBuilder extends EntityBuilder<Author> implements
 		Builder<Author> {
 
 	private String firstName;
+	private String middleName;
 	private String lastName;
 	private String gScholarID;
 	private String msAcademicID;
@@ -63,13 +64,14 @@ public class AuthorBuilder extends EntityBuilder<Author> implements
 		setCreationTime(person.getCreationTime());
 		setLastChangeTime(person.getLastChangeTime());
 		setFirstName(person.getFirstName());
+		setMiddleName(person.getMiddleName());
 		setLastName(person.getLastName());
 	}
 
 	@Override
 	public Author getObject() {
 		return new Author(getID(), getCreationTime(), getLastChangeTime(),
-				getFirstName(), getLastName(), getgScholarID(),
+				getFirstName(), getMiddleName(), getLastName(), getgScholarID(),
 				getMsAcademicID());
 	}
 
@@ -80,6 +82,14 @@ public class AuthorBuilder extends EntityBuilder<Author> implements
 	public AuthorBuilder setFirstName(String firstName) {
 		this.firstName = firstName;
 		return this;
+	}
+
+	public String getMiddleName() {
+		return middleName;
+	}
+
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
 	}
 
 	public String getLastName() {

@@ -86,22 +86,25 @@ public class Literature extends Neo4JEntity implements Searchable {
 	protected Path fulltextFilePath;
 
 	protected Integer gScholarNumCitations;
+	protected Integer msAcademicNumCitations;
 
 	@Fetch
 	@RelatedTo(type = "TAGS", direction = Direction.OUTGOING)
 	protected Set<Tag> tags;
 
-	public Literature(Long iD, Date creationTime, Date lastChangeTime,
-			String title, LiteratureType type, Set<Author> authors, String DOI,
-			ISBN ISBN, Integer year, String publicationContext,
-			String publisher, String websiteURL, String fulltextURL,
-			Path fulltextFilePath, Integer gScholarNumCitations, Set<Tag> tags) {
-		super(iD, creationTime, lastChangeTime);
+	public Literature(Long ID, Date creationTime, Date lastChangeTime,
+			String title, LiteratureType type, Set<Author> authors, String dOI,
+			com.github.bfour.fpliteraturecollector.domain.ISBN iSBN,
+			Integer year, String publicationContext, String publisher,
+			String websiteURL, String fulltextURL, Path fulltextFilePath,
+			Integer gScholarNumCitations, Integer msAcademicNumCitations,
+			Set<Tag> tags) {
+		super(ID, creationTime, lastChangeTime);
 		this.title = title;
 		this.type = type;
 		this.authors = authors;
-		this.DOI = DOI;
-		this.ISBN = ISBN;
+		DOI = dOI;
+		ISBN = iSBN;
 		this.year = year;
 		this.publicationContext = publicationContext;
 		this.publisher = publisher;
@@ -109,31 +112,8 @@ public class Literature extends Neo4JEntity implements Searchable {
 		this.fulltextURL = fulltextURL;
 		this.fulltextFilePath = fulltextFilePath;
 		this.gScholarNumCitations = gScholarNumCitations;
+		this.msAcademicNumCitations = msAcademicNumCitations;
 		this.tags = tags;
-	}
-
-	public Literature(String title, LiteratureType type, Set<Author> authors,
-			String DOI, ISBN ISBN, Integer year, String publicationContext,
-			String publisher, String websiteURL, String fulltextURL,
-			Path fulltextFilePath, Integer gScholarNumCitations, Set<Tag> tags) {
-		super();
-		this.title = title;
-		this.type = type;
-		this.authors = authors;
-		this.DOI = DOI;
-		this.ISBN = ISBN;
-		this.year = year;
-		this.publicationContext = publicationContext;
-		this.publisher = publisher;
-		this.websiteURL = websiteURL;
-		this.fulltextURL = fulltextURL;
-		this.fulltextFilePath = fulltextFilePath;
-		this.gScholarNumCitations = gScholarNumCitations;
-		this.tags = tags;
-	}
-
-	public Literature() {
-		super();
 	}
 
 	public String getTitle() {
@@ -182,6 +162,10 @@ public class Literature extends Neo4JEntity implements Searchable {
 
 	public Integer getgScholarNumCitations() {
 		return gScholarNumCitations;
+	}
+
+	public Integer getMsAcademicNumCitations() {
+		return msAcademicNumCitations;
 	}
 
 	public Set<Tag> getTags() {

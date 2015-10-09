@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.test;
  * -///////////////////////////////-
  */
 
-
 import java.util.List;
 
 import org.junit.After;
@@ -72,15 +71,15 @@ public class PersonTest {
 	@Test
 	public void deleteNonExistentPersonExpectNoChange() throws ServiceException {
 		assert (persServ.getAll().isEmpty());
-		persServ.delete(new Author("Nombre", "Inconnu", null, null));
+		persServ.delete(new Author("Nombre", "Q.", "Inconnu", null, null));
 		assert (persServ.getAll().isEmpty());
 	}
 
 	@Test(expected = ServiceException.class)
 	public void updateNonExistentPersonExpectFailure() throws ServiceException {
 		assert (persServ.getAll().isEmpty());
-		persServ.update(new Author("Nombre", "Inconnu", null, null),
-				new Author("Persona", "Nueva", null, null));
+		persServ.update(new Author("Nombre", "A.", "Inconnu", null, null),
+				new Author("Persona", "M.", "Nueva", null, null));
 		assert (persServ.getAll().isEmpty());
 	}
 
@@ -89,7 +88,7 @@ public class PersonTest {
 			throws ServiceException, DatalayerException {
 
 		List<Author> personList = TestDataCreator.createAuthorList1();
-		
+
 		for (Author person : personList)
 			personList.set(personList.indexOf(person), persServ.create(person));
 

@@ -46,6 +46,7 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 	private String fulltextURL;
 	private Path fulltextFilePath;
 	private Integer gScholarNumCitations;
+	private Integer msAcademicNumCitations;
 	private Set<Tag> tags;
 
 	public LiteratureBuilder() {
@@ -71,9 +72,10 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		setFulltextURL(l.getFulltextURL());
 
 		setgScholarNumCitations(l.getgScholarNumCitations());
+		setMsAcademicNumCitations(l.getMsAcademicNumCitations());
 
 		setTags(l.getTags());
-		
+
 	}
 
 	@Override
@@ -82,7 +84,8 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 				getTitle(), getType(), getAuthors(), getDOI(), getISBN(),
 				getYear(), getPublicationContext(), getPublisher(),
 				getWebsiteURL(), getFulltextURL(), getFulltextFilePath(),
-				getgScholarNumCitations(), getTags());
+				getgScholarNumCitations(), getMsAcademicNumCitations(),
+				getTags());
 	}
 
 	public String getTitle() {
@@ -188,9 +191,18 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		return gScholarNumCitations;
 	}
 
-	public LiteratureBuilder setgScholarNumCitations(Integer gScholarNumCitations) {
+	public LiteratureBuilder setgScholarNumCitations(
+			Integer gScholarNumCitations) {
 		this.gScholarNumCitations = gScholarNumCitations;
 		return this;
+	}
+
+	public Integer getMsAcademicNumCitations() {
+		return msAcademicNumCitations;
+	}
+
+	public void setMsAcademicNumCitations(Integer msAcademicNumCitations) {
+		this.msAcademicNumCitations = msAcademicNumCitations;
 	}
 
 	public Set<Tag> getTags() {
