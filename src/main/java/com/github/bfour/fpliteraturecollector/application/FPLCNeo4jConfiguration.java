@@ -50,8 +50,8 @@ import com.github.bfour.fpliteraturecollector.service.converters.StringToCrawler
 @EnableScheduling
 @EnableAutoConfiguration
 @Configuration
-@ComponentScan(basePackages = {"com.github.bfour.fpliteraturecollector"})
-@EnableNeo4jRepositories(basePackages = "com.github.bfour.fpliteraturecollector")
+@ComponentScan(basePackages = {"com.github.bfour.fpliteraturecollector.application", "com.github.bfour.fpliteraturecollector.service"})
+@EnableNeo4jRepositories(basePackages = "com.github.bfour.fpliteraturecollector.service")
 public class FPLCNeo4jConfiguration extends Neo4jConfiguration {
     public FPLCNeo4jConfiguration() {
         setBasePackage("com.github.bfour.fpliteraturecollector.domain");
