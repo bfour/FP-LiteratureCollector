@@ -97,7 +97,7 @@ public class QueryPanel extends JXPanel implements FeedbackProvider {
 		// add(horizontalGlue, "cell 2 0");
 
 		// toolbar
-		PlainToolbar toolbar = new PlainToolbar(Orientation.LEADING);
+		PlainToolbar toolbar = new PlainToolbar(Orientation.TRAILING, false);
 		add(toolbar, "cell 2 0");
 
 		litButton = new JButton("Literature", Icons.BOOKS_20.getIcon());
