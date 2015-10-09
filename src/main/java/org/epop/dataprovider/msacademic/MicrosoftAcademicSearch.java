@@ -16,8 +16,10 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -39,8 +41,6 @@ import org.epop.dataprovider.PatternMismatchException;
 import org.epop.dataprovider.Utils;
 import org.epop.utils.StringUtils;
 
-import com.github.bfour.fpjcommons.lang.Tuple;
-import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
@@ -78,7 +78,7 @@ public class MicrosoftAcademicSearch extends DataProvider {
 		// String.valueOf(searchStep)));
 
 		URI uri;
-		String responseBody = null;
+		String responseBody = "";
 
 		try {
 
@@ -243,13 +243,15 @@ public class MicrosoftAcademicSearch extends DataProvider {
 						String nameString = htmlSource.getTextExtractor()
 								.toString();
 						try {
-							Utils.setFirstMiddleLastNameFromNameString(authBuilder,
-									nameString);
+							Utils.setFirstMiddleLastNameFromNameString(
+									authBuilder, nameString);
 						} catch (PatternMismatchException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 
+						if (litBuilder.getAuthors() == null)
+							litBuilder.setAuthors(new HashSet<Author>());
 						litBuilder.getAuthors().add(authBuilder.getObject());
 					}
 
@@ -257,16 +259,19 @@ public class MicrosoftAcademicSearch extends DataProvider {
 
 					Source htmlSource = new Source(s.getContent().toString());
 
-					litBuilder.setPublicationContext(htmlSource
-							.getFirstElementByClass("conference-name")
-							.getTextExtractor().toString());
+					if (htmlSource.getFirstElementByClass("conference-name") != null)
+						litBuilder.setPublicationContext(htmlSource
+								.getFirstElementByClass("conference-name")
+								.getTextExtractor().toString());
 
-					String contextType = htmlSource.getFirstElement("span")
-							.getTextExtractor().toString();
-					if (contextType.equals("Journal: "))
-						litBuilder.setType(LiteratureType.JOURNAL_PAPER);
-					if (contextType.equals("Conference: "))
-						litBuilder.setType(LiteratureType.CONFERENCE_PAPER);
+					if (htmlSource.getFirstElement("span") != null) {
+						String contextType = htmlSource.getFirstElement("span")
+								.getTextExtractor().toString();
+						if (contextType.equals("Journal:"))
+							litBuilder.setType(LiteratureType.JOURNAL_PAPER);
+						if (contextType.equals("Conference:"))
+							litBuilder.setType(LiteratureType.CONFERENCE_PAPER);
+					}
 
 					for (Element q : s.getAllElements(HTMLElementName.SPAN)) {
 						// System.out.println(q.toString());
