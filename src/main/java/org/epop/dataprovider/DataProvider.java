@@ -30,7 +30,6 @@ package org.epop.dataprovider;
  * -///////////////////////////////-
  */
 
-
 import java.io.IOException;
 import java.io.Reader;
 import java.net.MalformedURLException;
@@ -60,14 +59,16 @@ public abstract class DataProvider {
 	 * @return the papers, never null
 	 * @throws DataUnavailableException
 	 * @throws DatalayerException
-	 * @throws  
-	 * @throws URISyntaxException 
-	 * @throws MalformedURLException 
+	 * @throws
+	 * @throws URISyntaxException
+	 * @throws MalformedURLException
 	 */
-	public final List<Literature> runQuery(String htmlParams, int pageTurnLimit)
-			throws DataUnavailableException, DatalayerException, URISyntaxException {
+	public final List<Literature> runQuery(String htmlParams,
+			int pageTurnLimit, boolean initialWait)
+			throws DataUnavailableException, DatalayerException,
+			URISyntaxException {
 		try {
-			Reader r = getHTMLDoc(htmlParams, pageTurnLimit);
+			Reader r = getHTMLDoc(htmlParams, pageTurnLimit, initialWait);
 			if (r == null)
 				throw new DataUnavailableException("cannot connect");
 			List<Literature> result = parsePage(r);
@@ -82,8 +83,9 @@ public abstract class DataProvider {
 	}
 
 	// get the HTM Document - return null in case of error
-	protected abstract Reader getHTMLDoc(String htmlParams, int pageTurnLimit)
-			throws URISyntaxException, MalformedURLException, IOException;
+	protected abstract Reader getHTMLDoc(String htmlParams, int pageTurnLimit,
+			boolean initialWait) throws URISyntaxException,
+			MalformedURLException, IOException;
 
 	// parse it - return null in case of error
 	protected abstract List<Literature> parsePage(Reader r)

@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.service.crawlers;
  * -///////////////////////////////-
  */
 
-
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
@@ -32,15 +31,14 @@ import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjsearch.fpjsearch.Searchable;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
-import com.github.bfour.fpliteraturecollector.domain.SupportedSearchEngine;
-
+import com.github.bfour.fpliteraturecollector.domain.SearchEngine;
 
 public class Crawler implements Searchable {
 
 	private DataProvider provider;
-	private List<SupportedSearchEngine> engines;
+	private List<SearchEngine> engines;
 
-	public Crawler(DataProvider provider, SupportedSearchEngine... engines) {
+	public Crawler(DataProvider provider, SearchEngine... engines) {
 		this.provider = provider;
 		this.engines = Arrays.asList(engines);
 	}
@@ -49,7 +47,9 @@ public class Crawler implements Searchable {
 			throws DataUnavailableException, DatalayerException,
 			URISyntaxException {
 		return provider.runQuery(atomReq.getSearchString(),
-				atomReq.getMaxPageTurns());
+				atomReq.getMaxPageTurns(), false); // TODO determine initial
+													// wait based on previous
+													// activity
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class Crawler implements Searchable {
 	 * 
 	 * @return SupportedSearchEngines used by this Crawler
 	 */
-	public List<SupportedSearchEngine> getSearchEnginesBeingAccessed() {
+	public List<SearchEngine> getSearchEnginesBeingAccessed() {
 		return engines;
 	}
 

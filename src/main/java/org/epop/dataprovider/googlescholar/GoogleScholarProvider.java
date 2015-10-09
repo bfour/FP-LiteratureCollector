@@ -30,7 +30,6 @@ package org.epop.dataprovider.googlescholar;
  * -///////////////////////////////-
  */
 
-
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -40,7 +39,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,6 +49,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.epop.dataprovider.DataProvider;
+import org.epop.dataprovider.Utils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -61,10 +60,11 @@ import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
+import com.github.bfour.fpliteraturecollector.domain.builders.AuthorBuilder;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 
 public class GoogleScholarProvider extends DataProvider {
-	
+
 	private static final Pattern citespattern = Pattern.compile("(\\d+)");
 
 	private static final List<String> malformed = new LinkedList<String>();
@@ -82,14 +82,16 @@ public class GoogleScholarProvider extends DataProvider {
 	}
 
 	@Override
-	protected Reader getHTMLDoc(String htmlParams, int pageTurnLimit)
-			throws URISyntaxException, IOException {
-		// connect to the server
-		// build the parameter list
+	protected Reader getHTMLDoc(String htmlParams, int pageTurnLimit,
+			boolean initialWait) throws URISyntaxException, IOException {
+
 		URI uri;
 		String responseBody = null;
 
 		try {
+
+			if (initialWait)
+				Thread.sleep(DELAY);
 
 			uri = URIUtils.createURI("http", SCHOLAR_GOOGLE_COM, -1,
 					"/scholar", htmlParams, null);
@@ -132,6 +134,9 @@ public class GoogleScholarProvider extends DataProvider {
 				// TODO Auto-generated catch block
 				// e1.printStackTrace();
 			}
+		} catch (InterruptedException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
 		} finally {
 			httpclient.getConnectionManager().shutdown();
 		}
@@ -326,50 +331,20 @@ public class GoogleScholarProvider extends DataProvider {
 		Pattern authorWithIDPattern = Pattern
 				.compile("citations\\?user=(.*?)&.*?>(.*?)<");
 
+		AuthorBuilder builder = new AuthorBuilder();
 		Matcher matcher = authorWithIDPattern.matcher(subsection);
 		if (matcher.find()) {
 			String gScholarID = matcher.group(1);
+			builder.setgScholarID(gScholarID);
 			String name = matcher.group(2);
-			Tuple<String, String> tuple = getFirstAndLastNameFromNameString(name);
-			if (tuple == null)
-				return null;
-			return new Author(tuple.getA(), tuple.getB(), gScholarID, null);
+			Utils.setFirstMiddleLastNameFromNameString(builder, name);
+			return builder.getObject();
 		} else {
 			// no ID for this author
-			Tuple<String, String> tuple = getFirstAndLastNameFromNameString(subsection);
-			if (tuple == null)
-				return null;
-			return new Author(tuple.getA(), tuple.getB(), null, null);
+			Utils.setFirstMiddleLastNameFromNameString(builder, subsection);
+			return builder.getObject();
 		}
 
-	}
-
-	private Tuple<String, String> getFirstAndLastNameFromNameString(String name)
-			throws ServiceException {
-		name = name.trim();
-		name = name.replace("\r\n", "");
-		name = name.replace("\n", "");
-		if (name.isEmpty())
-			return null;
-		// first token is first name, others are last name
-		StringTokenizer spaceTokenizer = new StringTokenizer(name, " ");
-		if (!spaceTokenizer.hasMoreTokens())
-			throw new ServiceException(
-					"getFirstAndLastNameFromNameString failed: no tokens found");
-		String first = cleanName(spaceTokenizer.nextToken());
-		StringBuilder last = new StringBuilder();
-		while (spaceTokenizer.hasMoreTokens()) {
-			last.append(cleanName(spaceTokenizer.nextToken()));
-			last.append(" ");
-		}
-		String lastNameString = cleanName(last.toString());
-		return new Tuple<String, String>(first, lastNameString);
-	}
-
-	private String cleanName(String name) {
-		name = name.replaceAll("<\\D+?>", "");
-		name = name.trim();
-		return name;
 	}
 
 }

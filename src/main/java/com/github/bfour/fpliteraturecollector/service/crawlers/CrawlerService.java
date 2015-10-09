@@ -29,7 +29,8 @@ import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.CRUDService;
 import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
 import com.github.bfour.fpjcommons.services.CRUD.DataIteratorWrapper;
-import com.github.bfour.fpliteraturecollector.service.crawlers.epop.EpopScholarCrawler;
+import com.github.bfour.fpliteraturecollector.service.crawlers.implementations.EpopMSAcademicCrawler;
+import com.github.bfour.fpliteraturecollector.service.crawlers.implementations.EpopScholarCrawler;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
@@ -41,6 +42,7 @@ public class CrawlerService implements CRUDService<Crawler> {
 	private CrawlerService() {
 		this.identifierInstanceMap = HashBiMap.create();
 		this.identifierInstanceMap.put("epop Google Scholar", new EpopScholarCrawler());
+		this.identifierInstanceMap.put("epop Microsoft Academic", new EpopMSAcademicCrawler());
 	}
 	
 	public static CrawlerService getInstance() {
