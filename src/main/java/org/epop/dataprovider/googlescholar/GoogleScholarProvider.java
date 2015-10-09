@@ -49,6 +49,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.epop.dataprovider.DataProvider;
+import org.epop.dataprovider.PatternMismatchException;
 import org.epop.dataprovider.Utils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -250,6 +251,7 @@ public class GoogleScholarProvider extends DataProvider {
 					int cites = cm.find() ? Integer.parseInt(cm.group(1)) : 0;
 					litBuilder.setgScholarNumCitations(cites);
 				} catch (NumberFormatException e) {
+					// TODO
 				}
 
 				// website URL
@@ -299,7 +301,7 @@ public class GoogleScholarProvider extends DataProvider {
 	}
 
 	private List<Author> getAuthorsFromHTMLSection(String htmlSection)
-			throws ServiceException {
+			throws PatternMismatchException {
 
 		htmlSection = htmlSection.replace("…", "");
 
@@ -326,7 +328,7 @@ public class GoogleScholarProvider extends DataProvider {
 	}
 
 	private Author getAuthorFromHTMLSubSection(String subsection)
-			throws ServiceException {
+			throws PatternMismatchException {
 
 		Pattern authorWithIDPattern = Pattern
 				.compile("citations\\?user=(.*?)&.*?>(.*?)<");

@@ -35,6 +35,7 @@ import org.apache.http.client.utils.URIUtils;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.epop.dataprovider.DataProvider;
+import org.epop.dataprovider.PatternMismatchException;
 import org.epop.dataprovider.Utils;
 import org.epop.utils.StringUtils;
 
@@ -174,7 +175,6 @@ public class MicrosoftAcademicSearch extends DataProvider {
 
 	private Literature extractPaper(Element element) {
 
-try {
 		LiteratureBuilder litBuilder = new LiteratureBuilder();
 
 		for (Element s : element.getAllElements(HTMLElementName.DIV)) {
@@ -240,13 +240,15 @@ try {
 							}
 						}
 						// name
-						String nameString = htmlSource.getTextExtractor().toString();
-try {						
-						Utils.setFirstMiddleLastNameFromNameString(authBuilder,
-								nameString);
-} catch (Exception e) {
-	e.printStackTrace();
-}
+						String nameString = htmlSource.getTextExtractor()
+								.toString();
+						try {
+							Utils.setFirstMiddleLastNameFromNameString(authBuilder,
+									nameString);
+						} catch (PatternMismatchException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 
 						litBuilder.getAuthors().add(authBuilder.getObject());
 					}
@@ -292,14 +294,8 @@ try {
 				}
 			}
 		}
-		
-		return litBuilder.getObject();
-		
-} catch (Exception e) {
-	e.printStackTrace();
-}
 
-return null;
+		return litBuilder.getObject();
 
 	}
 }

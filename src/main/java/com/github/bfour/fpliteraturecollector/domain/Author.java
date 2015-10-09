@@ -39,7 +39,7 @@ public class Author extends Neo4JEntity implements Searchable {
 	@Indexed
 	protected String msAcademicID;
 
-	public Author(long iD, Date creationTime, Date lastChangeTime,
+	public Author(Long iD, Date creationTime, Date lastChangeTime,
 			String firstName, String middleName, String lastName,
 			String gScholarID, String msAcademicID) {
 		super(iD, creationTime, lastChangeTime);

@@ -92,6 +92,9 @@ public class Literature extends Neo4JEntity implements Searchable {
 	@RelatedTo(type = "TAGS", direction = Direction.OUTGOING)
 	protected Set<Tag> tags;
 
+	public Literature() {
+	}
+	
 	public Literature(Long ID, Date creationTime, Date lastChangeTime,
 			String title, LiteratureType type, Set<Author> authors, String dOI,
 			com.github.bfour.fpliteraturecollector.domain.ISBN iSBN,

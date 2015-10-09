@@ -60,7 +60,7 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 	public LiteratureBrowsePanel(final ServiceManager servMan,
 			EntityFilterPipeline<Literature> filters) {
 
-		super(Literature.class, servMan.getLiteratureService(), true);
+		super(Literature.class, servMan.getLiteratureService(), false);
 
 		setFilters(filters);
 
@@ -167,6 +167,8 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 
 		getListLikeContainer().setMinimumColumnWidth(titleColumn, 100);
 		getListLikeContainer().setMinimumColumnWidth(authorsColumn, 40);
+		
+		load();
 
 	}
 }
