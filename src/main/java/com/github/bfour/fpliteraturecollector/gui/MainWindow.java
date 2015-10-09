@@ -1,5 +1,26 @@
 package com.github.bfour.fpliteraturecollector.gui;
 
+/*
+ * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
+ * FP-LiteratureCollector
+ * =================================
+ * Copyright (C) 2015 Florian Pollak
+ * =================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -///////////////////////////////-
+ */
+
+
 import javax.swing.JFrame;
 
 import net.miginfocom.swing.MigLayout;
@@ -10,8 +31,6 @@ import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
 import com.github.bfour.fpjgui.abstraction.feedback.StaticLocationFeedbackNotificationSpawner;
 import com.github.bfour.fpjgui.design.Icons;
-import com.github.bfour.fpjsearch.SearchActionListener;
-import com.github.bfour.fpjsearch.SearchEvent;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
 /**
@@ -19,8 +38,7 @@ import com.github.bfour.fpliteraturecollector.service.ServiceManager;
  * @author Florian Pollak
  *
  */
-public class MainWindow extends JFrame implements SearchActionListener,
-		FeedbackListener {
+public class MainWindow extends JFrame implements FeedbackListener {
 
 	private static final long serialVersionUID = 9057132203074048466L;
 	private static MainWindow instance;
@@ -87,10 +105,6 @@ public class MainWindow extends JFrame implements SearchActionListener,
 	 */
 	public void setFocus() {
 		mainPanel.requestFocusInWindow();
-	}
-
-	@Override
-	public void searchPerformed(SearchEvent search) {
 	}
 
 	/**

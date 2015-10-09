@@ -1,14 +1,34 @@
 package com.github.bfour.fpliteraturecollector.gui.authors;
 
+/*
+ * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
+ * FP-LiteratureCollector
+ * =================================
+ * Copyright (C) 2015 Florian Pollak
+ * =================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -///////////////////////////////-
+ */
+
 import net.miginfocom.swing.MigLayout;
 
 import com.github.bfour.fpjcommons.lang.BuilderFactory;
-import com.github.bfour.fpjgui.abstraction.EntityEditPanel;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
 import com.github.bfour.fpjgui.components.FPJGUILabel;
 import com.github.bfour.fpjgui.components.FPJGUILabelPanel;
 import com.github.bfour.fpjgui.components.FPJGUIMultilineLabel;
 import com.github.bfour.fpjgui.components.ToggleEditFormComponent;
+import com.github.bfour.fpjgui.components.composite.EntityEditPanel;
 import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.builders.AuthorBuilder;
@@ -17,13 +37,15 @@ import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 
 	private static final long serialVersionUID = -6108218045598314837L;
+	private FPJGUILabelPanel msAcademicLabelPanel;
+	private FPJGUILabelPanel gScholarIDLabelPanel;
 
 	/**
 	 * Create the panel.
 	 */
 	public AuthorsPanel(ServiceManager servMan) {
 
-		super(new BuilderFactory<Author, AuthorBuilder>() {
+		super(Author.class, new BuilderFactory<Author, AuthorBuilder>() {
 			@Override
 			public AuthorBuilder getBuilder() {
 				return new AuthorBuilder();
@@ -73,6 +95,26 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 				new FPJGUILabelPanel("Last Name(s)", lastNameToggle),
 				"cell 0 2,growx");
 
+		// gScholarID
+		FPJGUIMultilineLabel gScholarIDField = new FPJGUIMultilineLabel();
+		FPJGUIMultilineLabel gScholarIDLabel = new FPJGUIMultilineLabel();
+		ToggleEditFormComponent<String> gScholarIDToggle = new ToggleEditFormComponent<String>(
+				gScholarIDLabel, gScholarIDField);
+		registerToggleComponent(gScholarIDToggle);
+		gScholarIDLabelPanel = new FPJGUILabelPanel("Google Scholar ID",
+				gScholarIDToggle);
+		getContentPane().add(gScholarIDLabelPanel, "cell 0 3,growx");
+
+		// msAcademicID
+		FPJGUIMultilineLabel msAcademicIDField = new FPJGUIMultilineLabel();
+		FPJGUIMultilineLabel msAcademicIDLabel = new FPJGUIMultilineLabel();
+		ToggleEditFormComponent<String> msAcademicIDToggle = new ToggleEditFormComponent<String>(
+				msAcademicIDLabel, msAcademicIDField);
+		registerToggleComponent(msAcademicIDToggle);
+		msAcademicLabelPanel = new FPJGUILabelPanel("Microsoft Academic ID",
+				msAcademicIDToggle);
+		getContentPane().add(msAcademicLabelPanel, "cell 0 4,growx");
+
 		// mappings
 		ObjectGraphicalValueContainerMapper<AuthorBuilder, String> IDMapper = new ObjectGraphicalValueContainerMapper<AuthorBuilder, String>(
 				IDLabel) {
@@ -119,5 +161,38 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 		};
 		getMappers().add(lastNameMapper);
 
+		ObjectGraphicalValueContainerMapper<AuthorBuilder, String> gScholarIDMapper = new ObjectGraphicalValueContainerMapper<AuthorBuilder, String>(
+				gScholarIDToggle) {
+			@Override
+			public String getValue(AuthorBuilder object) {
+				if (object.getgScholarID() == null)
+					return "not defined";
+				return object.getgScholarID();
+			}
+
+			@Override
+			public void setValue(AuthorBuilder object, String value) {
+				object.setgScholarID(value);
+			}
+		};
+		getMappers().add(gScholarIDMapper);
+
+		ObjectGraphicalValueContainerMapper<AuthorBuilder, String> msAcademicIDMapper = new ObjectGraphicalValueContainerMapper<AuthorBuilder, String>(
+				msAcademicIDToggle) {
+			@Override
+			public String getValue(AuthorBuilder object) {
+				if (object.getMsAcademicID() == null)
+					return "not defined";
+				return object.getMsAcademicID();
+			}
+
+			@Override
+			public void setValue(AuthorBuilder object, String value) {
+				object.setMsAcademicID(value);
+			}
+		};
+		getMappers().add(msAcademicIDMapper);
+
 	}
+
 }

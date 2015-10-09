@@ -1,8 +1,29 @@
 package com.github.bfour.fpliteraturecollector.gui;
 
+/*
+ * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
+ * FP-LiteratureCollector
+ * =================================
+ * Copyright (C) 2015 Florian Pollak
+ * =================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -///////////////////////////////-
+ */
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -12,9 +33,9 @@ import net.miginfocom.swing.MigLayout;
 import org.jdesktop.swingx.JXPanel;
 
 import com.github.bfour.fpjcommons.lang.BuilderFactory;
-import com.github.bfour.fpjgui.abstraction.EntityEditPanel;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
 import com.github.bfour.fpjgui.components.FPJGUITextField;
+import com.github.bfour.fpjgui.components.composite.EntityEditPanel;
 import com.github.bfour.fpjgui.design.Colors;
 import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
@@ -31,7 +52,7 @@ public class QueryEditPanel extends EntityEditPanel<Query, QueryBuilder> {
 	 */
 	public QueryEditPanel(ServiceManager servMan, Query query) {
 
-		super(new BuilderFactory<Query, QueryBuilder>() {
+		super(Query.class, new BuilderFactory<Query, QueryBuilder>() {
 			@Override
 			public QueryBuilder getBuilder() {
 				return new QueryBuilder();
@@ -77,7 +98,7 @@ public class QueryEditPanel extends EntityEditPanel<Query, QueryBuilder> {
 		final AtomicRequestBrowsePanel atomReqBrowsePanel = new AtomicRequestBrowsePanel(
 				servMan, query);
 		final AtomicRequestPanel atomReqPanel = new AtomicRequestPanel(servMan,
-				atomReqBrowsePanel.getTable());
+				atomReqBrowsePanel.getListLikeContainer());
 
 		JXPanel atomicPanel = new JXPanel();
 		// PanelDecorator.decorateWithDropShadow(atomicPanel);
@@ -100,11 +121,10 @@ public class QueryEditPanel extends EntityEditPanel<Query, QueryBuilder> {
 				atomReqPanel.edit();
 			}
 		});
-		
+
 		// automatically set AtomicRequest in edit/view panel on selection
 		// change
-		atomReqBrowsePanel
-				.subscribeEntitySelectionChangeSubscriber(atomReqPanel);
+		atomReqBrowsePanel.subscribeSelectionChangeSubscriber(atomReqPanel);
 
 		// mappings
 		ObjectGraphicalValueContainerMapper<QueryBuilder, String> nameMapper = new ObjectGraphicalValueContainerMapper<QueryBuilder, String>(
@@ -127,12 +147,12 @@ public class QueryEditPanel extends EntityEditPanel<Query, QueryBuilder> {
 			public List<AtomicRequest> getValue(QueryBuilder object) {
 				if (object.getAtomicRequests() == null)
 					return new ArrayList<AtomicRequest>(0);
-				return object.getAtomicRequests();
+				return new ArrayList<>(object.getAtomicRequests());
 			}
 
 			@Override
 			public void setValue(QueryBuilder object, List<AtomicRequest> value) {
-				object.setAtomicRequests(value);
+				object.setAtomicRequests(new HashSet<>(value));
 			}
 		};
 		getMappers().add(atomicReqMapper);

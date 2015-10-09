@@ -1,5 +1,25 @@
 package com.github.bfour.fpliteraturecollector.gui;
 
+/*
+ * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
+ * FP-LiteratureCollector
+ * =================================
+ * Copyright (C) 2015 Florian Pollak
+ * =================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -///////////////////////////////-
+ */
+
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,11 +41,10 @@ import com.github.bfour.fpjcommons.events.CreateEvent;
 import com.github.bfour.fpjcommons.events.DeleteEvent;
 import com.github.bfour.fpjcommons.events.UpdateEvent;
 import com.github.bfour.fpjgui.abstraction.EntityLoader;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
-import com.github.bfour.fpjgui.components.composite.EntityBrowsePanel;
+import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
 import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGetter;
 import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
-import com.github.bfour.fpjgui.util.DefaultActionInterfacingHandler;
+import com.github.bfour.fpjgui.util.DefaultActionInterfaceHandler;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.service.AtomicRequestService;
@@ -34,8 +53,8 @@ import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 /**
  * This class deals with the presentation of a list of AtomicRequests
  */
-public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
-		implements FeedbackProvider {
+public class AtomicRequestBrowsePanel extends
+		EntityTableBrowsePanel<AtomicRequest> {
 
 	private static final long serialVersionUID = 1584008979044088377L;
 
@@ -53,11 +72,13 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 	public AtomicRequestBrowsePanel(final ServiceManager servMan,
 			final Query query) {
 
+		super(AtomicRequest.class, servMan.getAtomicRequestService(), false);
+
 		// show default buttons for CRUD options
 		setDeleteEntityEnabled(true);
 		setEditEntityEnabled(true);
 		setCreateEntityEnabled(true);
-		
+
 		// hide search bar
 		setSearchPanel(null);
 
@@ -70,7 +91,7 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 								.getIdentifierForCrawler(item.getCrawler());
 					}
 				}, true, 30, 30, "crawler", false);
-		getTable().addColumn(crawlerColumn);
+		getListLikeContainer().addColumn(crawlerColumn);
 
 		FPJGUITableColumn<AtomicRequest> requestStringColumn = new FPJGUITableColumn<AtomicRequest>(
 				"Request String", new FPJGUITableFieldGetter<AtomicRequest>() {
@@ -79,28 +100,27 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 						return item.getSearchString();
 					}
 				}, true, 30, 30, "requestStrings", false);
-		getTable().addColumn(requestStringColumn);
+		getListLikeContainer().addColumn(requestStringColumn);
 
-		this.table.setPreferredColumnWidth(crawlerColumn, 100);
-		this.table.setPreferredColumnWidth(requestStringColumn, 400);
+		getListLikeContainer().setPreferredColumnWidth(crawlerColumn, 100);
+		getListLikeContainer()
+				.setPreferredColumnWidth(requestStringColumn, 400);
 
-		this.table.setMinimumColumnWidth(crawlerColumn, 100);
-		this.table.setMinimumColumnWidth(requestStringColumn, 200);
+		getListLikeContainer().setMinimumColumnWidth(crawlerColumn, 100);
+		getListLikeContainer().setMinimumColumnWidth(requestStringColumn, 200);
 
 		// ==== loader ====
-		this.loader = new EntityLoader<AtomicRequest>() {
+		setLoader(new EntityLoader<AtomicRequest>() {
 			@Override
 			public List<AtomicRequest> get() {
-				List<AtomicRequest> list = new ArrayList<>();
-				if (query == null)
-					return new ArrayList<AtomicRequest>(0);
-				else
-					list = query.getAtomicRequests();
-				return list;
+				if (query != null)
+					return new ArrayList<>(query.getAtomicRequests());
+				return new ArrayList<>(0);
 			}
-		};
+		});
 
 		// hook up table with change event system
+		setChangeEventSystemEnabled(false); // disable default handlers
 		if (query == null) {
 			// no query specified --> this browse panel is for a new query -->
 			// do not register for any changes
@@ -115,7 +135,7 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 				@Override
 				public void handle(BatchDeleteEvent<Query> arg0) {
 					if (arg0.getAffectedObjects().contains(query))
-						getTable().clear();
+						getListLikeContainer().deleteAllEntries();
 				}
 
 				@Override
@@ -134,14 +154,15 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 				@Override
 				public void handle(DeleteEvent<Query> arg0) {
 					if (arg0.getDeletedObject().equals(query))
-						getTable().clear();
+						getListLikeContainer().deleteAllEntries();
 				}
 
 				@Override
 				public void handle(UpdateEvent<Query> arg0) {
 					if (arg0.getOldObject().equals(query))
-						getTable().setEntries(
-								arg0.getNewObject().getAtomicRequests());
+						getListLikeContainer().setEntries(
+								new ArrayList<>(arg0.getNewObject()
+										.getAtomicRequests()));
 				}
 			};
 			ChangeHandler.getInstance(Query.class).addEventListener(
@@ -168,18 +189,20 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 								| InstantiationException
 								| InvocationTargetException
 								| NoSuchMethodException e1) {
-							source = deleteButton;
+							source = getDeleteButton();
 						}
 					}
 				} else {
-					source = deleteButton;
+					source = getDeleteButton();
 				}
 				if (query == null) {
-					getTable().deleteEntry(table.getSelectedItem());
+					getListLikeContainer().deleteEntry(
+							getListLikeContainer().getSelectedItem());
 				} else {
-					DefaultActionInterfacingHandler.getInstance()
-							.requestDeleteFromList(source, feedbackProxy,
-									table.getSelectedItem(), eServ);
+					DefaultActionInterfaceHandler.getInstance()
+							.requestDeleteFromList(source, getFeedbackProxy(),
+									getListLikeContainer().getSelectedItem(),
+									eServ);
 				}
 			}
 		};
@@ -189,15 +212,15 @@ public class AtomicRequestBrowsePanel extends EntityBrowsePanel<AtomicRequest>
 
 	@Override
 	public List<AtomicRequest> getValue() {
-		return getTable().getEntries();
+		return getListLikeContainer().getEntries();
 	}
 
 	@Override
 	public void setValue(List<AtomicRequest> value) {
 		if (value == null)
-			getTable().setEntries(new ArrayList<AtomicRequest>(0));
+			getListLikeContainer().setEntries(new ArrayList<AtomicRequest>(0));
 		else
-			getTable().setEntries(value);
+			getListLikeContainer().setEntries(value);
 	}
 
 }

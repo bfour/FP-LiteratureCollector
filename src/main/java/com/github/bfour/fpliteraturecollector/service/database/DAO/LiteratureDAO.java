@@ -26,4 +26,6 @@ import com.github.bfour.fpliteraturecollector.domain.Literature;
 
 public interface LiteratureDAO extends CRUDDAO<Literature> {
 
+	boolean hasMaxOneAdjacentAtomicRequest(Literature lit);
+	
 }

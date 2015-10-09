@@ -1,5 +1,12 @@
 package com.github.bfour.fpliteraturecollector.domain;
 
+import java.util.Date;
+
+import org.springframework.data.neo4j.annotation.Indexed;
+
+import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
+import com.github.bfour.fpjsearch.fpjsearch.Searchable;
+
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
  * FP-LiteratureCollector
@@ -20,42 +27,48 @@ package com.github.bfour.fpliteraturecollector.domain;
  * -///////////////////////////////-
  */
 
-import java.util.Date;
-
-import com.github.bfour.fpjcommons.model.Entity;
-
-public class Author extends Entity {
+public class Author extends Neo4JEntity implements Searchable {
 
 	protected String firstName;
+	protected String middleName;
 	protected String lastName;
+
+	@Indexed
 	protected String gScholarID;
+
+	@Indexed
 	protected String msAcademicID;
 
-	public Author(long iD, Date creationTime, Date lastChangeTime,
-			String firstName, String lastName, String gScholarID,
-			String msAcademicID) {
+	public Author(Long iD, Date creationTime, Date lastChangeTime,
+			String firstName, String middleName, String lastName,
+			String gScholarID, String msAcademicID) {
 		super(iD, creationTime, lastChangeTime);
 		this.firstName = firstName;
+		this.middleName = middleName;
 		this.lastName = lastName;
 		this.gScholarID = gScholarID;
 		this.msAcademicID = msAcademicID;
 	}
 
-	public Author(String firstName, String lastName, String gScholarID,
-			String msAcademicID) {
+	public Author(String firstName, String middleName, String lastName,
+			String gScholarID, String msAcademicID) {
 		super();
 		this.firstName = firstName;
+		this.middleName = middleName;
 		this.lastName = lastName;
 		this.gScholarID = gScholarID;
 		this.msAcademicID = msAcademicID;
 	}
 
 	public Author() {
-		super();
 	}
 
 	public String getFirstName() {
 		return firstName;
+	}
+
+	public String getMiddleName() {
+		return middleName;
 	}
 
 	public String getLastName() {
@@ -74,28 +87,5 @@ public class Author extends Entity {
 	public String toString() {
 		return getFirstName() + " " + getLastName() + " (ID " + getID() + ")";
 	}
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((getID() == null) ? 0 : getID().hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!(obj instanceof Author))
-			return false;
-		Author other = (Author) obj;
-		if (getID() == null) {
-			if (other.getID() != null)
-				return false;
-		} else if (!getID().equals(other.getID()))
-			return false;
-		return true;
-	}	
 
 }

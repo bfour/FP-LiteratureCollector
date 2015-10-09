@@ -51,5 +51,9 @@ public interface QueryService extends BidirectionalCRUDService<Query> {
 	void unqueueAll() throws ServiceException;
 
 	void setAllIdleOrFinished() throws ServiceException;
+	
+	Query setCrawling(Query q) throws ServiceException;
+	
+	Query setNotCrawling(Query q) throws ServiceException;
 
 }

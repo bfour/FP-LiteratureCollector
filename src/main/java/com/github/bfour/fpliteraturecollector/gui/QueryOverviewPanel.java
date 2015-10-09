@@ -1,5 +1,26 @@
 package com.github.bfour.fpliteraturecollector.gui;
 
+/*
+ * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
+ * FP-LiteratureCollector
+ * =================================
+ * Copyright (C) 2015 Florian Pollak
+ * =================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -///////////////////////////////-
+ */
+
+
 import java.awt.Component;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -28,11 +49,15 @@ import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ListLikeValueContainer;
+import com.github.bfour.fpjgui.components.FPJGUIButton;
+import com.github.bfour.fpjgui.components.FPJGUIButton.ButtonFormats;
+import com.github.bfour.fpjgui.components.FPJGUIButton.FPJGUIButtonFactory;
 import com.github.bfour.fpjgui.components.PlainToolbar;
+import com.github.bfour.fpjgui.components.ScrollableJPanel;
 import com.github.bfour.fpjgui.design.PanelDecorator;
+import com.github.bfour.fpjgui.layout.Orientation;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
-import com.github.bfour.fpliteraturecollector.gui.components.ScrollableJPanel;
 import com.github.bfour.fpliteraturecollector.gui.design.Colors;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
@@ -91,8 +116,20 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		finishedPanel.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
 		container.add(finishedPanel, "growx, wrap");
 
+		// create interface
+		FPJGUIButton createButton = FPJGUIButtonFactory.createButton(ButtonFormats.LINK);
+		createButton.setText("Create a new query");
+		createButton.setIcon(Icons.ADD_16.getIcon());
+		createButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				createNew();
+			}
+		});
+		createPanel.add(createButton, "alignx center, wrap");
+		
 		// bottom toolbar
-		PlainToolbar toolbar = new PlainToolbar(true);
+		PlainToolbar toolbar = new PlainToolbar(Orientation.CENTERED);
 		add(toolbar, "cell 0 1, growx");
 
 		final JButton stopButton = new JButton("Stop", Icons.STOP_24.getIcon());
@@ -282,21 +319,8 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 
 	@Override
 	public synchronized void updateEntry(Query oldQuery, Query newQuery) {
-		// check if queue position has changed
-		// Integer currentPos = componentQueryMap.get(
-		// componentQueryMap.inverse().get(oldQuery)).getQueuePosition();
-		// Integer newPos = newQuery.getQueuePosition();
-		// if ((currentPos == null && newPos != null)
-		// || !currentPos.equals(newPos)) {
 		deleteEntry(oldQuery);
 		addEntry(newQuery);
-		// return;
-		// } else {
-		// updateBorderColor(componentQueryMap.inverse().get(oldQuery),
-		// newQuery);
-		// }
-		// pos has not changed, update panel information
-		// componentQueryMap.inverse().get(oldQuery).setEntity(newQuery);
 	}
 
 	private void updateBorderColor(QueryPanel queryPanel, Query query) {
@@ -328,5 +352,17 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 	@Override
 	public void feedbackRevoked(Feedback arg0) {
 		feedbackProxy.feedbackRevoked(arg0);
+	}
+
+	@Override
+	public void deleteAllEntries() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Long getEntryCount() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

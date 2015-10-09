@@ -21,21 +21,25 @@ package com.github.bfour.fpliteraturecollector.domain;
  */
 
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import javax.swing.ImageIcon;
 
-import com.github.bfour.fpjcommons.model.Entity;
+import org.neo4j.graphdb.Direction;
+import org.springframework.data.neo4j.annotation.Fetch;
+import org.springframework.data.neo4j.annotation.RelatedTo;
+
+import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 
-public class Query extends Entity {
+public class Query extends Neo4JEntity {
 
 	public static enum QueryStatus {
-		CRAWLING("crawling", com.github.bfour.fpjgui.design.Icons.BUSY_16
-				.getIcon()), FINISHED("finished", Icons.FINISHED_20.getIcon()), FINISHED_WITH_ERROR(
-				"finished with error", Icons.FINISHED_WITH_ERROR_20.getIcon()), QUEUED(
-				"queued", Icons.QUEUED_20.getIcon()), IDLE("idle",
-				Icons.IDLE_20.getIcon());
+		CRAWLING("crawling", com.github.bfour.fpjgui.design.Icons.BUSY_16.getIcon()), 
+		FINISHED("finished", Icons.FINISHED_20.getIcon()), 
+		FINISHED_WITH_ERROR("finished with error", Icons.FINISHED_WITH_ERROR_20.getIcon()), 
+		QUEUED("queued", Icons.QUEUED_20.getIcon()), 
+		IDLE("idle", Icons.IDLE_20.getIcon());
 
 		private String tellingName;
 		private ImageIcon icon;
@@ -56,12 +60,14 @@ public class Query extends Entity {
 	}
 
 	protected String name;
-	protected List<AtomicRequest> atomicRequests;
+	@Fetch
+	@RelatedTo(type = "ATOMIC_REQUESTS", direction = Direction.OUTGOING)
+	protected Set<AtomicRequest> atomicRequests;
 	protected Integer queuePosition;
 	protected QueryStatus status;
 
 	public Query(Long iD, Date creationTime, Date lastChangeTime, String name,
-			List<AtomicRequest> atomicRequests, Integer queuePosition,
+			Set<AtomicRequest> atomicRequests, Integer queuePosition,
 			QueryStatus status) {
 		super(iD, creationTime, lastChangeTime);
 		this.name = name;
@@ -70,7 +76,7 @@ public class Query extends Entity {
 		this.status = status;
 	}
 
-	public Query(String name, List<AtomicRequest> atomicRequests,
+	public Query(String name, Set<AtomicRequest> atomicRequests,
 			Integer queuePosition, QueryStatus status) {
 		super();
 		this.name = name;
@@ -87,7 +93,7 @@ public class Query extends Entity {
 		return name;
 	}
 
-	public List<AtomicRequest> getAtomicRequests() {
+	public Set<AtomicRequest> getAtomicRequests() {
 		return atomicRequests;
 	}
 
@@ -102,29 +108,6 @@ public class Query extends Entity {
 	@Override
 	public String toString() {
 		return name;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((getID() == null) ? 0 : getID().hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!(obj instanceof Query))
-			return false;
-		Query other = (Query) obj;
-		if (getID() == null) {
-			if (other.getID() != null)
-				return false;
-		} else if (!getID().equals(other.getID()))
-			return false;
-		return true;
 	}
 
 }

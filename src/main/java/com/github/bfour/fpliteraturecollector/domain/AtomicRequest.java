@@ -1,9 +1,13 @@
 package com.github.bfour.fpliteraturecollector.domain;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
-import com.github.bfour.fpjcommons.model.Entity;
+import org.neo4j.graphdb.Direction;
+import org.springframework.data.neo4j.annotation.RelatedTo;
+
+import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
+import com.github.bfour.fpjsearch.fpjsearch.Searchable;
 import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
 
 /*
@@ -26,18 +30,25 @@ import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
  * -///////////////////////////////-
  */
 
-public class AtomicRequest extends Entity {
+public class AtomicRequest extends Neo4JEntity implements Searchable {
 
-	protected Crawler crawler;
-	protected String searchString;
-	protected Integer maxPageTurns;
-	protected List<Literature> results;
-	protected boolean processed;
-	protected String processingError;
+	// @RelatedTo(type="CRAWLER", direction=Direction.OUTGOING)
+	private Crawler crawler;
+
+	private String searchString;
+
+	private Integer maxPageTurns;
+
+	@RelatedTo(type = "RESULTS", direction = Direction.OUTGOING)
+	private Set<Literature> results;
+
+	private boolean processed;
+
+	private String processingError;
 
 	public AtomicRequest(Long iD, Date creationTime, Date lastChangeTime,
 			Crawler crawler, String searchString, Integer maxPageTurns,
-			List<Literature> results, boolean processed, String processingError) {
+			Set<Literature> results, boolean processed, String processingError) {
 		super(iD, creationTime, lastChangeTime);
 		this.crawler = crawler;
 		this.searchString = searchString;
@@ -48,7 +59,7 @@ public class AtomicRequest extends Entity {
 	}
 
 	public AtomicRequest(Crawler crawler, String searchString,
-			Integer maxPageTurns, List<Literature> results, boolean processed,
+			Integer maxPageTurns, Set<Literature> results, boolean processed,
 			String processingError) {
 		this.crawler = crawler;
 		this.searchString = searchString;
@@ -59,7 +70,6 @@ public class AtomicRequest extends Entity {
 	}
 
 	public AtomicRequest() {
-		super();
 	}
 
 	public Crawler getCrawler() {
@@ -74,7 +84,7 @@ public class AtomicRequest extends Entity {
 		return maxPageTurns;
 	}
 
-	public List<Literature> getResults() {
+	public Set<Literature> getResults() {
 		return results;
 	}
 
@@ -93,29 +103,6 @@ public class AtomicRequest extends Entity {
 		else
 			return "#" + getID() + " (" + getCrawler() + ": "
 					+ getSearchString() + ")";
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((getID() == null) ? 0 : getID().hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!(obj instanceof AtomicRequest))
-			return false;
-		AtomicRequest other = (AtomicRequest) obj;
-		if (getID() == null) {
-			if (other.getID() != null)
-				return false;
-		} else if (!getID().equals(other.getID()))
-			return false;
-		return true;
 	}
 
 }

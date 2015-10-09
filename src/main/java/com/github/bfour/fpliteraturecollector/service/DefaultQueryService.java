@@ -20,9 +20,6 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.github.bfour.fpjcommons.lang.Tuple;
 import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpjcommons.services.ServiceException;
@@ -33,34 +30,27 @@ import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 import com.github.bfour.fpliteraturecollector.domain.builders.QueryBuilder;
 import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
-import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
-import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBQueryDAO;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.QueryDAO;
 
-public class DefaultQueryService extends
-		EventCreatingCRUDService<Query, OrientDBQueryDAO> implements
-		QueryService {
+public class DefaultQueryService extends EventCreatingCRUDService<Query>
+		implements QueryService {
 
 	private static DefaultQueryService instance;
 	private AtomicRequestService atomReqServ;
+	private QueryDAO DAO;
 
-	private DefaultQueryService(OrientDBGraphService graphService,
-			boolean forceCreateNewInstance, AtomicRequestService atomReqServ,
-			LiteratureService litServ, AuthorService authServ,
-			TagService tagServ) {
-		super(OrientDBQueryDAO
-				.getInstance(graphService, forceCreateNewInstance, atomReqServ,
-						litServ, authServ, tagServ));
+	private DefaultQueryService(QueryDAO DAO, boolean forceCreateNewInstance,
+			AtomicRequestService atomReqServ) {
+		super(DAO);
+		this.DAO = DAO;
 		this.atomReqServ = atomReqServ;
 	}
 
-	public static DefaultQueryService getInstance(
-			OrientDBGraphService graphService, boolean forceCreateNewInstance,
-			AtomicRequestService atomReqServ, LiteratureService litServ,
-			AuthorService authServ, TagService tagServ) {
+	public static DefaultQueryService getInstance(QueryDAO DAO,
+			boolean forceCreateNewInstance, AtomicRequestService atomReqServ) {
 		if (instance == null || forceCreateNewInstance)
-			instance = new DefaultQueryService(graphService,
-					forceCreateNewInstance, atomReqServ, litServ, authServ,
-					tagServ);
+			instance = new DefaultQueryService(DAO, forceCreateNewInstance,
+					atomReqServ);
 		return instance;
 	}
 
@@ -75,7 +65,7 @@ public class DefaultQueryService extends
 	public synchronized Query update(Query oldEntity, Query newEntity)
 			throws ServiceException {
 		checkIntegrity(newEntity);
-		return super.update(oldEntity, newEntity);
+		return super.update(oldEntity, setStatus(newEntity));
 	}
 
 	@Override
@@ -106,7 +96,7 @@ public class DefaultQueryService extends
 	public synchronized Query getByQueuePosition(int position)
 			throws ServiceException {
 		try {
-			Query q = getDAO().getByQueuePosition(position);
+			Query q = DAO.getByQueuePosition(position);
 			if (q == null)
 				return null;
 			return q;
@@ -117,6 +107,10 @@ public class DefaultQueryService extends
 
 	@Override
 	public synchronized Query queueUp(Query query) throws ServiceException {
+
+		if (query.getStatus() == QueryStatus.FINISHED
+				|| query.getStatus() == QueryStatus.FINISHED_WITH_ERROR)
+			return query;
 
 		Query predecessor = getByQueuePosition(query.getQueuePosition() - 1);
 		if (predecessor == null) {
@@ -130,6 +124,7 @@ public class DefaultQueryService extends
 		qBuilder.setQueuePosition(predecessor.getQueuePosition());
 		predBuilder.setQueuePosition(query.getQueuePosition());
 
+		// TODO (high) wrap in transaction
 		update(predecessor, predBuilder.getObject());
 		return update(query, qBuilder.getObject());
 
@@ -137,6 +132,10 @@ public class DefaultQueryService extends
 
 	@Override
 	public synchronized Query queueDown(Query query) throws ServiceException {
+
+		if (query.getStatus() == QueryStatus.FINISHED
+				|| query.getStatus() == QueryStatus.FINISHED_WITH_ERROR)
+			return query;
 
 		Query successor = getByQueuePosition(query.getQueuePosition() + 1);
 		if (successor == null) {
@@ -157,15 +156,16 @@ public class DefaultQueryService extends
 
 	@Override
 	public synchronized Query queue(Query query) throws ServiceException {
-		if (query.getStatus() == QueryStatus.IDLE
-				|| query.getStatus() == QueryStatus.FINISHED_WITH_ERROR
-				|| query.getStatus() == QueryStatus.QUEUED) {
-			Query newQuery = new QueryBuilder(query)
-					.setQueuePosition(getMaxQueuePosition() + 1)
-					.setStatus(QueryStatus.QUEUED).getObject();
-			return update(query, newQuery);
-		}
-		return query;
+
+		if (query.getStatus() == QueryStatus.FINISHED
+				|| query.getStatus() == QueryStatus.FINISHED_WITH_ERROR)
+			return query;
+
+		Query newQuery = new QueryBuilder(query)
+				.setQueuePosition(getMaxQueuePosition() + 1)
+				.setStatus(QueryStatus.QUEUED).getObject();
+		return update(query, newQuery);
+
 	}
 
 	@Override
@@ -178,7 +178,6 @@ public class DefaultQueryService extends
 	public synchronized Query unqueue(Query query) throws ServiceException {
 		Query newQuery = new QueryBuilder(query).setQueuePosition(null)
 				.getObject();
-		newQuery = setInitialStatus(newQuery);
 		return update(query, newQuery);
 	}
 
@@ -240,39 +239,53 @@ public class DefaultQueryService extends
 	@Override
 	public void setAllIdleOrFinished() throws ServiceException {
 		for (Query q : getAll()) {
-			update(q, setInitialStatus(q));
+			if (q.getStatus() == QueryStatus.FINISHED
+					|| q.getStatus() == QueryStatus.FINISHED_WITH_ERROR)
+				continue;
+			update(q, new QueryBuilder(q).setStatus(QueryStatus.IDLE)
+					.getObject());
 		}
 	}
 
 	private Query setStatus(Query q) {
-		if (q.getStatus() != null)
+
+		if (q.getStatus() == QueryStatus.CRAWLING)
 			return q;
 
+		QueryStatus status = null;
+
 		boolean hasError = false;
+		boolean hasUnprocessed = false;
 		for (AtomicRequest atomReq : q.getAtomicRequests()) {
 			if (!atomReq.isProcessed())
-				return new QueryBuilder(q).setStatus(QueryStatus.IDLE)
-						.getObject();
+				hasUnprocessed = true;
 			if (atomReq.getProcessingError() != null)
 				hasError = true;
 		}
 
-		if (hasError)
-			return new QueryBuilder(q).setStatus(
-					QueryStatus.FINISHED_WITH_ERROR).getObject();
+		if (hasUnprocessed && q.getQueuePosition() == null)
+			status = QueryStatus.IDLE;
+		else if (hasUnprocessed && q.getQueuePosition() != null) {
+			status = QueryStatus.QUEUED;
+		} else if (hasError)
+			status = QueryStatus.FINISHED_WITH_ERROR;
 		else
-			return new QueryBuilder(q).setStatus(QueryStatus.FINISHED)
-					.getObject();
+			status = QueryStatus.FINISHED;
+
+		return new QueryBuilder(q).setStatus(status).getObject();
 
 	}
 
-	private Query setInitialStatus(Query q) {
-		if (q.getStatus() != null
-				&& (q.getStatus() == QueryStatus.FINISHED || q.getStatus() == QueryStatus.FINISHED_WITH_ERROR)) {
-			// return new QueryBuilder(q).setStatus(q.getStatus()).getObject();
-			return q;
-		}
-		return new QueryBuilder(q).setStatus(QueryStatus.IDLE).getObject();
+	@Override
+	public Query setCrawling(Query q) throws ServiceException {
+		return update(q, new QueryBuilder(q).setStatus(QueryStatus.CRAWLING)
+				.getObject());
+	}
+
+	@Override
+	public Query setNotCrawling(Query q) throws ServiceException {
+		return update(q, new QueryBuilder(q).setStatus(QueryStatus.IDLE)
+				.getObject());
 	}
 
 }

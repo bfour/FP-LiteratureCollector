@@ -42,14 +42,20 @@ package com.github.bfour.fpliteraturecollector.service;
  * *
  */
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Service;
+
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlerService;
-import com.github.bfour.fpliteraturecollector.service.database.FPLCOrientDBGraphService;
-import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JAtomicRequestDAO;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JAuthorDAO;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JLiteratureDAO;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JQueryDAO;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JTagDAO;
 
-/**
- * TODO add comments
- */
+@Service
+@Configurable
 public class ServiceManager {
 
 	public static enum ServiceManagerMode {
@@ -59,13 +65,27 @@ public class ServiceManager {
 	private static ServiceManager instance;
 
 	private ServiceManagerMode modeMemory;
-	private OrientDBGraphService graphService;
 	private AuthorService authServ;
 	private TagService tagServ;
 	private LiteratureService litServ;
 	private AtomicRequestService atomReqServ;
 	private QueryService queryServ;
 	private CrawlerService crawlServ;
+
+	@Autowired
+	private Neo4JAuthorDAO authDAO;
+	@Autowired
+	private Neo4JTagDAO tagDAO;
+	@Autowired
+	private Neo4JLiteratureDAO literatureDAO;
+	@Autowired
+	private Neo4JAtomicRequestDAO atomReqDAO;
+	@Autowired
+	private Neo4JQueryDAO queryDAO;
+
+	public ServiceManager() throws ServiceException {
+		this(ServiceManagerMode.TEST);
+	}
 
 	private ServiceManager(ServiceManagerMode mode) throws ServiceException {
 		initialize(mode);
@@ -77,61 +97,70 @@ public class ServiceManager {
 			instance = new ServiceManager(mode);
 		return instance;
 	}
-	
+
 	private void initialize(ServiceManagerMode mode) throws ServiceException {
-		
+
 		modeMemory = mode;
-		
+
 		if (mode == ServiceManagerMode.DEFAULT
-				|| mode == ServiceManagerMode.TEST 
+				|| mode == ServiceManagerMode.TEST
 				|| mode == ServiceManagerMode.REMOTE_TEST) {
 
-			graphService = FPLCOrientDBGraphService.getInstance();
+			// if (mode == ServiceManagerMode.DEFAULT) {
+			// graphService.setLocalDatabase("database");
+			// // graphService.setRemoteDatabase("localhost", "litcoll", "meow",
+			// "meow");
+			// } else if (mode == ServiceManagerMode.TEST) {
+			// graphService.setLocalDatabase("junitTestDatabase");
+			// graphService.dropCurrentDB();
+			// graphService.setLocalDatabase("junitTestDatabase");
+			// } else if (mode == ServiceManagerMode.REMOTE_TEST) {
+			// graphService.setRemoteDatabase("localhost", "cat", "root",
+			// "meow");
+			// }
 
-			if (mode == ServiceManagerMode.DEFAULT) {
-				graphService.setLocalDatabase("database");
-//				graphService.setRemoteDatabase("localhost", "litcoll", "meow", "meow");
-			} else if (mode == ServiceManagerMode.TEST) {
-				graphService.setLocalDatabase("junitTestDatabase");
-				graphService.dropCurrentDB();
-				graphService.setLocalDatabase("junitTestDatabase");
-			} else if (mode == ServiceManagerMode.REMOTE_TEST) {
-				graphService.setRemoteDatabase("localhost", "cat", "root", "meow");
-			}
-
-			this.authServ = DefaultAuthorService.getInstance(graphService, true);
-			this.tagServ = DefaultTagService.getInstance(graphService, true);
-			this.litServ = DefaultLiteratureService.getInstance(graphService, true, this.authServ, this.tagServ);
-			this.atomReqServ = DefaultAtomicRequestService.getInstance(graphService, true, this.litServ, this.authServ, this.tagServ);
-			this.queryServ = DefaultQueryService.getInstance(graphService, true, this.atomReqServ, this.litServ, this.authServ, this.tagServ);
 			this.crawlServ = CrawlerService.getInstance();
-			
+
 		} else {
 			throw new ServiceException("invalid service manager mode: " + mode);
 		}
-		
+
 	}
 
 	public AuthorService getAuthorService() {
+		if (authServ == null)
+			authServ = DefaultAuthorService.getInstance(authDAO, true);
 		return authServ;
 	}
 
 	public TagService getTagService() {
+		if (tagServ == null)
+			tagServ = DefaultTagService.getInstance(tagDAO, true);
 		return tagServ;
 	}
-	
+
 	public LiteratureService getLiteratureService() {
+		if (litServ == null)
+			litServ = DefaultLiteratureService.getInstance(literatureDAO, true,
+					getAuthorService(), getTagService());
 		return litServ;
 	}
 
 	public AtomicRequestService getAtomicRequestService() {
+		if (atomReqServ == null)
+			atomReqServ = DefaultAtomicRequestService.getInstance(atomReqDAO,
+					true, getLiteratureService(), getAuthorService(),
+					getTagService());
 		return atomReqServ;
 	}
-	
+
 	public QueryService getQueryService() {
+		if (queryServ == null)
+			queryServ = DefaultQueryService.getInstance(queryDAO, true,
+					getAtomicRequestService());
 		return queryServ;
 	}
-	
+
 	public CrawlerService getCrawlerService() {
 		return crawlServ;
 	}
@@ -140,16 +169,16 @@ public class ServiceManager {
 	 * Deletes all user data and re-initializes.
 	 */
 	public void resetAllData() throws ServiceException {
-		graphService.deleteAllDataInCurrentDB();
+		// graphService.deleteAllDataInCurrentDB();
 	}
-	
+
 	public void dropAndReinitDatabase() throws ServiceException {
-		graphService.dropCurrentDB();
+		// graphService.dropCurrentDB();
 		initialize(modeMemory);
 	}
 
 	public void close() {
-		graphService.shutdown();
+		// graphService.shutdown();
 	}
 
 }

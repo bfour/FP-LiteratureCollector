@@ -24,29 +24,28 @@ import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
-import com.github.bfour.fpliteraturecollector.service.database.OrientDBGraphService;
-import com.github.bfour.fpliteraturecollector.service.database.DAO.OrientDBLiteratureDAO;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.LiteratureDAO;
 
 public class DefaultLiteratureService extends
-		EventCreatingCRUDService<Literature, OrientDBLiteratureDAO> implements
-		LiteratureService {
+		EventCreatingCRUDService<Literature> implements LiteratureService {
 
 	private static DefaultLiteratureService instance;
 	private AuthorService authServ;
+	private LiteratureDAO DAO;
 
-	private DefaultLiteratureService(OrientDBGraphService graphService,
+	private DefaultLiteratureService(LiteratureDAO DAO,
 			boolean forceCreateNewInstance, AuthorService authServ,
 			TagService tagServ) {
-		super(OrientDBLiteratureDAO.getInstance(graphService,
-				forceCreateNewInstance, authServ, tagServ));
+		super(DAO);
+		this.DAO = DAO;
 		this.authServ = authServ;
 	}
 
-	public static DefaultLiteratureService getInstance(
-			OrientDBGraphService graphService, boolean forceCreateNewInstance,
-			AuthorService authServ, TagService tagServ) {
+	public static DefaultLiteratureService getInstance(LiteratureDAO DAO,
+			boolean forceCreateNewInstance, AuthorService authServ,
+			TagService tagServ) {
 		if (instance == null || forceCreateNewInstance)
-			instance = new DefaultLiteratureService(graphService,
+			instance = new DefaultLiteratureService(DAO,
 					forceCreateNewInstance, authServ, tagServ);
 		return instance;
 	}
@@ -54,7 +53,7 @@ public class DefaultLiteratureService extends
 	@Override
 	public void deleteCascadeIfMaxOneAdjacentAtomicRequest(Literature literature)
 			throws ServiceException {
-		if (getDAO().hasMaxOneAdjacentAtomicRequest(literature)) {
+		if (DAO.hasMaxOneAdjacentAtomicRequest(literature)) {
 			for (Author author : literature.getAuthors())
 				authServ.deleteIfMaxOneAdjacentLiterature(author);
 			super.delete(literature);

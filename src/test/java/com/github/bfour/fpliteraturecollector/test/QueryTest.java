@@ -1,9 +1,32 @@
 package com.github.bfour.fpliteraturecollector.test;
 
+/*
+ * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
+ * FP-LiteratureCollector
+ * =================================
+ * Copyright (C) 2015 Florian Pollak
+ * =================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -///////////////////////////////-
+ */
+
+
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -108,7 +131,7 @@ public class QueryTest {
 		String name = "test query 1";
 		int queuePos = 1;
 
-		List<AtomicRequest> atomReqs = new ArrayList<AtomicRequest>();
+		Set<AtomicRequest> atomReqs = new HashSet<AtomicRequest>();
 		Crawler crawler = CrawlerService.getInstance().getAvailableCrawlers()
 				.iterator().next();
 		String searchString = "q=meow";
@@ -130,7 +153,7 @@ public class QueryTest {
 		assert (createdQuery.getName().equals(name));
 		assert (createdQuery.getQueuePosition().equals(queuePos));
 
-		List<AtomicRequest> createdRequests = createdQuery.getAtomicRequests();
+		Set<AtomicRequest> createdRequests = createdQuery.getAtomicRequests();
 		Iterator<AtomicRequest> iter = createdRequests.iterator();
 		assert (createdRequests.size() == atomReqs.size());
 		for (AtomicRequest atomReq : atomReqs) {
@@ -148,7 +171,7 @@ public class QueryTest {
 		String name2 = "test query 2";
 		int queuePos2 = 1;
 
-		List<AtomicRequest> atomReqs2 = new ArrayList<AtomicRequest>();
+		Set<AtomicRequest> atomReqs2 = new HashSet<AtomicRequest>();
 		Crawler crawler2 = CrawlerService.getInstance().getAvailableCrawlers()
 				.iterator().next();
 		String searchString2 = "q=oink";
@@ -170,7 +193,7 @@ public class QueryTest {
 		assert (createdQuery2.getName().equals(name2));
 		assert (createdQuery2.getQueuePosition().equals(queuePos2));
 
-		List<AtomicRequest> createdRequests2 = createdQuery2
+		Set<AtomicRequest> createdRequests2 = createdQuery2
 				.getAtomicRequests();
 		Iterator<AtomicRequest> iter2 = createdRequests2.iterator();
 		assert (createdRequests2.size() == atomReqs2.size());
@@ -206,21 +229,22 @@ public class QueryTest {
 		}
 
 		// create AtomicRequests
+		Set<Literature> literatureSet = new HashSet<>(literatureList);
 		List<AtomicRequest> atomReqs = new ArrayList<AtomicRequest>(3);
 		atomReqs.add(new AtomicRequest(crawlServ.getAvailableCrawlers()
-				.iterator().next(), "LDL", 2, literatureList, true, null));
+				.iterator().next(), "LDL", 2, literatureSet, true, null));
 		atomReqs.add(new AtomicRequest(crawlServ.getAvailableCrawlers()
 				.iterator().next(), "another test &%$$ öäüß ß é Á _:_::___' ",
-				1, literatureList, true, null));
+				1, literatureSet, true, null));
 		atomReqs.add(new AtomicRequest(crawlServ.getAvailableCrawlers()
 				.iterator().next(), ":-) 1861", 0,
-				new ArrayList<Literature>(0), true, null));
+				new HashSet<Literature>(0), true, null));
 		for (AtomicRequest atomReq : atomReqs)
 			atomReqs.set(atomReqs.indexOf(atomReq), atomReqServ.create(atomReq));
 
 		// query
 		List<Query> queries = new ArrayList<>();
-		queries.add(new Query("test query", atomReqs, 1, null));
+		queries.add(new Query("test query", new HashSet<>(atomReqs), 1, null));
 		for (Query query : queries)
 			queries.set(queries.indexOf(query), queryServ.create(query));
 

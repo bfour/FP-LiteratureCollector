@@ -10,6 +10,26 @@
  ******************************************************************************/
 package org.epop.dataprovider;
 
+/*
+ * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
+ * FP-LiteratureCollector
+ * =================================
+ * Copyright (C) 2015 Florian Pollak
+ * =================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -///////////////////////////////-
+ */
+
 import java.io.IOException;
 import java.io.Reader;
 import java.net.MalformedURLException;
@@ -39,14 +59,16 @@ public abstract class DataProvider {
 	 * @return the papers, never null
 	 * @throws DataUnavailableException
 	 * @throws DatalayerException
-	 * @throws  
-	 * @throws URISyntaxException 
-	 * @throws MalformedURLException 
+	 * @throws
+	 * @throws URISyntaxException
+	 * @throws MalformedURLException
 	 */
-	public final List<Literature> runQuery(String htmlParams, int pageTurnLimit)
-			throws DataUnavailableException, DatalayerException, URISyntaxException {
+	public final List<Literature> runQuery(String htmlParams,
+			int pageTurnLimit, boolean initialWait)
+			throws DataUnavailableException, DatalayerException,
+			URISyntaxException {
 		try {
-			Reader r = getHTMLDoc(htmlParams, pageTurnLimit);
+			Reader r = getHTMLDoc(htmlParams, pageTurnLimit, initialWait);
 			if (r == null)
 				throw new DataUnavailableException("cannot connect");
 			List<Literature> result = parsePage(r);
@@ -61,8 +83,9 @@ public abstract class DataProvider {
 	}
 
 	// get the HTM Document - return null in case of error
-	protected abstract Reader getHTMLDoc(String htmlParams, int pageTurnLimit)
-			throws URISyntaxException, MalformedURLException, IOException;
+	protected abstract Reader getHTMLDoc(String htmlParams, int pageTurnLimit,
+			boolean initialWait) throws URISyntaxException,
+			MalformedURLException, IOException;
 
 	// parse it - return null in case of error
 	protected abstract List<Literature> parsePage(Reader r)

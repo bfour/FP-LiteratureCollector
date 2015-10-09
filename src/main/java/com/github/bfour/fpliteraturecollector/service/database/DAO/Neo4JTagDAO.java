@@ -20,43 +20,38 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  * -///////////////////////////////-
  */
 
-import java.util.Date;
+import javax.transaction.TransactionManager;
 
-import com.github.bfour.fpjcommons.model.Entity;
-import com.tinkerpop.blueprints.impls.orient.OrientGraph;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.data.neo4j.repository.GraphRepository;
+import org.springframework.data.neo4j.support.Neo4jTemplate;
+import org.springframework.stereotype.Service;
 
-public class LazyGraphEntity extends Entity {
+import com.github.bfour.fpjpersist.neo4j.service.AbstractNeo4JDAO;
+import com.github.bfour.fpliteraturecollector.domain.Tag;
 
-	private Object vertexID;
-	private OrientGraph db;
+@Service
+@Configurable
+public class Neo4JTagDAO extends AbstractNeo4JDAO<Tag> implements TagDAO {
 
-	public LazyGraphEntity(Object vertexID, OrientGraph db) {
-		this.vertexID = vertexID;
-		this.db = db;
+	@Autowired
+	private Neo4JTagDAODelegate delegate;
+	
+	@Autowired
+	private Neo4jTemplate neoTemplate;
 
+	public Neo4JTagDAO() {
 	}
 
 	@Override
-	public Long getID() {
-		if (ID == null)
-			ID = (Long) db.getVertex(vertexID).getProperty("ID");
-		return ID;
+	protected GraphRepository<Tag> getDelegate() {
+		return delegate;
 	}
-
+	
 	@Override
-	public Date getCreationTime() {
-		if (creationTime == null)
-			creationTime = (Date) db.getVertex(vertexID).getProperty(
-					"creationTime");
-		return creationTime;
-	}
-
-	@Override
-	public Date getLastChangeTime() {
-		if (lastChangeTime == null)
-			lastChangeTime = (Date) db.getVertex(vertexID).getProperty(
-					"lastChangeTime");
-		return lastChangeTime;
+	protected TransactionManager getTxManager() {
+		return neoTemplate.getGraphDatabase().getTransactionManager();
 	}
 
 }

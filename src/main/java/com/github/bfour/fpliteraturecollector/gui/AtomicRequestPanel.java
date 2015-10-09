@@ -1,5 +1,25 @@
 package com.github.bfour.fpliteraturecollector.gui;
 
+/*
+ * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
+ * FP-LiteratureCollector
+ * =================================
+ * Copyright (C) 2015 Florian Pollak
+ * =================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -///////////////////////////////-
+ */
+
 import java.awt.Dimension;
 import java.util.Iterator;
 import java.util.List;
@@ -12,7 +32,6 @@ import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.CRUDService;
 import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
 import com.github.bfour.fpjcommons.utils.Getter;
-import com.github.bfour.fpjgui.abstraction.EntityEditPanel;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
 import com.github.bfour.fpjgui.components.FPJGUILabel;
 import com.github.bfour.fpjgui.components.FPJGUILabelPanel;
@@ -21,7 +40,8 @@ import com.github.bfour.fpjgui.components.FPJGUIScrollableTextPane;
 import com.github.bfour.fpjgui.components.FPJGUITextField;
 import com.github.bfour.fpjgui.components.SearchComboBox;
 import com.github.bfour.fpjgui.components.ToggleEditFormComponent;
-import com.github.bfour.fpjgui.components.composite.EntityBrowsePanel;
+import com.github.bfour.fpjgui.components.composite.EntityEditPanel;
+import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
 import com.github.bfour.fpjgui.components.table.FPJGUITable;
 import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
@@ -40,77 +60,80 @@ public class AtomicRequestPanel extends
 	public AtomicRequestPanel(final ServiceManager servMan,
 			final FPJGUITable<AtomicRequest> table) {
 
-		super(new BuilderFactory<AtomicRequest, AtomicRequestBuilder>() {
-			@Override
-			public AtomicRequestBuilder getBuilder() {
-				return new AtomicRequestBuilder();
-			}
-
-			@Override
-			public AtomicRequestBuilder getBuilder(AtomicRequest entity) {
-				return new AtomicRequestBuilder(entity);
-			}
-
-		}, new CRUDService<AtomicRequest>() {
-
-			@Override
-			public AtomicRequest create(AtomicRequest a) {
-				table.addEntry(a);
-				return a;
-			}
-
-			@Override
-			public void delete(AtomicRequest a) throws ServiceException {
-				table.deleteEntry(a);
-			}
-
-			@Override
-			public boolean exists(AtomicRequest a) throws ServiceException {
-				return table.containsEntry(a);
-			}
-
-			@Override
-			public DataIterator<AtomicRequest> getAllByStream()
-					throws ServiceException {
-				final Iterator<AtomicRequest> iter = table.getEntries()
-						.iterator();
-				return new DataIterator<AtomicRequest>() {
+		super(AtomicRequest.class,
+				new BuilderFactory<AtomicRequest, AtomicRequestBuilder>() {
 					@Override
-					public boolean hasNext() throws DatalayerException {
-						return iter.hasNext();
+					public AtomicRequestBuilder getBuilder() {
+						return new AtomicRequestBuilder();
 					}
 
 					@Override
-					public AtomicRequest next() throws DatalayerException {
-						return iter.next();
+					public AtomicRequestBuilder getBuilder(AtomicRequest entity) {
+						return new AtomicRequestBuilder(entity);
+					}
+
+				}, new CRUDService<AtomicRequest>() {
+
+					@Override
+					public AtomicRequest create(AtomicRequest a) {
+						table.addEntry(a);
+						return a;
 					}
 
 					@Override
-					public void remove() throws DatalayerException {
-						iter.remove();
+					public void delete(AtomicRequest a) throws ServiceException {
+						table.deleteEntry(a);
 					}
-				};
-			}
 
-			@Override
-			public List<AtomicRequest> getAll() throws ServiceException {
-				return table.getEntries();
-			}
+					@Override
+					public boolean exists(AtomicRequest a)
+							throws ServiceException {
+						return table.containsEntry(a);
+					}
 
-			@Override
-			public AtomicRequest get(AtomicRequest arg0)
-					throws ServiceException {
-				List<AtomicRequest> list = table.getEntries();
-				return list.get(list.indexOf(arg0));
-			}
+					@Override
+					public DataIterator<AtomicRequest> getAllByStream()
+							throws ServiceException {
+						final Iterator<AtomicRequest> iter = table.getEntries()
+								.iterator();
+						return new DataIterator<AtomicRequest>() {
+							@Override
+							public boolean hasNext() throws DatalayerException {
+								return iter.hasNext();
+							}
 
-			@Override
-			public AtomicRequest update(AtomicRequest oldEntry,
-					AtomicRequest newEntry) throws ServiceException {
-				table.updateEntry(oldEntry, newEntry);
-				return newEntry;
-			}
-		});
+							@Override
+							public AtomicRequest next()
+									throws DatalayerException {
+								return iter.next();
+							}
+
+							@Override
+							public void remove() throws DatalayerException {
+								iter.remove();
+							}
+						};
+					}
+
+					@Override
+					public List<AtomicRequest> getAll() throws ServiceException {
+						return table.getEntries();
+					}
+
+					@Override
+					public AtomicRequest get(AtomicRequest arg0)
+							throws ServiceException {
+						List<AtomicRequest> list = table.getEntries();
+						return list.get(list.indexOf(arg0));
+					}
+
+					@Override
+					public AtomicRequest update(AtomicRequest oldEntry,
+							AtomicRequest newEntry) throws ServiceException {
+						table.updateEntry(oldEntry, newEntry);
+						return newEntry;
+					}
+				});
 
 		setCRUDButtonsVisible(false);
 
@@ -118,7 +141,7 @@ public class AtomicRequestPanel extends
 				new MigLayout("insets 0", "[grow]", "[][][grow]"));
 
 		// crawler
-		EntityBrowsePanel<Crawler> crawlerBrowsePanel = new CrawlerBrowsePanel(
+		EntityTableBrowsePanel<Crawler> crawlerBrowsePanel = new CrawlerBrowsePanel(
 				servMan);
 		crawlerBrowsePanel.setDeleteEntityEnabled(false);
 		crawlerBrowsePanel.setCreateEntityEnabled(false);
@@ -199,7 +222,9 @@ public class AtomicRequestPanel extends
 		ToggleEditFormComponent<String> requestStringToggle = new ToggleEditFormComponent<String>(
 				requestStringLabel, requestStringField);
 		registerToggleComponent(requestStringToggle);
-		getContentPane().add(new FPJGUILabelPanel("Request string", requestStringToggle), "cell 0 2,grow");
+		getContentPane().add(
+				new FPJGUILabelPanel("Request string", requestStringToggle),
+				"cell 0 2,grow");
 
 		// mappings
 		ObjectGraphicalValueContainerMapper<AtomicRequestBuilder, Crawler> crawlerMapper = new ObjectGraphicalValueContainerMapper<AtomicRequestBuilder, Crawler>(

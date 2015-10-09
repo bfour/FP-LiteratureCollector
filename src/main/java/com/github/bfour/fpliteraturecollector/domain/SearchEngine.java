@@ -20,8 +20,9 @@ package com.github.bfour.fpliteraturecollector.domain;
  * -///////////////////////////////-
  */
 
-public enum SupportedSearchEngine {
-	GOOGLE_SCHOLAR;
+public enum SearchEngine {
+	
+	GOOGLE_SCHOLAR, MICROSOFT_ACADEMIC;
 
 	/**
 	 * A random double representing a token that is given to this engine's one
@@ -29,28 +30,12 @@ public enum SupportedSearchEngine {
 	 */
 	private Double token;
 
-	/**
-	 * Requests for this engine to be used (eg. in a crawler).
-	 * 
-	 * @return a random Double if no entity has requested this engine before or
-	 *         the last one gave this engine back (ie. called
-	 *         {@link SupportedSearchEngine#giveBack()}); otherwise null is
-	 *         returned
-	 */
-	public synchronized Double request() {
-		Math.random();
-		if (token != null)
-			return null;
-		token = Math.random();
+	public Double getToken() {
 		return token;
 	}
 
-	/**
-	 * 
-	 */
-	public synchronized void giveBack(Double token) {
-		if (token == this.token)
-			this.token = null;
+	public void setToken(Double token) {
+		this.token = token;
 	}
 
 }

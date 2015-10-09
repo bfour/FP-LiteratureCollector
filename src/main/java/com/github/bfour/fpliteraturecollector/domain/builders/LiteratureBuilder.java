@@ -21,7 +21,6 @@ package com.github.bfour.fpliteraturecollector.domain.builders;
  */
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Set;
 
 import com.github.bfour.fpjcommons.lang.Builder;
@@ -37,7 +36,7 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 
 	private String title;
 	private LiteratureType type;
-	private List<Author> authors;
+	private Set<Author> authors;
 	private String DOI;
 	private ISBN ISBN;
 	private Integer year;
@@ -47,6 +46,7 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 	private String fulltextURL;
 	private Path fulltextFilePath;
 	private Integer gScholarNumCitations;
+	private Integer msAcademicNumCitations;
 	private Set<Tag> tags;
 
 	public LiteratureBuilder() {
@@ -72,9 +72,10 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		setFulltextURL(l.getFulltextURL());
 
 		setgScholarNumCitations(l.getgScholarNumCitations());
+		setMsAcademicNumCitations(l.getMsAcademicNumCitations());
 
 		setTags(l.getTags());
-		
+
 	}
 
 	@Override
@@ -83,7 +84,8 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 				getTitle(), getType(), getAuthors(), getDOI(), getISBN(),
 				getYear(), getPublicationContext(), getPublisher(),
 				getWebsiteURL(), getFulltextURL(), getFulltextFilePath(),
-				getgScholarNumCitations(), getTags());
+				getgScholarNumCitations(), getMsAcademicNumCitations(),
+				getTags());
 	}
 
 	public String getTitle() {
@@ -104,11 +106,11 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		return this;
 	}
 
-	public List<Author> getAuthors() {
+	public Set<Author> getAuthors() {
 		return authors;
 	}
 
-	public LiteratureBuilder setAuthors(List<Author> authors) {
+	public LiteratureBuilder setAuthors(Set<Author> authors) {
 		this.authors = authors;
 		return this;
 	}
@@ -189,9 +191,18 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		return gScholarNumCitations;
 	}
 
-	public LiteratureBuilder setgScholarNumCitations(Integer gScholarNumCitations) {
+	public LiteratureBuilder setgScholarNumCitations(
+			Integer gScholarNumCitations) {
 		this.gScholarNumCitations = gScholarNumCitations;
 		return this;
+	}
+
+	public Integer getMsAcademicNumCitations() {
+		return msAcademicNumCitations;
+	}
+
+	public void setMsAcademicNumCitations(Integer msAcademicNumCitations) {
+		this.msAcademicNumCitations = msAcademicNumCitations;
 	}
 
 	public Set<Tag> getTags() {

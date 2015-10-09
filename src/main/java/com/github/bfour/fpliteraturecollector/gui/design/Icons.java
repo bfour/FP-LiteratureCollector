@@ -1,5 +1,26 @@
 package com.github.bfour.fpliteraturecollector.gui.design;
 
+/*
+ * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
+ * FP-LiteratureCollector
+ * =================================
+ * Copyright (C) 2015 Florian Pollak
+ * =================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -///////////////////////////////-
+ */
+
+
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +41,7 @@ public enum Icons {
 			
 	PERSON_GROUP("classpath:icons/group.png"),
 	BOOKS("classpath:icons/books.png"),
+	BOOKS_20("classpath:icons/books_20.png"),
 	DUPLICATE("classpath:icons/column_double.png"),
 	CONFIG("classpath:icons/setting_tools_32.png"),
 	
@@ -29,6 +51,7 @@ public enum Icons {
 	CROSS_12("classpath:icons/cross_12.png"),
 	
 	ADD("classpath:icons/add.png"),
+	ADD_16("classpath:icons/add_16.png"),
 	ADD_24("classpath:icons/add_24.png"),
 	
 	PLAY("classpath:icons/control_play_blue.png"),

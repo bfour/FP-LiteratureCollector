@@ -23,9 +23,11 @@ package com.github.bfour.fpliteraturecollector.domain;
 import java.awt.Color;
 import java.util.Date;
 
-import com.github.bfour.fpjcommons.model.Entity;
+import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
+import com.github.bfour.fpjsearch.fpjsearch.Searchable;
 
-public class Tag extends Entity {
+public class Tag extends Neo4JEntity implements
+		com.github.bfour.fpjguiextended.tagging.Tag, Searchable {
 
 	private String name;
 	private Color colour;
@@ -43,10 +45,16 @@ public class Tag extends Entity {
 		this.colour = colour;
 	}
 
+	public Tag() {
+
+	}
+
+	@Override
 	public String getName() {
 		return name;
 	}
-
+	
+	@Override
 	public Color getColour() {
 		return colour;
 	}
@@ -54,29 +62,6 @@ public class Tag extends Entity {
 	@Override
 	public String toString() {
 		return name;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((getID() == null) ? 0 : getID().hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!(obj instanceof Tag))
-			return false;
-		Tag other = (Tag) obj;
-		if (getID() == null) {
-			if (other.getID() != null)
-				return false;
-		} else if (!getID().equals(other.getID()))
-			return false;
-		return true;
 	}
 
 }

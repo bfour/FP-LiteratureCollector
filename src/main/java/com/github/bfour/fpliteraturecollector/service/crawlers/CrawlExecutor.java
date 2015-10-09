@@ -1,7 +1,29 @@
 package com.github.bfour.fpliteraturecollector.service.crawlers;
 
+/*
+ * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
+ * FP-LiteratureCollector
+ * =================================
+ * Copyright (C) 2015 Florian Pollak
+ * =================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -///////////////////////////////-
+ */
+
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.SwingWorker;
 
@@ -15,11 +37,15 @@ import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
+import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Query;
-import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 import com.github.bfour.fpliteraturecollector.domain.builders.AtomicRequestBuilder;
+import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 import com.github.bfour.fpliteraturecollector.domain.builders.QueryBuilder;
+import com.github.bfour.fpliteraturecollector.service.AtomicRequestService;
+import com.github.bfour.fpliteraturecollector.service.AuthorService;
+import com.github.bfour.fpliteraturecollector.service.LiteratureService;
 import com.github.bfour.fpliteraturecollector.service.QueryService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.abstraction.BackgroundWorker;
@@ -28,15 +54,20 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 
 	private class CrawlerWorker extends SwingWorker<Void, Void> {
 
-		private final Logger LOGGER = Logger
-				.getLogger(CrawlerWorker.class);
+		private final Logger LOGGER = Logger.getLogger(CrawlerWorker.class);
 
 		private QueryService qServ;
+		private AtomicRequestService atomReqServ;
+		private AuthorService authServ;
+		private LiteratureService litServ;
 		private List<Exception> errors;
 		private Crawler crawler;
 
 		public CrawlerWorker(ServiceManager servMan, Crawler crawler) {
 			this.qServ = servMan.getQueryService();
+			this.atomReqServ = servMan.getAtomicRequestService();
+			this.litServ = servMan.getLiteratureService();
+			this.authServ = servMan.getAuthorService();
 			this.errors = new ArrayList<Exception>();
 			this.crawler = crawler;
 		}
@@ -53,25 +84,53 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 					try {
 
 						// set crawling
-						qServ.update(
-								topRequest.getA(),
-								new QueryBuilder(topRequest.getA()).setStatus(
-										QueryStatus.CRAWLING).getObject());
+						qServ.setCrawling(topRequest.getA());
 
 						// get results and update
 						List<Literature> results = crawler.process(topRequest
 								.getB());
+
+						List<Literature> persistedResults = new ArrayList<Literature>(
+								results.size());
+						for (Literature lit : results) {
+							Set<Author> persistedAuthors = new HashSet<>(lit
+									.getAuthors().size());
+							for (Author auth : lit.getAuthors()) {
+								if (!authServ.exists(auth)) {
+									Author createdAuth = authServ.create(auth);
+									persistedAuthors.add(createdAuth);
+								} else {
+									persistedAuthors.add(auth);
+								}
+							}
+							lit = new LiteratureBuilder(lit).setAuthors(
+									persistedAuthors).getObject();
+							if (!litServ.exists(lit)) {
+								Literature createdLit = litServ.create(lit);
+								persistedResults.add(createdLit);
+							} else {
+								persistedResults.add(lit);
+							}
+						}
+						
+						results = persistedResults;
+
+						AtomicRequest newAtomReq = new AtomicRequestBuilder(
+								topRequest.getB()).setProcessed(true)
+								.setResults(new HashSet<>(results)).getObject();
+						atomReqServ.update(topRequest.getB(), newAtomReq);
+
 						List<AtomicRequest> atomReqs = new ArrayList<>(
 								topRequest.getA().getAtomicRequests());
 						atomReqs.set(atomReqs.indexOf(topRequest.getB()),
-								new AtomicRequestBuilder(topRequest.getB())
-										.setProcessed(true).setResults(results)
-										.getObject());
-						qServ.update(topRequest.getA(), new QueryBuilder(
-								topRequest.getA()).setAtomicRequests(atomReqs)
+								newAtomReq);
+
+						qServ.setNotCrawling(new QueryBuilder(topRequest.getA())
+								.setAtomicRequests(new HashSet<>(atomReqs))
 								.getObject());
 
 					} catch (Exception e) {
+						e.printStackTrace();
 						LOGGER.error(e);
 						List<AtomicRequest> atomReqs = new ArrayList<>(
 								topRequest.getA().getAtomicRequests());
@@ -81,12 +140,16 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 										.setProcessed(true)
 										.setProcessingError(e.getMessage())
 										.getObject());
-						qServ.update(topRequest.getA(), new QueryBuilder(
-								topRequest.getA()).setAtomicRequests(atomReqs)
-								.getObject());
+						qServ.update(
+								topRequest.getA(),
+								new QueryBuilder(topRequest.getA())
+										.setAtomicRequests(
+												new HashSet<>(atomReqs))
+										.getObject());
 					}
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				LOGGER.error(e);
 				errors.add(e);
 			}
