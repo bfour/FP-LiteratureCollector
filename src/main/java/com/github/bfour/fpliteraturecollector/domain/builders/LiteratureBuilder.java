@@ -47,6 +47,9 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 	private Path fulltextFilePath;
 	private Integer gScholarNumCitations;
 	private Integer msAcademicNumCitations;
+	private Integer acmNumCitations;
+	private Integer pubmedNumCitations;
+	private Integer ieeeNumCitations;
 	private Set<Tag> tags;
 
 	public LiteratureBuilder() {
@@ -73,6 +76,9 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 
 		setgScholarNumCitations(l.getgScholarNumCitations());
 		setMsAcademicNumCitations(l.getMsAcademicNumCitations());
+		setAcmNumCitations(l.getAcmNumCitations());
+		setPubmedNumCitations(l.getPubmedNumCitations());
+		setIeeeNumCitations(l.getIeeeNumCitations());
 
 		setTags(l.getTags());
 
@@ -85,7 +91,8 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 				getYear(), getPublicationContext(), getPublisher(),
 				getWebsiteURL(), getFulltextURL(), getFulltextFilePath(),
 				getgScholarNumCitations(), getMsAcademicNumCitations(),
-				getTags());
+				getAcmNumCitations(), getPubmedNumCitations(),
+				getIeeeNumCitations(), getTags());
 	}
 
 	public String getTitle() {
@@ -203,6 +210,30 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 
 	public void setMsAcademicNumCitations(Integer msAcademicNumCitations) {
 		this.msAcademicNumCitations = msAcademicNumCitations;
+	}
+
+	public Integer getAcmNumCitations() {
+		return acmNumCitations;
+	}
+
+	public void setAcmNumCitations(Integer acmNumCitations) {
+		this.acmNumCitations = acmNumCitations;
+	}
+
+	public Integer getPubmedNumCitations() {
+		return pubmedNumCitations;
+	}
+
+	public void setPubmedNumCitations(Integer pubmedNumCitations) {
+		this.pubmedNumCitations = pubmedNumCitations;
+	}
+
+	public Integer getIeeeNumCitations() {
+		return ieeeNumCitations;
+	}
+
+	public void setIeeeNumCitations(Integer ieeeNumCitations) {
+		this.ieeeNumCitations = ieeeNumCitations;
 	}
 
 	public Set<Tag> getTags() {

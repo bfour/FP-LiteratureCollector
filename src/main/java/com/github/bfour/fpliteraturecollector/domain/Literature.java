@@ -85,8 +85,11 @@ public class Literature extends Neo4JEntity implements Searchable {
 	protected String fulltextURL;
 	protected Path fulltextFilePath;
 
-	protected Integer gScholarNumCitations;
-	protected Integer msAcademicNumCitations;
+	private Integer gScholarNumCitations;
+	private Integer msAcademicNumCitations;
+	private Integer acmNumCitations;
+	private Integer pubmedNumCitations;
+	private Integer ieeeNumCitations;
 
 	@Fetch
 	@RelatedTo(type = "TAGS", direction = Direction.OUTGOING)
@@ -94,14 +97,15 @@ public class Literature extends Neo4JEntity implements Searchable {
 
 	public Literature() {
 	}
-	
+
 	public Literature(Long ID, Date creationTime, Date lastChangeTime,
 			String title, LiteratureType type, Set<Author> authors, String dOI,
 			com.github.bfour.fpliteraturecollector.domain.ISBN iSBN,
 			Integer year, String publicationContext, String publisher,
 			String websiteURL, String fulltextURL, Path fulltextFilePath,
 			Integer gScholarNumCitations, Integer msAcademicNumCitations,
-			Set<Tag> tags) {
+			Integer acmNumCitations, Integer pubmedNumCitations,
+			Integer ieeeNumCitations, Set<Tag> tags) {
 		super(ID, creationTime, lastChangeTime);
 		this.title = title;
 		this.type = type;
@@ -116,6 +120,9 @@ public class Literature extends Neo4JEntity implements Searchable {
 		this.fulltextFilePath = fulltextFilePath;
 		this.gScholarNumCitations = gScholarNumCitations;
 		this.msAcademicNumCitations = msAcademicNumCitations;
+		this.acmNumCitations = acmNumCitations;
+		this.pubmedNumCitations = pubmedNumCitations;
+		this.ieeeNumCitations = ieeeNumCitations;
 		this.tags = tags;
 	}
 
@@ -169,6 +176,18 @@ public class Literature extends Neo4JEntity implements Searchable {
 
 	public Integer getMsAcademicNumCitations() {
 		return msAcademicNumCitations;
+	}
+
+	public Integer getAcmNumCitations() {
+		return acmNumCitations;
+	}
+
+	public Integer getPubmedNumCitations() {
+		return pubmedNumCitations;
+	}
+
+	public Integer getIeeeNumCitations() {
+		return ieeeNumCitations;
 	}
 
 	public Set<Tag> getTags() {

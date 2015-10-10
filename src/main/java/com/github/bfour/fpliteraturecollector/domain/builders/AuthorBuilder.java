@@ -54,6 +54,9 @@ public class AuthorBuilder extends EntityBuilder<Author> implements
 	private String lastName;
 	private String gScholarID;
 	private String msAcademicID;
+	private String acmID;
+	private String pubmedID;
+	private String ieeeID;	
 
 	public AuthorBuilder() {
 		super();
@@ -66,13 +69,18 @@ public class AuthorBuilder extends EntityBuilder<Author> implements
 		setFirstName(person.getFirstName());
 		setMiddleName(person.getMiddleName());
 		setLastName(person.getLastName());
+		setgScholarID(person.getgScholarID());
+		setMsAcademicID(person.getMsAcademicID());
+		setAcmID(person.getAcmID());
+		setPubmedID(person.getPubmedID());
+		setIeeeID(person.getIeeeID());
 	}
 
 	@Override
 	public Author getObject() {
 		return new Author(getID(), getCreationTime(), getLastChangeTime(),
 				getFirstName(), getMiddleName(), getLastName(), getgScholarID(),
-				getMsAcademicID());
+				getMsAcademicID(), getAcmID(), getPubmedID(), getIeeeID());
 	}
 
 	public String getFirstName() {
@@ -117,6 +125,30 @@ public class AuthorBuilder extends EntityBuilder<Author> implements
 	public AuthorBuilder setMsAcademicID(String msAcademicID) {
 		this.msAcademicID = msAcademicID;
 		return this;
+	}
+
+	public String getAcmID() {
+		return acmID;
+	}
+
+	public void setAcmID(String acmID) {
+		this.acmID = acmID;
+	}
+
+	public String getPubmedID() {
+		return pubmedID;
+	}
+
+	public void setPubmedID(String pubmedID) {
+		this.pubmedID = pubmedID;
+	}
+
+	public String getIeeeID() {
+		return ieeeID;
+	}
+
+	public void setIeeeID(String ieeeID) {
+		this.ieeeID = ieeeID;
 	}
 
 }

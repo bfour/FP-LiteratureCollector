@@ -39,6 +39,9 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 	private static final long serialVersionUID = -6108218045598314837L;
 	private FPJGUILabelPanel msAcademicLabelPanel;
 	private FPJGUILabelPanel gScholarIDLabelPanel;
+	private FPJGUILabelPanel acmLabelPanel;
+	private FPJGUILabelPanel pubmedLabelPanel;
+	private FPJGUILabelPanel ieeeLabelPanel;
 
 	/**
 	 * Create the panel.
@@ -115,6 +118,33 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 				msAcademicIDToggle);
 		getContentPane().add(msAcademicLabelPanel, "cell 0 4,growx");
 
+		// acm
+		FPJGUIMultilineLabel acmIDField = new FPJGUIMultilineLabel();
+		FPJGUIMultilineLabel acmIDLabel = new FPJGUIMultilineLabel();
+		ToggleEditFormComponent<String> acmIDToggle = new ToggleEditFormComponent<String>(
+				acmIDLabel, acmIDField);
+		registerToggleComponent(acmIDToggle);
+		acmLabelPanel = new FPJGUILabelPanel("ACM ID", acmIDToggle);
+		getContentPane().add(acmLabelPanel, "cell 0 5,growx");
+
+		// pubmed
+		FPJGUIMultilineLabel pubmedIDField = new FPJGUIMultilineLabel();
+		FPJGUIMultilineLabel pubmedIDLabel = new FPJGUIMultilineLabel();
+		ToggleEditFormComponent<String> pubmedIDToggle = new ToggleEditFormComponent<String>(
+				pubmedIDLabel, pubmedIDField);
+		registerToggleComponent(pubmedIDToggle);
+		pubmedLabelPanel = new FPJGUILabelPanel("Pubmed ID", pubmedIDToggle);
+		getContentPane().add(pubmedLabelPanel, "cell 0 6,growx");
+		
+		// ieee
+		FPJGUIMultilineLabel ieeeIDField = new FPJGUIMultilineLabel();
+		FPJGUIMultilineLabel ieeeIDLabel = new FPJGUIMultilineLabel();
+		ToggleEditFormComponent<String> ieeeIDToggle = new ToggleEditFormComponent<String>(
+				ieeeIDLabel, ieeeIDField);
+		registerToggleComponent(ieeeIDToggle);
+		ieeeLabelPanel = new FPJGUILabelPanel("ieee ID", ieeeIDToggle);
+		getContentPane().add(ieeeLabelPanel, "cell 0 6,growx");		
+
 		// mappings
 		ObjectGraphicalValueContainerMapper<AuthorBuilder, String> IDMapper = new ObjectGraphicalValueContainerMapper<AuthorBuilder, String>(
 				IDLabel) {
@@ -166,7 +196,7 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 			@Override
 			public String getValue(AuthorBuilder object) {
 				if (object.getgScholarID() == null)
-					return "not defined";
+					return "-";
 				return object.getgScholarID();
 			}
 
@@ -182,7 +212,7 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 			@Override
 			public String getValue(AuthorBuilder object) {
 				if (object.getMsAcademicID() == null)
-					return "not defined";
+					return "-";
 				return object.getMsAcademicID();
 			}
 
@@ -192,6 +222,54 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 			}
 		};
 		getMappers().add(msAcademicIDMapper);
+
+		ObjectGraphicalValueContainerMapper<AuthorBuilder, String> acmIDMapper = new ObjectGraphicalValueContainerMapper<AuthorBuilder, String>(
+				acmIDToggle) {
+			@Override
+			public String getValue(AuthorBuilder object) {
+				if (object.getAcmID() == null)
+					return "-";
+				return object.getAcmID();
+			}
+
+			@Override
+			public void setValue(AuthorBuilder object, String value) {
+				object.setAcmID(value);
+			}
+		};
+		getMappers().add(acmIDMapper);
+
+		ObjectGraphicalValueContainerMapper<AuthorBuilder, String> pubmedIDMapper = new ObjectGraphicalValueContainerMapper<AuthorBuilder, String>(
+				pubmedIDToggle) {
+			@Override
+			public String getValue(AuthorBuilder object) {
+				if (object.getPubmedID() == null)
+					return "-";
+				return object.getPubmedID();
+			}
+
+			@Override
+			public void setValue(AuthorBuilder object, String value) {
+				object.setPubmedID(value);
+			}
+		};
+		getMappers().add(pubmedIDMapper);
+		
+		ObjectGraphicalValueContainerMapper<AuthorBuilder, String> ieeeIDMapper = new ObjectGraphicalValueContainerMapper<AuthorBuilder, String>(
+				ieeeIDToggle) {
+			@Override
+			public String getValue(AuthorBuilder object) {
+				if (object.getIeeeID() == null)
+					return "-";
+				return object.getIeeeID();
+			}
+
+			@Override
+			public void setValue(AuthorBuilder object, String value) {
+				object.setIeeeID(value);
+			}
+		};
+		getMappers().add(ieeeIDMapper);		
 
 	}
 

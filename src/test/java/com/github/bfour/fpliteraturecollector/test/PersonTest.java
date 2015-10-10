@@ -71,15 +71,17 @@ public class PersonTest {
 	@Test
 	public void deleteNonExistentPersonExpectNoChange() throws ServiceException {
 		assert (persServ.getAll().isEmpty());
-		persServ.delete(new Author("Nombre", "Q.", "Inconnu", null, null));
+		persServ.delete(new Author("Nombre", "Q.", "Inconnu", null, null, null,
+				null, null));
 		assert (persServ.getAll().isEmpty());
 	}
 
 	@Test(expected = ServiceException.class)
 	public void updateNonExistentPersonExpectFailure() throws ServiceException {
 		assert (persServ.getAll().isEmpty());
-		persServ.update(new Author("Nombre", "A.", "Inconnu", null, null),
-				new Author("Persona", "M.", "Nueva", null, null));
+		persServ.update(new Author("Nombre", "A.", "Inconnu", null, null, null,
+				null, null), new Author("Persona", "M.", "Nueva", null, null,
+				null, null, null));
 		assert (persServ.getAll().isEmpty());
 	}
 

@@ -38,26 +38,43 @@ public class Author extends Neo4JEntity implements Searchable {
 
 	@Indexed
 	protected String msAcademicID;
+	
+	@Indexed
+	protected String acmID;
+	
+	@Indexed
+	protected String pubmedID;
+	
+	@Indexed
+	protected String ieeeID;
 
-	public Author(Long iD, Date creationTime, Date lastChangeTime,
+	public Author(Long ID, Date creationTime, Date lastChangeTime,
 			String firstName, String middleName, String lastName,
-			String gScholarID, String msAcademicID) {
-		super(iD, creationTime, lastChangeTime);
+			String gScholarID, String msAcademicID, String acmID,
+			String pubmedID, String ieeeID) {
+		super(ID, creationTime, lastChangeTime);
 		this.firstName = firstName;
 		this.middleName = middleName;
 		this.lastName = lastName;
 		this.gScholarID = gScholarID;
 		this.msAcademicID = msAcademicID;
+		this.acmID = acmID;
+		this.pubmedID = pubmedID;
+		this.ieeeID = ieeeID;
 	}
 
 	public Author(String firstName, String middleName, String lastName,
-			String gScholarID, String msAcademicID) {
+			String gScholarID, String msAcademicID, String acmID,
+			String pubmedID, String ieeeID) {
 		super();
 		this.firstName = firstName;
 		this.middleName = middleName;
 		this.lastName = lastName;
 		this.gScholarID = gScholarID;
 		this.msAcademicID = msAcademicID;
+		this.acmID = acmID;
+		this.pubmedID = pubmedID;
+		this.ieeeID = ieeeID;
 	}
 
 	public Author() {
@@ -81,6 +98,18 @@ public class Author extends Neo4JEntity implements Searchable {
 
 	public String getMsAcademicID() {
 		return msAcademicID;
+	}
+
+	public String getAcmID() {
+		return acmID;
+	}
+
+	public String getPubmedID() {
+		return pubmedID;
+	}
+
+	public String getIeeeID() {
+		return ieeeID;
 	}
 
 	@Override
