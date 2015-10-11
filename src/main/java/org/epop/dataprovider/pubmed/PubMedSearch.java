@@ -16,24 +16,33 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIUtils;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.epop.dataprovider.DataProvider;
+import org.epop.dataprovider.HTMLPage;
+import org.epop.dataprovider.XMLPage;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import com.github.bfour.fpliteraturecollector.domain.Author;
+import com.github.bfour.fpliteraturecollector.domain.Link;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
+import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
+import com.github.bfour.fpliteraturecollector.domain.builders.AuthorBuilder;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 
 public class PubMedSearch extends DataProvider {
@@ -56,58 +65,17 @@ public class PubMedSearch extends DataProvider {
 	protected Reader getHTMLDoc(String htmlParams, int pageTurnLimit,
 			boolean initialWait) {
 
-		URI uri;
-		String responseBody = "";
-
 		try {
 
 			if (initialWait)
 				Thread.sleep(DELAY);
 
-			uri = URIUtils.createURI("http", PUBMED_SEARCH, -1, "", htmlParams
-					+ "&dispmax=200", null);
-			HttpGet httpget = new HttpGet(uri);
-			System.out.println(httpget.getURI());
-			HttpClient httpclient = new DefaultHttpClient();
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			responseBody = httpclient.execute(httpget, responseHandler);
+			URI uri = new URI(PUBMED_SEARCH + "?" + htmlParams); // TODO (high) add dispmax param
+			HTMLPage page = new HTMLPage(uri);
 
 			// if (pageTurnLimit == 0)
-			return new StringReader(responseBody);
+			return new StringReader(page.getRawCode());
 
-			// int counter = 1;
-			// String newResponseBody = responseBody;
-			// while (!newResponseBody
-			// .contains("<span title=\"Inactive next page of results\" class=\"inactive page_link next\">"))
-			// {
-			//
-			// Thread.sleep(DELAY);
-			//
-			// URI newUri = URIUtils.createURI(
-			// "http",
-			// PUBMED_SEARCH,
-			// -1,
-			// "",
-			// htmlParams + "&start="
-			// + String.valueOf((counter * searchStep) + 1)
-			// + "&end="
-			// + String.valueOf((counter + 1) * searchStep),
-			// null);
-			//
-			// httpget = new HttpGet(newUri);
-			// System.out.println(httpget.getURI());
-			// httpclient = new DefaultHttpClient();
-			// newResponseBody = httpclient.execute(httpget, responseHandler);
-			// // System.out.println(newResponseBody);
-			// responseBody = responseBody + newResponseBody;
-			//
-			// if (pageTurnLimit == counter)
-			// return new StringReader(responseBody);
-			//
-			// counter++;
-			//
-			// }
-			//
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -118,6 +86,9 @@ public class PubMedSearch extends DataProvider {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -156,8 +127,9 @@ public class PubMedSearch extends DataProvider {
 
 		Element titleElem = element.getFirstElement("class", "title", false);
 		if (titleElem != null) {
-			
-			Matcher matcher = ID_PATTERN.matcher(titleElem.getAttributeValue("href"));
+
+			Matcher matcher = ID_PATTERN.matcher(titleElem.getAllElements("a")
+					.get(0).getAttributeValue("href"));
 			if (matcher.find()) {
 				String id = matcher.group(1);
 				String entryLink = PUBMED_SEARCH + id;
@@ -166,32 +138,167 @@ public class PubMedSearch extends DataProvider {
 				} catch (URISyntaxException | IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (XPathExpressionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ParserConfigurationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SAXException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			} else {
 				// TODO error handling
 			}
-			
-			
+
 		}
-		
+
 		return litBuilder.getObject();
 
 	}
-	
-	private void articleToLiterature(String articleID, LiteratureBuilder builder)
-			throws URISyntaxException, ClientProtocolException, IOException {
-		
-		URI uri = URIUtils.createURI("http", PUBMED_SEARCH, -1, "", articleID, null);
-		HttpGet httpget = new HttpGet(uri);
-		System.out.println(httpget.getURI());
-		HttpClient httpclient = new DefaultHttpClient();
-		ResponseHandler<String> responseHandler = new BasicResponseHandler();
-		String responseBody = httpclient.execute(httpget, responseHandler);
 
-		Source source = new Source(responseBody);
-		
-		
-		
+	private void articleToLiterature(String articleID, LiteratureBuilder builder)
+			throws ClientProtocolException, IOException,
+			ParserConfigurationException, URISyntaxException,
+			XPathExpressionException, SAXException {
+
+		HTMLPage htmlPage = new HTMLPage("http://www.ncbi.nlm.nih.gov/pubmed/"
+				+ articleID);
+
+		HTMLPage page = new HTMLPage("http://www.ncbi.nlm.nih.gov/pubmed/"
+				+ articleID + "?report=xml&format=text");
+		String xmlCode = StringEscapeUtils.unescapeHtml(page
+				.getStringByXPath("html/body/pre/text()"));
+		XMLPage xmlPage = new XMLPage(xmlCode);
+
+		// title
+		try {
+			builder.setTitle(xmlPage.getStringByXPath("//ArticleTitle/text()"));
+		} catch (XPathExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// abstract text
+		try {
+			NodeList nodes = xmlPage.getNodeSetByXPath("//Abstract");
+			int i = 0;
+			Node node;
+			StringBuilder stringBuilder = new StringBuilder("<html>");
+			while ((node = nodes.item(i)) != null) {
+				if (node.getAttributes().getNamedItem("Label") != null) {
+					stringBuilder.append("<b>");
+					stringBuilder.append(node.getAttributes()
+							.getNamedItem("Label").getTextContent());
+					stringBuilder.append("</b><br/>");
+				}
+				stringBuilder.append(node.getTextContent().trim()
+						.replaceAll("\t", "").replaceAll("\\s{2,}", " "));
+				stringBuilder.append("<br/>");
+				i++;
+			}
+			builder.setAbstractText(stringBuilder.toString() + "</html>");
+		} catch (XPathExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// authors
+		try {
+			Set<Author> authors = new HashSet<>();
+			int i = 0;
+			while (true) {
+				i++;
+				String lastName = xmlPage
+						.getStringByXPath("//AuthorList/Author[" + i
+								+ "]/ForeName");
+				String firstName = xmlPage
+						.getStringByXPath("//AuthorList/Author[" + i
+								+ "]/LastName");
+				if (lastName.isEmpty() && firstName.isEmpty())
+					break;
+				authors.add(new AuthorBuilder().setFirstName(firstName)
+						.setLastName(lastName).getObject());
+			}
+			builder.setAuthors(authors);
+		} catch (XPathExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// DOI
+		try {
+			String doi = xmlPage
+					.getStringByXPath("//ArticleId[@IdType='doi']/text()");
+			if (doi != null && !doi.isEmpty())
+				builder.setDOI(doi);
+		} catch (XPathExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// year
+		try {
+			String year = xmlPage.getStringByXPath("//DateRevised/Year/text()");
+			if (year != null && !year.isEmpty())
+				builder.setYear(Integer.parseInt(year));
+		} catch (XPathExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// publication context
+		try {
+			String journalTitle = xmlPage
+					.getStringByXPath("//Article/Journal/Title/text()");
+			if (journalTitle != null && !journalTitle.isEmpty()) {
+				builder.setPublicationContext(journalTitle);
+				builder.setType(LiteratureType.JOURNAL_PAPER);
+			}
+		} catch (XPathExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// full text URLs
+		try {
+			NodeList nodes = htmlPage
+					.getNodeSetByXPath(".//*[@id='maincontent']//div[@class='linkoutlist']/ul[1]/li");
+			int i = 0;
+			Node node;
+			Set<Link> linkSet = new HashSet<>();
+			Set<Link> fullTextLinkSet = new HashSet<Link>();
+			while ((node = nodes.item(i)) != null) {
+
+				if (node.getFirstChild().getAttributes().getNamedItem("href") == null) {
+					i++;
+					continue;
+				}
+
+				String linkText = node.getFirstChild().getTextContent();
+				String uri = node.getFirstChild().getAttributes()
+						.getNamedItem("href").getTextContent();
+				linkSet.add(new Link(linkText, uri));
+
+				if (linkText.equals("PubMed Central")) {
+					HTMLPage pmcPage = new HTMLPage(uri);
+					Node pdfLinkNode = pmcPage
+							.getNodeByXPath(".//*[@id='rightcolumn']//div[@class='format-menu']/ul/li[4]/a/@href");
+					String pdfLink = pdfLinkNode.getTextContent();
+					fullTextLinkSet.add(new Link(linkText,
+							"http://www.ncbi.nlm.nih.gov" + pdfLink));
+				}
+
+				i++;
+
+			}
+			builder.setWebsiteURLs(linkSet);
+			builder.setFulltextURLs(fullTextLinkSet);
+		} catch (XPathExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
-	
 }

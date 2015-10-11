@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.domain;
  * -///////////////////////////////-
  */
 
-import java.nio.file.Path;
 import java.util.Date;
 import java.util.Set;
 
@@ -59,31 +58,33 @@ public class Literature extends Neo4JEntity implements Searchable {
 	}
 
 	@Indexed(indexType = IndexType.FULLTEXT, indexName = "literatureTitle")
-	protected String title;
+	private String title;
 
-	protected LiteratureType type;
+	private String abstractText;
+	
+	private LiteratureType type;
 
 	@Fetch
 	@RelatedTo(type = "AUTHORS", direction = Direction.OUTGOING)
-	protected Set<Author> authors;
+	private Set<Author> authors;
 
-	protected String DOI;
+	private String DOI;
 
-	protected ISBN ISBN;
+	private ISBN ISBN;
 
-	protected Integer year;
+	private Integer year;
 
 	/**
 	 * eg. name of journal, name of conference ...
 	 */
 	@Indexed(indexType = IndexType.FULLTEXT, indexName = "publicationContext")
-	protected String publicationContext;
+	private String publicationContext;
 	@Indexed(indexType = IndexType.FULLTEXT, indexName = "publisher")
-	protected String publisher;
+	private String publisher;
 
-	protected String websiteURL;
-	protected String fulltextURL;
-	protected Path fulltextFilePath;
+	private Set<Link> websiteURLs;
+	private Set<Link> fulltextURLs;
+	private Set<Link> fulltextFilePaths;
 
 	private Integer gScholarNumCitations;
 	private Integer msAcademicNumCitations;
@@ -93,21 +94,20 @@ public class Literature extends Neo4JEntity implements Searchable {
 
 	@Fetch
 	@RelatedTo(type = "TAGS", direction = Direction.OUTGOING)
-	protected Set<Tag> tags;
-
-	public Literature() {
-	}
-
+	private Set<Tag> tags;
+	
 	public Literature(Long ID, Date creationTime, Date lastChangeTime,
-			String title, LiteratureType type, Set<Author> authors, String dOI,
+			String title, String abstractText, LiteratureType type,
+			Set<Author> authors, String dOI,
 			com.github.bfour.fpliteraturecollector.domain.ISBN iSBN,
 			Integer year, String publicationContext, String publisher,
-			String websiteURL, String fulltextURL, Path fulltextFilePath,
-			Integer gScholarNumCitations, Integer msAcademicNumCitations,
-			Integer acmNumCitations, Integer pubmedNumCitations,
-			Integer ieeeNumCitations, Set<Tag> tags) {
+			Set<Link> websiteURLs, Set<Link> fulltextURLs,
+			Set<Link> fulltextFilePaths, Integer gScholarNumCitations,
+			Integer msAcademicNumCitations, Integer acmNumCitations,
+			Integer pubmedNumCitations, Integer ieeeNumCitations, Set<Tag> tags) {
 		super(ID, creationTime, lastChangeTime);
 		this.title = title;
+		this.abstractText = abstractText;
 		this.type = type;
 		this.authors = authors;
 		DOI = dOI;
@@ -115,9 +115,9 @@ public class Literature extends Neo4JEntity implements Searchable {
 		this.year = year;
 		this.publicationContext = publicationContext;
 		this.publisher = publisher;
-		this.websiteURL = websiteURL;
-		this.fulltextURL = fulltextURL;
-		this.fulltextFilePath = fulltextFilePath;
+		this.websiteURLs = websiteURLs;
+		this.fulltextURLs = fulltextURLs;
+		this.fulltextFilePaths = fulltextFilePaths;
 		this.gScholarNumCitations = gScholarNumCitations;
 		this.msAcademicNumCitations = msAcademicNumCitations;
 		this.acmNumCitations = acmNumCitations;
@@ -126,8 +126,15 @@ public class Literature extends Neo4JEntity implements Searchable {
 		this.tags = tags;
 	}
 
+	public Literature() {
+	}
+
 	public String getTitle() {
 		return title;
+	}
+
+	public String getAbstractText() {
+		return abstractText;
 	}
 
 	public LiteratureType getType() {
@@ -158,16 +165,16 @@ public class Literature extends Neo4JEntity implements Searchable {
 		return publisher;
 	}
 
-	public String getWebsiteURL() {
-		return websiteURL;
+	public Set<Link> getWebsiteURLs() {
+		return websiteURLs;
 	}
 
-	public String getFulltextURL() {
-		return fulltextURL;
+	public Set<Link> getFulltextURLs() {
+		return fulltextURLs;
 	}
 
-	public Path getFulltextFilePath() {
-		return fulltextFilePath;
+	public Set<Link> getFulltextFilePaths() {
+		return fulltextFilePaths;
 	}
 
 	public Integer getgScholarNumCitations() {

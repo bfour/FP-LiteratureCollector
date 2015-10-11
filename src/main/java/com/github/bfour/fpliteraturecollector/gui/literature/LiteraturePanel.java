@@ -20,32 +20,26 @@ package com.github.bfour.fpliteraturecollector.gui.literature;
  * -///////////////////////////////-
  */
 
-import java.awt.Desktop;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.awt.font.TextAttribute;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.swing.JLabel;
 
 import net.miginfocom.swing.MigLayout;
 
 import com.github.bfour.fpjcommons.lang.BuilderFactory;
 import com.github.bfour.fpjcommons.utils.Getter;
 import com.github.bfour.fpjgui.abstraction.EntityLoader;
-import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
-import com.github.bfour.fpjgui.abstraction.feedback.Feedback.FeedbackType;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
-import com.github.bfour.fpjgui.components.FPJGUIButton;
-import com.github.bfour.fpjgui.components.FPJGUIButton.ButtonFormats;
-import com.github.bfour.fpjgui.components.FPJGUIButton.FPJGUIButtonFactory;
 import com.github.bfour.fpjgui.components.FPJGUILabel;
 import com.github.bfour.fpjgui.components.FPJGUILabelPanel;
 import com.github.bfour.fpjgui.components.FPJGUIMultilineLabel;
+import com.github.bfour.fpjgui.components.FPJGUITextPane;
 import com.github.bfour.fpjgui.components.SearchComboBox;
 import com.github.bfour.fpjgui.components.ToggleEditFormComponent;
 import com.github.bfour.fpjgui.components.composite.EntityEditPanel;
@@ -54,6 +48,7 @@ import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
 import com.github.bfour.fpjguiextended.tagging.TagTilePanel;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.ISBN;
+import com.github.bfour.fpliteraturecollector.domain.Link;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
@@ -64,8 +59,6 @@ public class LiteraturePanel extends
 		EntityEditPanel<Literature, LiteratureBuilder> {
 
 	private static final long serialVersionUID = -6108218045598314837L;
-	private URI webSiteURL;
-	private URI fullTextURL;
 
 	/**
 	 * Create the panel.
@@ -94,7 +87,7 @@ public class LiteraturePanel extends
 		getContentPane().add(new FPJGUILabelPanel("ID", IDLabel), "growx,wrap");
 
 		// title
-		FPJGUIMultilineLabel titleField = new FPJGUIMultilineLabel();
+		FPJGUITextPane titleField = new FPJGUITextPane();
 		titleField.setValidationRule(new ValidationRule<String>() {
 			@Override
 			public ValidationRuleResult evaluate(String obj) {
@@ -103,11 +96,24 @@ public class LiteraturePanel extends
 			}
 		});
 		titleField.setValueRequired(true);
-		FPJGUIMultilineLabel nameLabel = new FPJGUIMultilineLabel();
+		FPJGUIMultilineLabel titleLabel = new FPJGUIMultilineLabel();
+		titleLabel.setFont(new JLabel().getFont().deriveFont(
+				Collections.singletonMap(TextAttribute.WEIGHT,
+						TextAttribute.WEIGHT_BOLD)));
 		ToggleEditFormComponent<String> titleToggle = new ToggleEditFormComponent<String>(
-				nameLabel, titleField);
+				titleLabel, titleField);
 		registerToggleComponent(titleToggle);
 		getContentPane().add(new FPJGUILabelPanel("Title", titleToggle),
+				"growx,wrap");
+
+		// abstract
+		FPJGUITextPane abstractField = new FPJGUITextPane();
+		FPJGUIMultilineLabel abstractLabel = new FPJGUIMultilineLabel();
+		abstractLabel.setContentType("text/html"); // TODO (optional) check why auto-content detection doesn't work
+		ToggleEditFormComponent<String> abstractToggle = new ToggleEditFormComponent<String>(
+				abstractLabel, abstractField);
+		registerToggleComponent(abstractToggle);
+		getContentPane().add(new FPJGUILabelPanel("Abstract", abstractToggle),
 				"growx,wrap");
 
 		// type
@@ -173,49 +179,20 @@ public class LiteraturePanel extends
 		getContentPane().add(new FPJGUILabelPanel("Tags", tagToggle),
 				"growx,wrap");
 
-		final FPJGUIButton websiteURLLabel = FPJGUIButtonFactory
-				.createButton(ButtonFormats.LINK);
-		websiteURLLabel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					Desktop desktop = java.awt.Desktop.getDesktop();
-					desktop.browse(webSiteURL);
-				} catch (IOException e1) {
-					getFeedbackProxy().feedbackBroadcasted(
-							new Feedback(websiteURLLabel,
-									"Sorry, failed to open link.", e1
-											.getMessage(), FeedbackType.ERROR));
-				}
-			}
-		});
-		FPJGUIMultilineLabel websiteURLField = new FPJGUIMultilineLabel();
-		ToggleEditFormComponent<String> websiteURLToggle = new ToggleEditFormComponent<String>(
-				websiteURLLabel, websiteURLField);
+		// website URL
+		LinkSetPanel websiteURLPanel = new LinkSetPanel();
+		LinkSetEditPanel websiteURLEditPanel = new LinkSetEditPanel();
+		ToggleEditFormComponent<Set<Link>> websiteURLToggle = new ToggleEditFormComponent<>(
+				websiteURLPanel, websiteURLEditPanel);
 		registerToggleComponent(websiteURLToggle);
 		getContentPane().add(new FPJGUILabelPanel("Website", websiteURLToggle),
 				"growx,wrap");
 
 		// fulltextURL
-		final FPJGUIButton fulltextURLLabel = FPJGUIButtonFactory
-				.createButton(ButtonFormats.LINK);
-		fulltextURLLabel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					Desktop desktop = java.awt.Desktop.getDesktop();
-					desktop.browse(fullTextURL);
-				} catch (IOException e1) {
-					getFeedbackProxy().feedbackBroadcasted(
-							new Feedback(fulltextURLLabel,
-									"Sorry, failed to open link.", e1
-											.getMessage(), FeedbackType.ERROR));
-				}
-			}
-		});
-		FPJGUIMultilineLabel fulltextURLField = new FPJGUIMultilineLabel();
-		ToggleEditFormComponent<String> fulltextURLToggle = new ToggleEditFormComponent<String>(
-				fulltextURLLabel, fulltextURLField);
+		LinkSetPanel fulltextURLPanel = new LinkSetPanel();
+		LinkSetEditPanel fulltextURLEditPanel = new LinkSetEditPanel();
+		ToggleEditFormComponent<Set<Link>> fulltextURLToggle = new ToggleEditFormComponent<>(
+				fulltextURLPanel, fulltextURLEditPanel);
 		registerToggleComponent(fulltextURLToggle);
 		getContentPane().add(
 				new FPJGUILabelPanel("Full Text URL", fulltextURLToggle),
@@ -252,6 +229,20 @@ public class LiteraturePanel extends
 			}
 		};
 		getMappers().add(titleMapper);
+
+		ObjectGraphicalValueContainerMapper<LiteratureBuilder, String> abstractMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, String>(
+				abstractToggle) {
+			@Override
+			public String getValue(LiteratureBuilder object) {
+				return object.getAbstractText();
+			}
+
+			@Override
+			public void setValue(LiteratureBuilder object, String value) {
+				object.setAbstractText(value);
+			}
+		};
+		getMappers().add(abstractMapper);
 
 		ObjectGraphicalValueContainerMapper<LiteratureBuilder, LiteratureType> typeMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, LiteratureType>(
 				typeToggle) {
@@ -341,48 +332,30 @@ public class LiteraturePanel extends
 		};
 		getMappers().add(tagMapper);
 
-		ObjectGraphicalValueContainerMapper<LiteratureBuilder, String> websiteURLMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, String>(
+		ObjectGraphicalValueContainerMapper<LiteratureBuilder, Set<Link>> websiteURLMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, Set<Link>>(
 				websiteURLToggle) {
 			@Override
-			public String getValue(LiteratureBuilder object) {
-				webSiteURL = null;
-				if (object.getWebsiteURL() == null)
-					return "-";
-				try {
-					URI uri = new URI(object.getWebsiteURL());
-					webSiteURL = uri;
-					return uri.getHost();
-				} catch (URISyntaxException e) {
-					return object.getFulltextURL();
-				}
+			public Set<Link> getValue(LiteratureBuilder object) {
+				return object.getWebsiteURLs();
 			}
 
 			@Override
-			public void setValue(LiteratureBuilder object, String value) {
-				object.setWebsiteURL(value);
+			public void setValue(LiteratureBuilder object, Set<Link> value) {
+				object.setWebsiteURLs(value);
 			}
 		};
 		getMappers().add(websiteURLMapper);
 
-		ObjectGraphicalValueContainerMapper<LiteratureBuilder, String> fulltextURLMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, String>(
+		ObjectGraphicalValueContainerMapper<LiteratureBuilder, Set<Link>> fulltextURLMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, Set<Link>>(
 				fulltextURLToggle) {
 			@Override
-			public String getValue(LiteratureBuilder object) {
-				fullTextURL = null;
-				if (object.getFulltextURL() == null)
-					return "-";
-				try {
-					URI uri = new URI(object.getFulltextURL());
-					fullTextURL = uri;
-					return uri.getHost();
-				} catch (URISyntaxException e) {
-					return object.getFulltextURL();
-				}
+			public Set<Link> getValue(LiteratureBuilder object) {
+				return object.getFulltextURLs();
 			}
 
 			@Override
-			public void setValue(LiteratureBuilder object, String value) {
-				object.setFulltextURL(value);
+			public void setValue(LiteratureBuilder object, Set<Link> value) {
+				object.setFulltextURLs(value);
 			}
 		};
 		getMappers().add(fulltextURLMapper);

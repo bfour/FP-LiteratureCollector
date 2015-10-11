@@ -20,13 +20,13 @@ package com.github.bfour.fpliteraturecollector.domain.builders;
  * -///////////////////////////////-
  */
 
-import java.nio.file.Path;
 import java.util.Set;
 
 import com.github.bfour.fpjcommons.lang.Builder;
 import com.github.bfour.fpjcommons.model.EntityBuilder;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.ISBN;
+import com.github.bfour.fpliteraturecollector.domain.Link;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
@@ -35,6 +35,7 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		Builder<Literature> {
 
 	private String title;
+	private String abstractText;
 	private LiteratureType type;
 	private Set<Author> authors;
 	private String DOI;
@@ -42,9 +43,9 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 	private Integer year;
 	private String publicationContext;
 	private String publisher;
-	private String websiteURL;
-	private String fulltextURL;
-	private Path fulltextFilePath;
+	private Set<Link> websiteURLs;
+	private Set<Link> fulltextURLs;
+	private Set<Link> fulltextFilePaths;
 	private Integer gScholarNumCitations;
 	private Integer msAcademicNumCitations;
 	private Integer acmNumCitations;
@@ -63,6 +64,7 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		setLastChangeTime(l.getLastChangeTime());
 
 		setTitle(l.getTitle());
+		setAbstractText(l.getAbstractText());
 		setType(l.getType());
 		setAuthors(l.getAuthors());
 		setDOI(l.getDOI());
@@ -70,9 +72,9 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		setYear(l.getYear());
 		setPublicationContext(l.getPublicationContext());
 		setPublisher(l.getPublisher());
-		setWebsiteURL(l.getWebsiteURL());
-		setFulltextFilePath(l.getFulltextFilePath());
-		setFulltextURL(l.getFulltextURL());
+		setWebsiteURLs(l.getWebsiteURLs());
+		setFulltextFilePaths(l.getFulltextFilePaths());
+		setFulltextURLs(l.getFulltextURLs());
 
 		setgScholarNumCitations(l.getgScholarNumCitations());
 		setMsAcademicNumCitations(l.getMsAcademicNumCitations());
@@ -87,12 +89,12 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 	@Override
 	public Literature getObject() {
 		return new Literature(getID(), getCreationTime(), getLastChangeTime(),
-				getTitle(), getType(), getAuthors(), getDOI(), getISBN(),
-				getYear(), getPublicationContext(), getPublisher(),
-				getWebsiteURL(), getFulltextURL(), getFulltextFilePath(),
-				getgScholarNumCitations(), getMsAcademicNumCitations(),
-				getAcmNumCitations(), getPubmedNumCitations(),
-				getIeeeNumCitations(), getTags());
+				getTitle(), getAbstractText(), getType(), getAuthors(),
+				getDOI(), getISBN(), getYear(), getPublicationContext(),
+				getPublisher(), getWebsiteURLs(), getFulltextURLs(),
+				getFulltextFilePaths(), getgScholarNumCitations(),
+				getMsAcademicNumCitations(), getAcmNumCitations(),
+				getPubmedNumCitations(), getIeeeNumCitations(), getTags());
 	}
 
 	public String getTitle() {
@@ -102,6 +104,14 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 	public LiteratureBuilder setTitle(String title) {
 		this.title = title;
 		return this;
+	}
+
+	public String getAbstractText() {
+		return abstractText;
+	}
+
+	public void setAbstractText(String abstractText) {
+		this.abstractText = abstractText;
 	}
 
 	public LiteratureType getType() {
@@ -167,31 +177,28 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		return this;
 	}
 
-	public String getWebsiteURL() {
-		return websiteURL;
+	public Set<Link> getWebsiteURLs() {
+		return websiteURLs;
 	}
 
-	public LiteratureBuilder setWebsiteURL(String websiteURL) {
-		this.websiteURL = websiteURL;
-		return this;
+	public void setWebsiteURLs(Set<Link> websiteURLs) {
+		this.websiteURLs = websiteURLs;
 	}
 
-	public String getFulltextURL() {
-		return fulltextURL;
+	public Set<Link> getFulltextURLs() {
+		return fulltextURLs;
 	}
 
-	public LiteratureBuilder setFulltextURL(String fulltextURL) {
-		this.fulltextURL = fulltextURL;
-		return this;
+	public void setFulltextURLs(Set<Link> fulltextURLs) {
+		this.fulltextURLs = fulltextURLs;
 	}
 
-	public Path getFulltextFilePath() {
-		return fulltextFilePath;
+	public Set<Link> getFulltextFilePaths() {
+		return fulltextFilePaths;
 	}
 
-	public LiteratureBuilder setFulltextFilePath(Path fulltextFilePath) {
-		this.fulltextFilePath = fulltextFilePath;
-		return this;
+	public void setFulltextFilePaths(Set<Link> fulltextFilePaths) {
+		this.fulltextFilePaths = fulltextFilePaths;
 	}
 
 	public Integer getgScholarNumCitations() {

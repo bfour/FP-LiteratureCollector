@@ -53,7 +53,7 @@ import com.github.bfour.fpjgui.components.FPJGUIButton;
 import com.github.bfour.fpjgui.components.FPJGUIButton.ButtonFormats;
 import com.github.bfour.fpjgui.components.FPJGUIButton.FPJGUIButtonFactory;
 import com.github.bfour.fpjgui.components.PlainToolbar;
-import com.github.bfour.fpjgui.components.ScrollableJPanel;
+import com.github.bfour.fpjgui.components.ScrollableJXPanel;
 import com.github.bfour.fpjgui.design.PanelDecorator;
 import com.github.bfour.fpjgui.layout.Orientation;
 import com.github.bfour.fpliteraturecollector.domain.Query;
@@ -90,7 +90,7 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 
 		setLayout(new MigLayout("insets 0", "[grow]", "[grow][]"));
 
-		container = new ScrollableJPanel();
+		container = new ScrollableJXPanel();
 		container.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
 		JScrollPane wrapper = new JScrollPane(container);
 		wrapper.setBorder(null);

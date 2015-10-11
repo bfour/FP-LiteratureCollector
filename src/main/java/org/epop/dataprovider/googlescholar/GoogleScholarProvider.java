@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,10 +56,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import com.github.bfour.fpjcommons.lang.Tuple;
 import com.github.bfour.fpjcommons.services.DatalayerException;
-import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpliteraturecollector.domain.Author;
+import com.github.bfour.fpliteraturecollector.domain.Link;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
 import com.github.bfour.fpliteraturecollector.domain.builders.AuthorBuilder;
@@ -256,12 +256,16 @@ public class GoogleScholarProvider extends DataProvider {
 
 				// website URL
 				String websiteURL = article.select(".gs_rt a").attr("href");
-				litBuilder.setWebsiteURL(websiteURL);
+				Set<Link> siteLinks = new HashSet<>();
+				siteLinks.add(new Link(null, websiteURL));
+				litBuilder.setWebsiteURLs(siteLinks);
 
 				// fulltext
 				String fulltextURL = article.select("div.gs_md_wp.gs_ttss a")
 						.attr("href");
-				litBuilder.setFulltextURL(fulltextURL);
+				Set<Link> fullLinks = new HashSet<>();
+				fullLinks.add(new Link(null, fulltextURL));				
+				litBuilder.setFulltextURLs(fullLinks);
 
 				papers.add(litBuilder.getObject());
 
