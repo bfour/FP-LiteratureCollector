@@ -10,7 +10,6 @@ import net.miginfocom.swing.MigLayout;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule.ValidationRuleResult;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValueContainer;
-import com.github.bfour.fpjgui.components.FPJGUILabelPanel;
 import com.github.bfour.fpjgui.components.FPJGUITextField;
 import com.github.bfour.fpliteraturecollector.domain.Link;
 
@@ -28,10 +27,10 @@ public class LinkEditPanel extends JPanel implements ValueContainer<Link> {
 	 */
 	public LinkEditPanel() {
 
-		setLayout(new MigLayout("insets 0", "[][]", "[]"));
+		setLayout(new MigLayout("insets 0", "[2cm::][3cm::]", "[]"));
 
 		nameField = new FPJGUITextField();
-		add(new FPJGUILabelPanel("Name", nameField), "cell 0 0, growx");
+		add(nameField, "cell 0 0, growx");
 
 		uriField = new FPJGUITextField();
 		uriField.setValidationRule(new ValidationRule<String>() {
@@ -46,7 +45,7 @@ public class LinkEditPanel extends JPanel implements ValueContainer<Link> {
 				return ValidationRuleResult.getSimpleTrueInstance();
 			}
 		});
-		add(new FPJGUILabelPanel("URL", uriField), "cell 1 0, growx");
+		add(uriField, "cell 1 0, growx");
 
 	}
 

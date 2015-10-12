@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -80,7 +81,7 @@ public class LiteraturePanel extends
 				}, servMan.getLiteratureService());
 
 		getContentPane().setLayout(
-				new MigLayout("insets 0, w 60:80:100", "[grow]", "[]"));
+				new MigLayout("insets 0, w 80:100:120", "[grow]", "[]"));
 
 		// ID
 		FPJGUILabel<String> IDLabel = new FPJGUILabel<String>();
@@ -109,7 +110,10 @@ public class LiteraturePanel extends
 		// abstract
 		FPJGUITextPane abstractField = new FPJGUITextPane();
 		FPJGUIMultilineLabel abstractLabel = new FPJGUIMultilineLabel();
-		abstractLabel.setContentType("text/html"); // TODO (optional) check why auto-content detection doesn't work
+		abstractLabel.setContentType("text/html"); // TODO (optional) check why
+													// auto-content detection
+													// doesn't work
+		abstractLabel.setFont(new JLabel().getFont());
 		ToggleEditFormComponent<String> abstractToggle = new ToggleEditFormComponent<String>(
 				abstractLabel, abstractField);
 		registerToggleComponent(abstractToggle);

@@ -46,6 +46,8 @@ public class LinkPanel extends JPanel implements ValueContainer<Link>,
 				}
 			}
 		});
+		
+		add(fulltextURLLabel, "grow");
 
 	}
 

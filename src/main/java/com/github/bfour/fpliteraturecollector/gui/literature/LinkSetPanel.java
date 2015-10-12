@@ -38,18 +38,29 @@ public class LinkSetPanel extends JPanel implements GraphicalValueContainer<Set<
 
 	@Override
 	public void setValue(Set<Link> value) {
+		
 		this.value = value;
+		
 		for (Component comp : getComponents()) {
 			remove(comp);
 		}
+		
+		revalidate();
+		repaint();	
+		
 		if (value == null)
 			return;
+		
 		for (Link link : value) {
 			LinkPanel panel = new LinkPanel();
 			panel.setValue(link);
 			panel.addFeedbackListener(feedbackProxy);
 			add(panel, "wrap");
 		}
+		
+		revalidate();
+		repaint();
+		
 	}
 
 	@Override

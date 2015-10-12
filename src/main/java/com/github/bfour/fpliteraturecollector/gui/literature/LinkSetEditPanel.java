@@ -52,13 +52,16 @@ public class LinkSetEditPanel extends JPanel implements
 			remove(comp);
 		}
 
+		revalidate();
+		repaint();	
+		
 		if (value == null)
 			return;
 
 		for (Link link : value) {
 			LinkEditPanel panel = new LinkEditPanel();
 			panel.setValue(link);
-			add(panel);
+			add(panel, "wrap");
 			FPJGUIButton deleteButton = FPJGUIButtonFactory
 					.createButton(ButtonFormats.NAKED);
 			deleteButton.setIcon(Icons.DELETE_16.getIcon());
@@ -69,6 +72,9 @@ public class LinkSetEditPanel extends JPanel implements
 				}
 			});
 		}
+		
+		revalidate();
+		repaint();	
 
 	}
 
