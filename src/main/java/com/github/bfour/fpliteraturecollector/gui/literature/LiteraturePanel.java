@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
@@ -45,6 +46,7 @@ import com.github.bfour.fpjgui.components.SearchComboBox;
 import com.github.bfour.fpjgui.components.ToggleEditFormComponent;
 import com.github.bfour.fpjgui.components.composite.EntityEditPanel;
 import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
+import com.github.bfour.fpjgui.design.Borders;
 import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
 import com.github.bfour.fpjguiextended.tagging.TagTilePanel;
 import com.github.bfour.fpliteraturecollector.domain.Author;
@@ -114,8 +116,14 @@ public class LiteraturePanel extends
 													// auto-content detection
 													// doesn't work
 		abstractLabel.setFont(new JLabel().getFont());
+		JScrollPane abstractLabelScrollPane = new JScrollPane(abstractLabel);
+		JScrollPane abstractFieldScrollPane = new JScrollPane(abstractField);
+		abstractLabelScrollPane.setBorder(abstractLabel.getBorder());
+		abstractFieldScrollPane.setBorder(Borders.GENERIC.getBorder());
+		abstractField.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+		abstractLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));		
 		ToggleEditFormComponent<String> abstractToggle = new ToggleEditFormComponent<String>(
-				abstractLabel, abstractField);
+				abstractLabel, abstractField, abstractLabelScrollPane, abstractFieldScrollPane);
 		registerToggleComponent(abstractToggle);
 		getContentPane().add(new FPJGUILabelPanel("Abstract", abstractToggle),
 				"growx,wrap");
