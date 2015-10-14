@@ -1,7 +1,9 @@
 package com.github.bfour.fpliteraturecollector.gui.literature;
 
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JPanel;
@@ -32,13 +34,16 @@ public class LinkPanel extends JPanel implements ValueContainer<Link>,
 	public LinkPanel() {
 
 		setLayout(new MigLayout("insets 0"));
-		
+
 		fulltextURLLabel = FPJGUIButtonFactory.createButton(ButtonFormats.LINK);
 		fulltextURLLabel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					java.awt.Desktop.getDesktop().browse(getValue().getUri());
+					if (getValue().getUri().getScheme().equals("file"))
+						Desktop.getDesktop().open(new File(getValue().getUri()));
+					else
+						Desktop.getDesktop().browse(getValue().getUri());
 				} catch (IOException e1) {
 					feedbackProxy.feedbackBroadcasted(new Feedback(
 							fulltextURLLabel, "Sorry, failed to open link.", e1
@@ -46,7 +51,7 @@ public class LinkPanel extends JPanel implements ValueContainer<Link>,
 				}
 			}
 		});
-		
+
 		add(fulltextURLLabel, "grow");
 
 	}
