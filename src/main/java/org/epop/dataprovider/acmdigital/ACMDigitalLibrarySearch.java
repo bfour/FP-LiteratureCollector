@@ -25,6 +25,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
@@ -40,6 +42,7 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.epop.dataprovider.DataProvider;
+import org.epop.dataprovider.HTMLPage;
 import org.epop.dataprovider.PatternMismatchException;
 import org.epop.dataprovider.Utils;
 import org.epop.utils.StringUtils;
@@ -50,7 +53,7 @@ import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 
 public class ACMDigitalLibrarySearch extends DataProvider {
 
-	private static final String ACMDigitalLibrary_Results = "dl.acm.org";
+	private static final String BASE_URL = "http://dl.acm.org/results.cfm";
 	private static final long DELAY = 18611;
 	private static final String AUTHOR_ID_PATTERN_STRING = ".*author_page\\.cfm\\?id=(\\d+).*";
 	private static Pattern AUTHOR_ID_PATTERN;
@@ -84,13 +87,9 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 			if (initialWait)
 				Thread.sleep(DELAY);
 
-			uri = URIUtils.createURI("http", ACMDigitalLibrary_Results, -1,
-					"/results.cfm", htmlParams, null);
-			HttpGet httpget = new HttpGet(uri);
-			logger.debug(httpget.getURI());
-			HttpClient httpclient = new DefaultHttpClient();
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			responseBody = httpclient.execute(httpget, responseHandler);
+			uri = new URI(BASE_URL + "?" + htmlParams);
+			HTMLPage page = new HTMLPage(uri);
+			responseBody = page.getRawCode();
 
 			if (pageTurnLimit == 0)
 				return new StringReader(responseBody);
@@ -108,18 +107,9 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 
 				Thread.sleep(DELAY);
 
-				URI newUri = URIUtils.createURI(
-						"http",
-						ACMDigitalLibrary_Results,
-						-1,
-						"/results.cfm",
-						htmlParams + "&start="
-								+ String.valueOf((counter * 20) + 1), null);
-				httpget = new HttpGet(newUri);
-				logger.debug(httpget.getURI());
-				httpclient = new DefaultHttpClient();
-				newResponseBody = httpclient.execute(httpget, responseHandler);
-				// logger.debug(newResponseBody);
+				URI newUri = new URI(BASE_URL + "?" + htmlParams + "&start="
+						+ String.valueOf((counter * 20) + 1));
+				newResponseBody = new HTMLPage(uri).getRawCode();
 				responseBody = responseBody + newResponseBody;
 
 				if (pageTurnLimit == counter)
@@ -139,6 +129,9 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -344,7 +337,7 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 		} else {
 			return null;
 		}
-		
+
 	}
 
 	/**

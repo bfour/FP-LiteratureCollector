@@ -3,6 +3,7 @@ package com.github.bfour.fpliteraturecollector.service;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.text.Normalizer;
 import java.util.Date;
 
@@ -31,10 +32,14 @@ public class FileStorageService {
 
 		String fileName = getFileNameForLiterature(lit);
 		fileName += "." + FilenameUtils.getExtension(webAddress.getFile());
-		File file = new File(rootDirectory.getAbsolutePath() + "/" + lit.getID()
-				+ "/" + fileName);
+		File file = new File(rootDirectory.getAbsolutePath() + "/"
+				+ lit.getID() + "/" + fileName);
 
-		FileUtils.copyURLToFile(webAddress, file);
+		URLConnection conn = webAddress.openConnection();
+		conn.setRequestProperty("User-Agent",
+				"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0");
+		conn.connect();
+		FileUtils.copyInputStreamToFile(conn.getInputStream(), file);
 
 		return new Link(fileName, file.toURI(), webAddress.toString());
 
