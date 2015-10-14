@@ -199,7 +199,7 @@ public class LiteraturePanel extends
 				websiteURLPanel, websiteURLEditPanel);
 		registerToggleComponent(websiteURLToggle);
 		getContentPane().add(new FPJGUILabelPanel("Website", websiteURLToggle),
-				"growx,wrap");
+				"growx,wrap,w ::100%");
 
 		// fulltextURL
 		LinkSetPanel fulltextURLPanel = new LinkSetPanel();
@@ -209,7 +209,7 @@ public class LiteraturePanel extends
 		registerToggleComponent(fulltextURLToggle);
 		getContentPane().add(
 				new FPJGUILabelPanel("Full Text URL", fulltextURLToggle),
-				"growx,wrap");
+				"growx,wrap,w ::100%");
 
 		// fulltextPath
 		LinkSetPanel fulltextPathPanel = new LinkSetPanel();
@@ -219,7 +219,7 @@ public class LiteraturePanel extends
 		registerToggleComponent(fulltextPathToggle);
 		getContentPane().add(
 				new FPJGUILabelPanel("Full Text Files", fulltextPathToggle),
-				"growx,wrap");
+				"growx,wrap,w ::100%");
 
 		// mappings
 		ObjectGraphicalValueContainerMapper<LiteratureBuilder, String> IDMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, String>(

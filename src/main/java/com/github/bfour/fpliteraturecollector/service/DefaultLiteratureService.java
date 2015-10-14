@@ -20,10 +20,16 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Author;
+import com.github.bfour.fpliteraturecollector.domain.Link;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
+import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.LiteratureDAO;
 
 public class DefaultLiteratureService extends
@@ -51,8 +57,41 @@ public class DefaultLiteratureService extends
 	}
 
 	@Override
-	public void deleteCascadeIfMaxOneAdjacentAtomicRequest(Literature literature)
+	public synchronized void downloadFullTexts(Literature literature)
 			throws ServiceException {
+
+		outerloop: for (Link fullTextURL : literature.getFulltextURLs()) {
+
+			if (literature.getFulltextFilePaths() != null)
+				for (Link alreadyExistingFiles : literature
+						.getFulltextFilePaths()) {
+					if (alreadyExistingFiles.getReference().equals(
+							fullTextURL.getUri().toString()))
+						continue outerloop;
+				}
+
+			try {
+				Link fullTextFileLink = FileStorageService.getInstance()
+						.persist(fullTextURL.getUri().toURL(), literature);
+				Set<Link> newFileLinks = new HashSet<>();
+				if (literature.getFulltextFilePaths() != null)
+					newFileLinks.addAll(literature.getFulltextFilePaths());
+				newFileLinks.add(fullTextFileLink);
+				update(literature, new LiteratureBuilder(literature)
+						.setFulltextFilePaths(newFileLinks).getObject());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				throw new ServiceException(e);
+			}
+
+		}
+
+	}
+
+	@Override
+	public synchronized void deleteCascadeIfMaxOneAdjacentAtomicRequest(
+			Literature literature) throws ServiceException {
 		if (DAO.hasMaxOneAdjacentAtomicRequest(literature)) {
 			for (Author author : literature.getAuthors())
 				authServ.deleteIfMaxOneAdjacentLiterature(author);

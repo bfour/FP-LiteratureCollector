@@ -197,8 +197,9 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		return fulltextFilePaths;
 	}
 
-	public void setFulltextFilePaths(Set<Link> fulltextFilePaths) {
+	public LiteratureBuilder setFulltextFilePaths(Set<Link> fulltextFilePaths) {
 		this.fulltextFilePaths = fulltextFilePaths;
+		return this;
 	}
 
 	public Integer getgScholarNumCitations() {

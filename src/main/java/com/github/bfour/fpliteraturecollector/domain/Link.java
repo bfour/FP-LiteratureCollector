@@ -15,11 +15,7 @@ public class Link {
 	private String reference;
 
 	public Link(String name, String uriString) throws URISyntaxException {
-		URI uri = new URI(uriString);
-		if (name == null)
-			name = uri.getHost();
-		this.name = name;
-		this.uri = uri;
+		this(name, new URI(uriString));
 	}
 
 	public Link(String name, URI uri) {
@@ -40,6 +36,10 @@ public class Link {
 
 	public URI getUri() {
 		return uri;
+	}
+
+	public String getReference() {
+		return reference;
 	}
 
 	@Override

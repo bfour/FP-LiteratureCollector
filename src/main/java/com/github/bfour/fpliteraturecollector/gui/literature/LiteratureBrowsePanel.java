@@ -108,6 +108,39 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 		setCreateEntityEnabled(true);
 
 		// extra buttons
+		FPJGUIButton downloadFullTextButton = FPJGUIButtonFactory
+				.createButton(
+						ButtonFormats.DEFAULT,
+						Lengths.LARGE_BUTTON_HEIGHT.getLength(),
+						"Download Fulltext",
+						com.github.bfour.fpliteraturecollector.gui.design.Icons.BOOKS_20
+								.getIcon());
+		getMainPanel().add(downloadFullTextButton, "cell 0 2");
+		downloadFullTextButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				List<Literature> selectedLiterature = getValue();
+				Feedback statusFeeback = new Feedback(
+						LiteratureBrowsePanel.this, "Downloading fulltext for "
+								+ selectedLiterature.size()
+								+ " literature entries.", "",
+						FeedbackType.PROGRESS.getColor(), FeedbackType.PROGRESS
+								.getIcon(), FeedbackType.PROGRESS, true);
+				feedbackBroadcasted(statusFeeback);
+				for (Literature lit : selectedLiterature) {
+					try {
+						servMan.getLiteratureService().downloadFullTexts(lit);
+					} catch (ServiceException e1) {
+						feedbackBroadcasted(new Feedback(
+								LiteratureBrowsePanel.this,
+								"Sorry, failed to download fulltext for " + lit,
+								e1.getMessage(), FeedbackType.ERROR));
+					}
+				}
+				feedbackRevoked(statusFeeback);
+			}
+		});
+
 		final FPJGUIButton tagButton = FPJGUIButtonFactory.createButton(
 				ButtonFormats.DEFAULT, Lengths.LARGE_BUTTON_HEIGHT.getLength(),
 				"Tag",
@@ -167,7 +200,7 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 
 		getListLikeContainer().setMinimumColumnWidth(titleColumn, 100);
 		getListLikeContainer().setMinimumColumnWidth(authorsColumn, 40);
-		
+
 		load();
 
 	}

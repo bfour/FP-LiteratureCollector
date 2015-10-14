@@ -10,14 +10,14 @@ import com.github.bfour.fpliteraturecollector.domain.Link;
 
 public class StringToLinkConverter implements Converter<String, Link> {
 
-	public StringToLinkConverter() {
-		// TODO Auto-generated constructor stub
-	}
-
 	@Override
 	public Link convert(String source) {
+
 		String[] split = source.split(";");
-		String name = new String(Base64.getUrlDecoder().decode(split[0]));
+
+		String name = split[0].equals(" ") ? null : new String(Base64
+				.getUrlDecoder().decode(split[0]));
+
 		URI uri = null;
 		try {
 			uri = new URI(new String(Base64.getUrlDecoder().decode(split[1])));
@@ -25,7 +25,12 @@ public class StringToLinkConverter implements Converter<String, Link> {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return new Link(name, uri);
+
+		String reference = split[2].equals(" ") ? null : new String(Base64
+				.getUrlDecoder().decode(split[2]));
+
+		return new Link(name, uri, reference);
+
 	}
 
 }
