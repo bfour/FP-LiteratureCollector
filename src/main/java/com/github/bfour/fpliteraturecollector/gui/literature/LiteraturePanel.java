@@ -120,10 +120,11 @@ public class LiteraturePanel extends
 		JScrollPane abstractFieldScrollPane = new JScrollPane(abstractField);
 		abstractLabelScrollPane.setBorder(abstractLabel.getBorder());
 		abstractFieldScrollPane.setBorder(Borders.GENERIC.getBorder());
-		abstractField.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
-		abstractLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));		
+		abstractField.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		abstractLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		ToggleEditFormComponent<String> abstractToggle = new ToggleEditFormComponent<String>(
-				abstractLabel, abstractField, abstractLabelScrollPane, abstractFieldScrollPane);
+				abstractLabel, abstractField, abstractLabelScrollPane,
+				abstractFieldScrollPane);
 		registerToggleComponent(abstractToggle);
 		getContentPane().add(new FPJGUILabelPanel("Abstract", abstractToggle),
 				"growx,wrap");
@@ -208,6 +209,16 @@ public class LiteraturePanel extends
 		registerToggleComponent(fulltextURLToggle);
 		getContentPane().add(
 				new FPJGUILabelPanel("Full Text URL", fulltextURLToggle),
+				"growx,wrap");
+
+		// fulltextPath
+		LinkSetPanel fulltextPathPanel = new LinkSetPanel();
+		LinkSetEditPanel fulltextPathEditPanel = new LinkSetEditPanel();
+		ToggleEditFormComponent<Set<Link>> fulltextPathToggle = new ToggleEditFormComponent<>(
+				fulltextPathPanel, fulltextPathEditPanel);
+		registerToggleComponent(fulltextPathToggle);
+		getContentPane().add(
+				new FPJGUILabelPanel("Full Text Files", fulltextPathToggle),
 				"growx,wrap");
 
 		// mappings
@@ -371,6 +382,20 @@ public class LiteraturePanel extends
 			}
 		};
 		getMappers().add(fulltextURLMapper);
+
+		ObjectGraphicalValueContainerMapper<LiteratureBuilder, Set<Link>> fulltextPathMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, Set<Link>>(
+				fulltextPathToggle) {
+			@Override
+			public Set<Link> getValue(LiteratureBuilder object) {
+				return object.getFulltextFilePaths();
+			}
+
+			@Override
+			public void setValue(LiteratureBuilder object, Set<Link> value) {
+				object.setFulltextFilePaths(value);
+			}
+		};
+		getMappers().add(fulltextPathMapper);
 
 	}
 }

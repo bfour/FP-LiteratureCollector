@@ -31,7 +31,6 @@ import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import net.htmlparser.jericho.StartTag;
 
-import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -39,11 +38,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.epop.dataprovider.DataProvider;
 import org.epop.dataprovider.PatternMismatchException;
-import org.epop.dataprovider.Query;
 import org.epop.dataprovider.Utils;
 import org.epop.utils.StringUtils;
 
@@ -150,88 +147,6 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 		// return the response
 		return new StringReader(responseBody);
 
-	}
-
-	/**
-	 * getParameters Build a list of parameters to build the uri
-	 * 
-	 * @param q
-	 *            Query object that contains the query
-	 * @return qparams List<NameValuePair> that contains parameters to build the
-	 *         uri
-	 */
-	private List<NameValuePair> getParameters(Query q) {
-		// build the parameter list
-		List<NameValuePair> qparams;
-
-		// http://dl.acm.org/results.cfm?within=&adv=1&COLL=DL&peoplezone=Author&people=Gargantini+Angelo&peoplehow=and
-
-		qparams = new ArrayList<NameValuePair>();
-		// within=
-		qparams.add(new BasicNameValuePair("within", ""));
-		// adv=1
-		qparams.add(new BasicNameValuePair("adv", "1"));
-		// COLL=DL
-		qparams.add(new BasicNameValuePair("COLL", "DL"));
-		// peoplezone=Author
-		qparams.add(new BasicNameValuePair("peoplezone", "Author"));
-		// people=Gargantini+Angelo
-		qparams.add(new BasicNameValuePair("people", q
-				.getCompleteAuthorName('+')));
-		// peoplehow=and
-		qparams.add(new BasicNameValuePair("peoplehow", "and"));
-
-		return qparams;
-	}
-
-	/**
-	 * getParameters_page Build a list of parameters to build the uri for the
-	 * next pages
-	 * 
-	 * @param q
-	 *            Query object that contains the query
-	 * @param counter
-	 *            Number of the record to start
-	 * @return qparams_page List<NameValuePair> that contains parameters to
-	 *         build the uri
-	 */
-	private List<NameValuePair> getParameters_page(Query q, int counter) {
-		// build the parameter list for other page
-		List<NameValuePair> qparams_page;
-
-		// http://dl.acm.org/results.cfm?query=Owner%3AGUIDE%28Author%3AGargantini%20and%20Author%3AAngelo%29&querydisp=Owner%3AGUIDE%28Author%3AGargantini%20and%20Author%3AAngelo%29&source_query=&start=21&srt=score%20dsc&short=0&source_disp=&coll=DL&dl=GUIDE&termshow=matchboolean&range_query=&zadv=1
-		qparams_page = new ArrayList<NameValuePair>();
-		// query=Owner%3AGUIDE%28Author%3AGargantini%20and%20Author%3AAngelo%29
-		qparams_page.add(new BasicNameValuePair("query", "Owner:GUIDE(Author:"
-				+ q.getAuthorLastName() + " and Author:"
-				+ q.getAuthorFirstName() + ")"));
-		// querydisp=Owner%3AGUIDE%28Author%3AGargantini%20and%20Author%3AAngelo%29
-		qparams_page.add(new BasicNameValuePair("querydisp",
-				"Owner:GUIDE(Author:" + q.getAuthorLastName() + " and Author:"
-						+ q.getAuthorFirstName() + ")"));
-		// source_query=
-		qparams_page.add(new BasicNameValuePair("sourcequery", ""));
-		// start=result
-		qparams_page.add(new BasicNameValuePair("start", String
-				.valueOf(counter)));
-		// srt=score dsc
-		qparams_page.add(new BasicNameValuePair("srt", "score" + " " + "dsc"));
-		// short=0
-		qparams_page.add(new BasicNameValuePair("short", "0"));
-		// source_disp=
-		qparams_page.add(new BasicNameValuePair("source_disp", ""));
-		// coll=DL
-		qparams_page.add(new BasicNameValuePair("coll", "DL"));
-		// dl=GUIDE
-		qparams_page.add(new BasicNameValuePair("dl", "GUIDE"));
-		// termshow=matchboolean
-		qparams_page.add(new BasicNameValuePair("termshow", "matchboolean"));
-		// range_query=
-		qparams_page.add(new BasicNameValuePair("range_query", ""));
-		// zadv=1
-		qparams_page.add(new BasicNameValuePair("zadv", "1"));
-
-		return qparams_page;
 	}
 
 	@Override

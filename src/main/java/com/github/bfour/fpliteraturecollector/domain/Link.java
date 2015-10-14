@@ -7,6 +7,12 @@ public class Link {
 
 	private String name;
 	private URI uri;
+	/**
+	 * custom reference string, eg. if a link to an online resources is
+	 * persisted and this link links to the offline local/downloaded resource,
+	 * the reference could have the URI of the online resource
+	 */
+	private String reference;
 
 	public Link(String name, String uriString) throws URISyntaxException {
 		URI uri = new URI(uriString);
@@ -15,12 +21,17 @@ public class Link {
 		this.name = name;
 		this.uri = uri;
 	}
-	
+
 	public Link(String name, URI uri) {
 		if (name == null)
 			name = uri.getHost();
 		this.name = name;
 		this.uri = uri;
+	}
+
+	public Link(String name, URI uri, String reference) {
+		this(name, uri);
+		this.reference = reference;
 	}
 
 	public String getName() {
