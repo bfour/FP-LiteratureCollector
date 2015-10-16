@@ -76,7 +76,8 @@ public class QueryPanel extends JXPanel implements FeedbackProvider {
 	/**
 	 * Create the panel.
 	 */
-	public QueryPanel(final ServiceManager servMan, Query q) {
+	public QueryPanel(final ServiceManager servMan, Query q,
+			QueryOverviewPanel overviewPanel) {
 
 		feedbackProxy = new FeedbackProviderProxy();
 
@@ -151,6 +152,13 @@ public class QueryPanel extends JXPanel implements FeedbackProvider {
 									}
 								}));
 				litWindow.setVisible(true);
+			}
+		});
+
+		editButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				overviewPanel.edit(QueryPanel.this.query);
 			}
 		});
 

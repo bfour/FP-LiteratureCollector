@@ -20,7 +20,6 @@ package com.github.bfour.fpliteraturecollector.gui;
  * -///////////////////////////////-
  */
 
-
 import java.awt.Component;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -117,7 +116,8 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		container.add(finishedPanel, "growx, wrap");
 
 		// create interface
-		FPJGUIButton createButton = FPJGUIButtonFactory.createButton(ButtonFormats.LINK);
+		FPJGUIButton createButton = FPJGUIButtonFactory
+				.createButton(ButtonFormats.LINK);
 		createButton.setText("Create a new query");
 		createButton.setIcon(Icons.ADD_16.getIcon());
 		createButton.addActionListener(new ActionListener() {
@@ -127,7 +127,7 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 			}
 		});
 		createPanel.add(createButton, "alignx center, wrap");
-		
+
 		// bottom toolbar
 		PlainToolbar toolbar = new PlainToolbar(Orientation.CENTERED);
 		add(toolbar, "cell 0 1, growx");
@@ -240,6 +240,39 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		repaint();
 	}
 
+	public synchronized void edit(Query query) {
+
+		final QueryEditPanel editPanel = new QueryEditPanel(servMan, query);
+		PanelDecorator.decorateWithDropShadow(editPanel,
+				Colors.EDIT_QUERY_DROPSHADOW.getColor());
+		ActionListener saveProxy = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				createPanel.remove(editPanel);
+				revalidate();
+				repaint();
+			}
+		};
+		ActionListener discardProxy = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				createPanel.remove(editPanel);
+				addEntry(query);
+				revalidate();
+				repaint();
+			}
+		};
+		editPanel.addPostSaveListener(saveProxy);
+		editPanel.addPostDiscardChangesListener(discardProxy);
+
+		deleteEntry(query);
+		createPanel.add(editPanel, "growx, wrap");
+
+		revalidate();
+		repaint();
+
+	}
+
 	@Override
 	public void addFeedbackListener(FeedbackListener arg0) {
 		feedbackProxy.addFeedbackListener(arg0);
@@ -258,7 +291,7 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 
 	@Override
 	public synchronized void addEntry(Query query) {
-		QueryPanel queryPanel = new QueryPanel(servMan, query);
+		QueryPanel queryPanel = new QueryPanel(servMan, query, this);
 		queryPanel.addFeedbackListener(feedbackProxy);
 		int position = (query.getQueuePosition() == null ? 0 : query
 				.getQueuePosition());
@@ -284,14 +317,15 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 	}
 
 	@Override
-	public synchronized void deleteEntry(Query arg0) {
-		QueryPanel panel = componentQueryMap.inverse().get(arg0);
+	public synchronized void deleteEntry(Query query) {
+		QueryPanel panel = componentQueryMap.inverse().get(query);
 		createPanel.remove(panel);
 		crawlingPanel.remove(panel);
 		queuePanel.remove(panel);
 		finishedPanel.remove(panel);
 		idlePanel.remove(panel);
 		componentQueryMap.remove(panel);
+		componentQueryMap.inverse().remove(query);
 		revalidate();
 		repaint();
 	}
@@ -357,12 +391,12 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 	@Override
 	public void deleteAllEntries() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public Long getEntryCount() {
 		// TODO Auto-generated method stub
-		return null;
+		return (long) 0;
 	}
 }
