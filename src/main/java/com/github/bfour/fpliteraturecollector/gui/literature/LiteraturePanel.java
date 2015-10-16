@@ -221,6 +221,22 @@ public class LiteraturePanel extends
 				new FPJGUILabelPanel("Full Text Files", fulltextPathToggle),
 				"growx,wrap,w ::100%");
 
+		// notes
+		FPJGUIMultilineLabel notesLabel = new FPJGUIMultilineLabel();
+		FPJGUITextPane notesField = new FPJGUITextPane();
+		JScrollPane notesLabelScrollPane = new JScrollPane(notesLabel);
+		JScrollPane notesFieldScrollPane = new JScrollPane(notesField);
+		notesLabelScrollPane.setBorder(abstractLabel.getBorder());
+		notesFieldScrollPane.setBorder(Borders.GENERIC.getBorder());
+		notesField.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		notesLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		ToggleEditFormComponent<String> notesToggle = new ToggleEditFormComponent<>(
+				notesLabel, notesField, notesLabelScrollPane,
+				notesFieldScrollPane);
+		registerToggleComponent(notesToggle);
+		getContentPane().add(new FPJGUILabelPanel("Notes", notesToggle),
+				"growx,wrap,w ::100%");
+
 		// mappings
 		ObjectGraphicalValueContainerMapper<LiteratureBuilder, String> IDMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, String>(
 				IDLabel) {
@@ -396,6 +412,20 @@ public class LiteraturePanel extends
 			}
 		};
 		getMappers().add(fulltextPathMapper);
+
+		ObjectGraphicalValueContainerMapper<LiteratureBuilder, String> notesMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, String>(
+				notesToggle) {
+			@Override
+			public String getValue(LiteratureBuilder object) {
+				return object.getNotes();
+			}
+
+			@Override
+			public void setValue(LiteratureBuilder object, String value) {
+				object.setNotes(value);
+			}
+		};
+		getMappers().add(notesMapper);
 
 	}
 }
