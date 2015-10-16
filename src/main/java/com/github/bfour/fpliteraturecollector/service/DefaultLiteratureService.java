@@ -20,6 +20,7 @@ package com.github.bfour.fpliteraturecollector.service;
  * -///////////////////////////////-
  */
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -63,11 +64,26 @@ public class DefaultLiteratureService extends
 		outerloop: for (Link fullTextURL : literature.getFulltextURLs()) {
 
 			if (literature.getFulltextFilePaths() != null)
+				// check if already exists
 				for (Link alreadyExistingFiles : literature
 						.getFulltextFilePaths()) {
 					if (alreadyExistingFiles.getReference().equals(
-							fullTextURL.getUri().toString()))
-						continue outerloop;
+							fullTextURL.getUri().toString())) {
+						// check if file actually exists
+						File file = new File(alreadyExistingFiles.getUri());
+						if (file.exists())
+							continue outerloop;
+						else {
+							Set<Link> newFullTextPaths = literature
+									.getFulltextFilePaths();
+							newFullTextPaths.remove(alreadyExistingFiles);
+							update(literature,
+									new LiteratureBuilder(literature)
+											.setFulltextFilePaths(
+													newFullTextPaths)
+											.getObject());
+						}
+					}
 				}
 
 			try {
