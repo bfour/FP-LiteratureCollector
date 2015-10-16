@@ -51,6 +51,8 @@ public class FileStorageService {
 		String name = Normalizer.normalize(lit.getTitle(), Normalizer.Form.NFD)
 				.replaceAll("[^\\p{ASCII}]", "");
 
+		name = name.replaceAll("[^A-z\\s]", "");
+		
 		// remove unnecessary words
 		name = name.replaceAll("\\sa\\s", " ");
 		name = name.replaceAll("\\sthe\\s", " ");
