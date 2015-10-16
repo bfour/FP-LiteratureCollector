@@ -52,6 +52,7 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 	private Integer pubmedNumCitations;
 	private Integer ieeeNumCitations;
 	private Set<Tag> tags;
+	private String notes;
 
 	public LiteratureBuilder() {
 		super();
@@ -83,6 +84,7 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		setIeeeNumCitations(l.getIeeeNumCitations());
 
 		setTags(l.getTags());
+		setNotes(l.getNotes());
 
 	}
 
@@ -94,7 +96,8 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 				getPublisher(), getWebsiteURLs(), getFulltextURLs(),
 				getFulltextFilePaths(), getgScholarNumCitations(),
 				getMsAcademicNumCitations(), getAcmNumCitations(),
-				getPubmedNumCitations(), getIeeeNumCitations(), getTags());
+				getPubmedNumCitations(), getIeeeNumCitations(), getTags(),
+				getNotes());
 	}
 
 	public String getTitle() {
@@ -251,6 +254,14 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 	public LiteratureBuilder setTags(Set<Tag> tags) {
 		this.tags = tags;
 		return this;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 
 }

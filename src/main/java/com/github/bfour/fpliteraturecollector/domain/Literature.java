@@ -61,7 +61,7 @@ public class Literature extends Neo4JEntity implements Searchable {
 	private String title;
 
 	private String abstractText;
-	
+
 	private LiteratureType type;
 
 	@Fetch
@@ -95,7 +95,11 @@ public class Literature extends Neo4JEntity implements Searchable {
 	@Fetch
 	@RelatedTo(type = "TAGS", direction = Direction.OUTGOING)
 	private Set<Tag> tags;
-	
+	private String notes;
+
+	public Literature() {
+	}
+
 	public Literature(Long ID, Date creationTime, Date lastChangeTime,
 			String title, String abstractText, LiteratureType type,
 			Set<Author> authors, String dOI,
@@ -104,7 +108,8 @@ public class Literature extends Neo4JEntity implements Searchable {
 			Set<Link> websiteURLs, Set<Link> fulltextURLs,
 			Set<Link> fulltextFilePaths, Integer gScholarNumCitations,
 			Integer msAcademicNumCitations, Integer acmNumCitations,
-			Integer pubmedNumCitations, Integer ieeeNumCitations, Set<Tag> tags) {
+			Integer pubmedNumCitations, Integer ieeeNumCitations,
+			Set<Tag> tags, String notes) {
 		super(ID, creationTime, lastChangeTime);
 		this.title = title;
 		this.abstractText = abstractText;
@@ -124,9 +129,7 @@ public class Literature extends Neo4JEntity implements Searchable {
 		this.pubmedNumCitations = pubmedNumCitations;
 		this.ieeeNumCitations = ieeeNumCitations;
 		this.tags = tags;
-	}
-
-	public Literature() {
+		this.notes = notes;
 	}
 
 	public String getTitle() {
@@ -199,6 +202,10 @@ public class Literature extends Neo4JEntity implements Searchable {
 
 	public Set<Tag> getTags() {
 		return tags;
+	}
+
+	public String getNotes() {
+		return notes;
 	}
 
 	@Override
