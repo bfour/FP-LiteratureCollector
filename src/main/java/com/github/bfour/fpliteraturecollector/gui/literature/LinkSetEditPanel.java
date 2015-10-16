@@ -19,10 +19,12 @@ import com.github.bfour.fpjgui.abstraction.valueChangeHandling.ValueChangeListen
 import com.github.bfour.fpjgui.abstraction.valueContainer.GraphicalValueContainer;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule.ValidationRuleResult;
+import com.github.bfour.fpjgui.abstraction.valueContainer.ValueContainer;
 import com.github.bfour.fpjgui.components.FPJGUIButton;
 import com.github.bfour.fpjgui.components.FPJGUIButton.ButtonFormats;
 import com.github.bfour.fpjgui.components.FPJGUIButton.FPJGUIButtonFactory;
 import com.github.bfour.fpjgui.design.Icons;
+import com.github.bfour.fpjgui.util.GraphicalValueContainerValidationFeedbackHandler;
 import com.github.bfour.fpliteraturecollector.domain.Link;
 
 public class LinkSetEditPanel extends JPanel implements
@@ -30,9 +32,13 @@ public class LinkSetEditPanel extends JPanel implements
 
 	private static final long serialVersionUID = 1519718341197424458L;
 	private FeedbackProviderProxy feedbackProxy = new FeedbackProviderProxy();
+	private ValidationRule<Set<Link>> rule;
+	private GraphicalValueContainerValidationFeedbackHandler<Set<Link>> validationFeedbackHandler;
 
 	public LinkSetEditPanel() {
 		setLayout(new MigLayout("insets 0", "[]", "[]"));
+		validationFeedbackHandler = new GraphicalValueContainerValidationFeedbackHandler<Set<Link>>(
+				this);
 	}
 
 	@Override
@@ -53,8 +59,8 @@ public class LinkSetEditPanel extends JPanel implements
 		}
 
 		revalidate();
-		repaint();	
-		
+		repaint();
+
 		if (value == null)
 			return;
 
@@ -72,23 +78,34 @@ public class LinkSetEditPanel extends JPanel implements
 				}
 			});
 		}
-		
+
 		revalidate();
-		repaint();	
+		repaint();
 
 	}
 
 	@Override
 	public void setValidationRule(ValidationRule<Set<Link>> rule) {
+		this.rule = rule;
 	}
 
 	@Override
 	public ValidationRule<Set<Link>> getValidationRule() {
-		return null;
+		return rule;
 	}
 
 	@Override
 	public ValidationRuleResult validateValue() {
+		for (Component comp : getComponents()) {
+			if (comp instanceof ValueContainer) {
+				@SuppressWarnings("rawtypes")
+				// TODO (low) improve
+				ValidationRuleResult result = ((ValueContainer) comp)
+						.validateValue();
+				if (!result.getValue())
+					return result;
+			}
+		}
 		return ValidationRuleResult.getSimpleTrueInstance();
 	}
 
@@ -128,20 +145,27 @@ public class LinkSetEditPanel extends JPanel implements
 
 	@Override
 	public ValidationRuleResult validateValueAndGiveFeedback() {
-		// TODO Auto-generated method stub
-		return null;
+		for (Component comp : getComponents()) {
+			if (comp instanceof GraphicalValueContainer) {
+				@SuppressWarnings("rawtypes")
+				// TODO (low) improve
+				ValidationRuleResult result = ((GraphicalValueContainer) comp)
+						.validateValueAndGiveFeedback();
+				if (!result.getValue())
+					return result;
+			}
+		}
+		return ValidationRuleResult.getSimpleTrueInstance();
 	}
 
 	@Override
 	public void showInPlaceFeedback(Feedback feedback) {
-		// TODO Auto-generated method stub
-
+		validationFeedbackHandler.feedbackBroadcasted(feedback);
 	}
 
 	@Override
 	public void hideInPlaceFeedback() {
-		// TODO Auto-generated method stub
-
+		validationFeedbackHandler.revokeAllFeedback();
 	}
 
 	@Override

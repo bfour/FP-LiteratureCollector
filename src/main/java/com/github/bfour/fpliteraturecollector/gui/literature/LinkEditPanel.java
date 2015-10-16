@@ -27,6 +27,23 @@ public class LinkEditPanel extends JPanel implements ValueContainer<Link> {
 	 */
 	public LinkEditPanel() {
 
+		rule = new ValidationRule<Link>() {
+			@Override
+			public ValidationRuleResult evaluate(Link obj) {
+				if ((obj.getName() == null || obj.getName().isEmpty())
+						&& (obj.getUri() == null))
+					return new ValidationRuleResult(false,
+							"Please enter a name and a URL.");
+				if (obj.getName() == null || obj.getName().isEmpty())
+					return new ValidationRuleResult(false,
+							"Please enter a name.");
+				if (obj.getUri() == null)
+					return new ValidationRuleResult(false,
+							"Please enter a URL.");
+				return ValidationRuleResult.getSimpleTrueInstance();
+			}
+		};
+
 		setLayout(new MigLayout("insets 0", "[2cm::][3cm::]", "[]"));
 
 		nameField = new FPJGUITextField();
@@ -71,14 +88,14 @@ public class LinkEditPanel extends JPanel implements ValueContainer<Link> {
 
 	@Override
 	public ValidationRule<Link> getValidationRule() {
-		// TODO Auto-generated method stub
 		return rule;
 	}
 
 	@Override
 	public ValidationRuleResult validateValue() {
-		// TODO Auto-generated method stub
-		return ValidationRuleResult.getSimpleTrueInstance();
+		if (rule == null)
+			return ValidationRuleResult.getSimpleTrueInstance();
+		return rule.evaluate(getValue());
 	}
 
 }

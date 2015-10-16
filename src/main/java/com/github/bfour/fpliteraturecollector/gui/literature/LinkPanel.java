@@ -30,8 +30,16 @@ public class LinkPanel extends JPanel implements ValueContainer<Link>,
 	private FeedbackProviderProxy feedbackProxy = new FeedbackProviderProxy();
 	private FPJGUIButton fulltextURLLabel;
 	private Link value;
+	private ValidationRule<Link> rule;
 
 	public LinkPanel() {
+
+		rule = new ValidationRule<Link>() {
+			@Override
+			public ValidationRuleResult evaluate(Link obj) {
+				return ValidationRuleResult.getSimpleTrueInstance();
+			}
+		};
 
 		setLayout(new MigLayout("insets 0"));
 
@@ -41,7 +49,8 @@ public class LinkPanel extends JPanel implements ValueContainer<Link>,
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if (getValue().getUri().getScheme().equals("file"))
-						Desktop.getDesktop().open(new File(getValue().getUri()));
+						Desktop.getDesktop()
+								.open(new File(getValue().getUri()));
 					else
 						Desktop.getDesktop().browse(getValue().getUri());
 				} catch (IOException e1) {
@@ -79,11 +88,12 @@ public class LinkPanel extends JPanel implements ValueContainer<Link>,
 
 	@Override
 	public void setValidationRule(ValidationRule<Link> rule) {
+		this.rule = rule;
 	}
 
 	@Override
 	public ValidationRule<Link> getValidationRule() {
-		return null;
+		return rule;
 	}
 
 	@Override

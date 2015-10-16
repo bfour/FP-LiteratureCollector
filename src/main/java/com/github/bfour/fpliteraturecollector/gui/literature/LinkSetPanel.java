@@ -16,14 +16,16 @@ import com.github.bfour.fpjgui.abstraction.valueChangeHandling.ValueChangeListen
 import com.github.bfour.fpjgui.abstraction.valueContainer.GraphicalValueContainer;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule.ValidationRuleResult;
+import com.github.bfour.fpjgui.abstraction.valueContainer.ValueContainer;
 import com.github.bfour.fpliteraturecollector.domain.Link;
 
-public class LinkSetPanel extends JPanel implements GraphicalValueContainer<Set<Link>>,
-		FeedbackProvider {
+public class LinkSetPanel extends JPanel implements
+		GraphicalValueContainer<Set<Link>>, FeedbackProvider {
 
 	private static final long serialVersionUID = 1519718341197424458L;
 	private FeedbackProviderProxy feedbackProxy = new FeedbackProviderProxy();
 	private Set<Link> value;
+	private ValidationRule<Set<Link>> rule;
 
 	public LinkSetPanel() {
 
@@ -38,38 +40,39 @@ public class LinkSetPanel extends JPanel implements GraphicalValueContainer<Set<
 
 	@Override
 	public void setValue(Set<Link> value) {
-		
+
 		this.value = value;
-		
+
 		for (Component comp : getComponents()) {
 			remove(comp);
 		}
-		
+
 		revalidate();
-		repaint();	
-		
+		repaint();
+
 		if (value == null)
 			return;
-		
+
 		for (Link link : value) {
 			LinkPanel panel = new LinkPanel();
 			panel.setValue(link);
 			panel.addFeedbackListener(feedbackProxy);
 			add(panel, "wrap");
 		}
-		
+
 		revalidate();
 		repaint();
-		
+
 	}
 
 	@Override
 	public void setValidationRule(ValidationRule<Set<Link>> rule) {
+		this.rule = rule;
 	}
 
 	@Override
 	public ValidationRule<Set<Link>> getValidationRule() {
-		return null;
+		return rule;
 	}
 
 	@Override
@@ -90,55 +93,54 @@ public class LinkSetPanel extends JPanel implements GraphicalValueContainer<Set<
 	@Override
 	public void setValueRequired(boolean required) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void addValueChangeListener(ValueChangeListener listener) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void removeValueChangeListener(ValueChangeListener listener) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void fireValueChange(ValueChangeEvent event) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public ValidationRuleResult validateValueAndGiveFeedback() {
-		// TODO Auto-generated method stub
-		return null;
+		return ValidationRuleResult.getSimpleTrueInstance();
 	}
 
 	@Override
 	public void showInPlaceFeedback(Feedback feedback) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void hideInPlaceFeedback() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void addComponent(Component component, String formatting) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void removeComponent(Component component) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
