@@ -70,7 +70,10 @@ public class PubMedSearch extends DataProvider {
 			if (initialWait)
 				Thread.sleep(DELAY);
 
-			URI uri = new URI(PUBMED_SEARCH + "?" + htmlParams); // TODO (high) add dispmax param
+			URI uri = new URI(PUBMED_SEARCH + "?" + htmlParams); // TODO (high)
+																	// add
+																	// dispmax
+																	// param
 			HTMLPage page = new HTMLPage(uri);
 
 			// if (pageTurnLimit == 0)
@@ -163,8 +166,9 @@ public class PubMedSearch extends DataProvider {
 			ParserConfigurationException, URISyntaxException,
 			XPathExpressionException, SAXException {
 
-		HTMLPage htmlPage = new HTMLPage("http://www.ncbi.nlm.nih.gov/pubmed/"
-				+ articleID);
+		String pubMedURL = "http://www.ncbi.nlm.nih.gov/pubmed/"
+				+ articleID;
+		HTMLPage htmlPage = new HTMLPage(pubMedURL);
 
 		HTMLPage page = new HTMLPage("http://www.ncbi.nlm.nih.gov/pubmed/"
 				+ articleID + "?report=xml&format=text");
@@ -261,14 +265,19 @@ public class PubMedSearch extends DataProvider {
 			e.printStackTrace();
 		}
 
-		// full text URLs
+		// URLs
 		try {
+			
 			NodeList nodes = htmlPage
 					.getNodeSetByXPath(".//*[@id='maincontent']//div[@class='linkoutlist']/ul[1]/li");
 			int i = 0;
 			Node node;
-			Set<Link> linkSet = new HashSet<>();
+			Set<Link> webSiteLinks = new HashSet<>();
 			Set<Link> fullTextLinkSet = new HashSet<Link>();
+			
+			// add pubmed page
+			webSiteLinks.add(new Link("PubMed", pubMedURL));
+			
 			while ((node = nodes.item(i)) != null) {
 
 				if (node.getFirstChild().getAttributes().getNamedItem("href") == null) {
@@ -279,7 +288,7 @@ public class PubMedSearch extends DataProvider {
 				String linkText = node.getFirstChild().getTextContent();
 				String uri = node.getFirstChild().getAttributes()
 						.getNamedItem("href").getTextContent();
-				linkSet.add(new Link(linkText, uri));
+				webSiteLinks.add(new Link(linkText, uri));
 
 				if (linkText.equals("PubMed Central")) {
 					HTMLPage pmcPage = new HTMLPage(uri);
@@ -293,7 +302,7 @@ public class PubMedSearch extends DataProvider {
 				i++;
 
 			}
-			builder.setWebsiteURLs(linkSet);
+			builder.setWebsiteURLs(webSiteLinks);
 			builder.setFulltextURLs(fullTextLinkSet);
 		} catch (XPathExpressionException e) {
 			// TODO Auto-generated catch block

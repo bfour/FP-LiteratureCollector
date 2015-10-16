@@ -42,7 +42,7 @@ public class AuthorsWindow extends FPJGUIWindow {
 		getContentPane().add(crudPanel, "grow");
 
 		// pack
-		pack();
+		// pack();
 
 	}
 

@@ -120,24 +120,25 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				List<Literature> selectedLiterature = getValue();
-				Feedback statusFeeback = new Feedback(
-						LiteratureBrowsePanel.this, "Downloading fulltext for "
-								+ selectedLiterature.size()
-								+ " literature entries.", "",
-						FeedbackType.PROGRESS.getColor(), FeedbackType.PROGRESS
-								.getIcon(), FeedbackType.PROGRESS, true);
-				feedbackBroadcasted(statusFeeback);
+//				Feedback statusFeeback = new Feedback(
+//						LiteratureBrowsePanel.this, "Downloading fulltext for "
+//								+ selectedLiterature.size()
+//								+ " literature entries.", "",
+//						FeedbackType.PROGRESS.getColor(), FeedbackType.PROGRESS
+//								.getIcon(), FeedbackType.PROGRESS, true);
+				Feedback statusFeedback = new Feedback(LiteratureBrowsePanel.this, "meow meow");
+				feedbackBroadcasted(statusFeedback);
 				for (Literature lit : selectedLiterature) {
 					try {
 						servMan.getLiteratureService().downloadFullTexts(lit);
 					} catch (ServiceException e1) {
 						feedbackBroadcasted(new Feedback(
 								LiteratureBrowsePanel.this,
-								"Sorry, failed to download fulltext for " + lit,
+								"Sorry, failed to download fulltext for literature ID " + lit.getID(),
 								e1.getMessage(), FeedbackType.ERROR));
 					}
 				}
-				feedbackRevoked(statusFeeback);
+				feedbackRevoked(statusFeedback);
 			}
 		});
 
