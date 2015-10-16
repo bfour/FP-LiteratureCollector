@@ -120,13 +120,14 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				List<Literature> selectedLiterature = getValue();
-//				Feedback statusFeeback = new Feedback(
-//						LiteratureBrowsePanel.this, "Downloading fulltext for "
-//								+ selectedLiterature.size()
-//								+ " literature entries.", "",
-//						FeedbackType.PROGRESS.getColor(), FeedbackType.PROGRESS
-//								.getIcon(), FeedbackType.PROGRESS, true);
-				Feedback statusFeedback = new Feedback(LiteratureBrowsePanel.this, "meow meow");
+				// Feedback statusFeeback = new Feedback(
+				// LiteratureBrowsePanel.this, "Downloading fulltext for "
+				// + selectedLiterature.size()
+				// + " literature entries.", "",
+				// FeedbackType.PROGRESS.getColor(), FeedbackType.PROGRESS
+				// .getIcon(), FeedbackType.PROGRESS, true);
+				Feedback statusFeedback = new Feedback(
+						LiteratureBrowsePanel.this, "meow meow");
 				feedbackBroadcasted(statusFeedback);
 				for (Literature lit : selectedLiterature) {
 					try {
@@ -134,8 +135,9 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 					} catch (ServiceException e1) {
 						feedbackBroadcasted(new Feedback(
 								LiteratureBrowsePanel.this,
-								"Sorry, failed to download fulltext for literature ID " + lit.getID(),
-								e1.getMessage(), FeedbackType.ERROR));
+								"Sorry, failed to download fulltext for literature ID "
+										+ lit.getID(), e1.getMessage(),
+								FeedbackType.ERROR));
 					}
 				}
 				feedbackRevoked(statusFeedback);
@@ -196,11 +198,30 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 				}, true, 30, 30, "authors", false);
 		getListLikeContainer().addColumn(authorsColumn);
 
+		FPJGUITableColumn<Literature> tagsColumn = new FPJGUITableColumn<Literature>(
+				"Tags", new FPJGUITableFieldGetter<Literature>() {
+					@Override
+					public String get(Literature item) {
+						Set<Tag> tags = item.getTags();
+						if (tags == null)
+							return "";
+						StringBuilder builder = new StringBuilder();
+						for (Tag tag : tags) {
+							builder.append(tag.getName());
+							builder.append(", ");
+						}
+						return builder.substring(0, builder.length() - 2);
+					}
+				}, true, 30, 30, "tags", false);
+		getListLikeContainer().addColumn(tagsColumn);
+
 		getListLikeContainer().setPreferredColumnWidth(titleColumn, 200);
 		getListLikeContainer().setPreferredColumnWidth(authorsColumn, 40);
+		getListLikeContainer().setPreferredColumnWidth(tagsColumn, 30);
 
 		getListLikeContainer().setMinimumColumnWidth(titleColumn, 100);
 		getListLikeContainer().setMinimumColumnWidth(authorsColumn, 40);
+		getListLikeContainer().setMinimumColumnWidth(tagsColumn, 30);
 
 		load();
 
