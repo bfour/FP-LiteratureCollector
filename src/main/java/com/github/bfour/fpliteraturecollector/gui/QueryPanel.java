@@ -24,6 +24,7 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -40,6 +41,8 @@ import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjgui.abstraction.EntityFilter;
 import com.github.bfour.fpjgui.abstraction.EntityFilterPipeline;
 import com.github.bfour.fpjgui.abstraction.GUIOption;
+import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
+import com.github.bfour.fpjgui.abstraction.feedback.Feedback.FeedbackType;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
@@ -67,9 +70,10 @@ public class QueryPanel extends JXPanel implements FeedbackProvider {
 	private FPJGUILabel<String> statusLabel;
 
 	private JButton litButton;
-	private JButton stopButton;
+	private JButton exportButton;
 	private JButton editButton;
 	private JButton deleteButton;
+	private JButton stopButton;
 	private JButton queueUpButton;
 	private JButton queueDownButton;
 
@@ -106,10 +110,10 @@ public class QueryPanel extends JXPanel implements FeedbackProvider {
 		litButton.setMargin(new Insets(1, 4, 2, 4));
 		toolbar.add(litButton);
 
-		stopButton = new JButton("Stop", Icons.STOP_20.getIcon());
-		stopButton.setIconTextGap(4);
-		stopButton.setMargin(new Insets(1, 4, 2, 4));
-		toolbar.add(stopButton);
+		exportButton = new JButton("Export", Icons.EXPORT_20.getIcon());
+		exportButton.setIconTextGap(4);
+		exportButton.setMargin(new Insets(1, 4, 2, 4));
+		toolbar.add(exportButton);
 
 		editButton = new JButton("Edit", Icons.EDIT_20.getIcon());
 		editButton.setIconTextGap(4);
@@ -120,6 +124,11 @@ public class QueryPanel extends JXPanel implements FeedbackProvider {
 		deleteButton.setIconTextGap(4);
 		deleteButton.setMargin(new Insets(1, 4, 2, 4));
 		toolbar.add(deleteButton);
+
+		stopButton = new JButton("Stop", Icons.STOP_20.getIcon());
+		stopButton.setIconTextGap(4);
+		stopButton.setMargin(new Insets(1, 4, 2, 4));
+		toolbar.add(stopButton);
 
 		queueUpButton = new JButton("Queue up", Icons.QUEUE_UP_20.getIcon());
 		queueUpButton.setIconTextGap(4);
@@ -152,6 +161,29 @@ public class QueryPanel extends JXPanel implements FeedbackProvider {
 									}
 								}));
 				litWindow.setVisible(true);
+			}
+		});
+
+		exportButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Feedback statusFeedback = new Feedback(QueryPanel.this,
+						"Exporting " + query + " to XML.",
+						FeedbackType.PROGRESS);
+				feedbackProxy.feedbackBroadcasted(statusFeedback);
+				try {
+					servMan.getReportService().exportToXML(query);
+				} catch (FileNotFoundException e1) {
+					feedbackProxy
+							.feedbackBroadcasted(new Feedback(
+									QueryPanel.this,
+									"Sorry, export to XML failed, because export file not found.",
+									e1.getMessage(), FeedbackType.ERROR));
+				}
+				feedbackProxy.feedbackRevoked(statusFeedback);
+				feedbackProxy.feedbackBroadcasted(new Feedback(QueryPanel.this,
+						"Export to XML finished for " + query + ".",
+						FeedbackType.SUCCESS));
 			}
 		});
 

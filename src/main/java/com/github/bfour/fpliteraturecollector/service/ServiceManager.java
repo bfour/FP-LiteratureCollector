@@ -71,6 +71,7 @@ public class ServiceManager {
 	private AtomicRequestService atomReqServ;
 	private QueryService queryServ;
 	private CrawlerService crawlServ;
+	private ReportService reportServ;
 
 	@Autowired
 	private Neo4JAuthorDAO authDAO;
@@ -120,6 +121,7 @@ public class ServiceManager {
 			// }
 
 			this.crawlServ = CrawlerService.getInstance();
+			this.reportServ = ReportService.getInstance();
 
 		} else {
 			throw new ServiceException("invalid service manager mode: " + mode);
@@ -163,6 +165,10 @@ public class ServiceManager {
 
 	public CrawlerService getCrawlerService() {
 		return crawlServ;
+	}
+	
+	public ReportService getReportService() {
+		return reportServ;
 	}
 
 	/**

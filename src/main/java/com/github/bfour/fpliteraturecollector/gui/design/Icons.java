@@ -78,6 +78,9 @@ public enum Icons {
 	DELETE_20("classpath:icons/bin_20.png"),
 	STOP_20("classpath:icons/stop_20.png"),
 	
+	EXPORT_20("classpath:icons/page_white_code_red_20.png"),
+	DOWNLOAD_20("classpath:icons/box_down_20.png"),
+	
 	;
 	
 	private String path;

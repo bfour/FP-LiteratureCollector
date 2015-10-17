@@ -41,6 +41,7 @@ import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
 import com.github.bfour.fpjgui.components.FPJGUILabel;
 import com.github.bfour.fpjgui.components.FPJGUILabelPanel;
 import com.github.bfour.fpjgui.components.FPJGUIMultilineLabel;
+import com.github.bfour.fpjgui.components.FPJGUITextField;
 import com.github.bfour.fpjgui.components.FPJGUITextPane;
 import com.github.bfour.fpjgui.components.SearchComboBox;
 import com.github.bfour.fpjgui.components.ToggleEditFormComponent;
@@ -167,7 +168,7 @@ public class LiteraturePanel extends
 
 		// DOI
 		FPJGUIMultilineLabel DOILabel = new FPJGUIMultilineLabel();
-		FPJGUIMultilineLabel DOIField = new FPJGUIMultilineLabel();
+		FPJGUITextField DOIField = new FPJGUITextField();
 		ToggleEditFormComponent<String> DOIToggle = new ToggleEditFormComponent<String>(
 				DOILabel, DOIField);
 		registerToggleComponent(DOIToggle);
@@ -176,7 +177,7 @@ public class LiteraturePanel extends
 
 		// ISBN
 		FPJGUIMultilineLabel ISBNLabel = new FPJGUIMultilineLabel();
-		FPJGUIMultilineLabel ISBNField = new FPJGUIMultilineLabel();
+		FPJGUITextField ISBNField = new FPJGUITextField();
 		ToggleEditFormComponent<String> ISBNToggle = new ToggleEditFormComponent<String>(
 				ISBNLabel, ISBNField);
 		registerToggleComponent(ISBNToggle);
@@ -325,8 +326,6 @@ public class LiteraturePanel extends
 				DOIToggle) {
 			@Override
 			public String getValue(LiteratureBuilder object) {
-				if (object.getDOI() == null)
-					return "-";
 				return object.getDOI();
 			}
 
@@ -342,13 +341,16 @@ public class LiteraturePanel extends
 			@Override
 			public String getValue(LiteratureBuilder object) {
 				if (object.getISBN() == null)
-					return "-";
+					return null;
 				return object.getISBN().getV13String();
 			}
 
 			@Override
 			public void setValue(LiteratureBuilder object, String value) {
-				object.setISBN(new ISBN(value));
+				if (value == null)
+					object.setISBN(null);
+				else
+					object.setISBN(new ISBN(value));
 			}
 		};
 		getMappers().add(ISBNMapper);
