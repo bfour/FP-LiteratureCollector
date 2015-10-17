@@ -31,7 +31,9 @@ public class FileStorageService {
 	public Link persist(URL webAddress, Literature lit) throws IOException {
 
 		String fileName = getFileNameForLiterature(lit);
-		fileName += "." + FilenameUtils.getExtension(webAddress.getFile());
+		fileName += ".pdf";
+		// + FilenameUtils.getExtension(webAddress.getFile()).substring(0,
+		// 3);
 		File file = new File(rootDirectory.getAbsolutePath() + "/"
 				+ lit.getID() + "/" + fileName);
 
@@ -52,7 +54,7 @@ public class FileStorageService {
 				.replaceAll("[^\\p{ASCII}]", "");
 
 		name = name.replaceAll("[^A-z\\s]", "");
-		
+
 		// remove unnecessary words
 		name = name.replaceAll("\\sa\\s", " ");
 		name = name.replaceAll("\\sthe\\s", " ");
