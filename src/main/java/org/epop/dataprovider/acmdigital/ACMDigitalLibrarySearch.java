@@ -19,13 +19,16 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Element;
@@ -34,25 +37,23 @@ import net.htmlparser.jericho.Source;
 import net.htmlparser.jericho.StartTag;
 
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIUtils;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.epop.dataprovider.DataProvider;
 import org.epop.dataprovider.HTMLPage;
 import org.epop.dataprovider.PatternMismatchException;
 import org.epop.dataprovider.Utils;
 import org.epop.utils.StringUtils;
+import org.w3c.dom.Node;
 
+import com.github.bfour.fpliteraturecollector.domain.Author;
+import com.github.bfour.fpliteraturecollector.domain.Link;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.builders.AuthorBuilder;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 
 public class ACMDigitalLibrarySearch extends DataProvider {
 
+	private static final String DOMAIN = "http://dl.acm.org/";
 	private static final String BASE_URL = "http://dl.acm.org/results.cfm";
 	private static final long DELAY = 18611;
 	private static final String AUTHOR_ID_PATTERN_STRING = ".*author_page\\.cfm\\?id=(\\d+).*";
@@ -77,7 +78,7 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 	protected Reader getHTMLDoc(String htmlParams, int pageTurnLimit,
 			boolean initialWait) {
 
-		boolean exit = false;// flag to exit if the author was not found
+		boolean exit = false; // flag to exit if the author was not found
 
 		URI uri;
 		String responseBody = "";
@@ -109,7 +110,7 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 
 				URI newUri = new URI(BASE_URL + "?" + htmlParams + "&start="
 						+ String.valueOf((counter * 20) + 1));
-				newResponseBody = new HTMLPage(uri).getRawCode();
+				newResponseBody = new HTMLPage(newUri).getRawCode();
 				responseBody = responseBody + newResponseBody;
 
 				if (pageTurnLimit == counter)
@@ -163,7 +164,6 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 			// iterates elements with tag "td"
 			while (elementList.hasNext()) {
 				Element element = elementList.next();
-				logger.debug(element.toString());
 				StartTag startTag = element.getStartTag();
 				Attribute Attr = startTag.getAttributes().get("style");
 
@@ -220,17 +220,27 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 		 * extract paperTitle analyze all the elements with tag "a", attribute
 		 * class="medium-text" and extract the title
 		 */
+		URI pageURI = null;
 		for (Element a : element.getAllElements(HTMLElementName.A)) {
 			Attribute classAttr = a.getStartTag().getAttributes().get("class");
 			if (classAttr != null) {
 				if (classAttr.getValue().equals("medium-text")) {
-					logger.debug(a.toString());
 					Source htmlSource = new Source(a.getContent().toString());
 					String title = StringUtils
 							.formatInLineSingleSpace(htmlSource
 									.getTextExtractor().toString());
 					logger.debug(title);
 					builder.setTitle(title);
+					String href = a.getAttributeValue("href");
+					if (builder.getWebsiteURLs() == null)
+						builder.setWebsiteURLs(new HashSet<Link>());
+					try {
+						pageURI = new URI(DOMAIN + href + "&preflayout=flat");
+						builder.getWebsiteURLs().add(new Link("ACM", pageURI));
+					} catch (URISyntaxException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -243,8 +253,8 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 			Attribute classAttr = s.getStartTag().getAttributes().get("class");
 			if (classAttr != null) {
 				if (classAttr.getValue().equals("authors")) {
+					Set<Author> authors = new HashSet<>();
 					for (Element q : s.getAllElements(HTMLElementName.A)) {
-						logger.debug(q.toString());
 						Source htmlSource = new Source(q.getContent()
 								.toString());
 						AuthorBuilder authBuilder = new AuthorBuilder();
@@ -258,20 +268,22 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						Matcher matcher = AUTHOR_ID_PATTERN.matcher(htmlSource);
+						Matcher matcher = AUTHOR_ID_PATTERN.matcher(q
+								.getAttributeValue("href"));
 						if (matcher.find()) {
 							authBuilder.setAcmID(matcher.group(1));
 						} else {
 							// TODO error handling
 						}
+						authors.add(authBuilder.getObject());
 					}
+					builder.setAuthors(authors);
 					/**
 					 * extract paperPlace analyze all the elements with tag
 					 * "div", attribute class="addinfo" and extract the place
 					 */
 				} else if (classAttr.getValue().equals("addinfo")) {
 					for (Element g : s.getAllElements(HTMLElementName.DIV)) {
-						logger.debug(g.toString());
 						Source htmlSource = new Source(g.getContent()
 								.toString());
 						String paperPlace = StringUtils
@@ -320,7 +332,6 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 					|| y.toString().contains("October")
 					|| y.toString().contains("November")
 					|| y.toString().contains("December")) {
-				logger.debug(y.toString());
 				String s = y.getContent().toString();
 				String venueYear = ExtractYear(s);
 				logger.debug(venueYear);
@@ -329,6 +340,39 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 				}
 
 			}
+		}
+
+		try {
+			HTMLPage entryPage = new HTMLPage(pageURI);
+			try {
+				Node abstractTextNode = entryPage
+						.getNodeByXPath("//*[@id='fback']/div[3]/div[1]");
+				if (abstractTextNode != null)
+					builder.setAbstractText(abstractTextNode.getTextContent());
+			} catch (XPathExpressionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				Node fullTextLinkNode = entryPage
+						.getNodeByXPath("//*[@id='divmain']/table[1]/tbody/tr/td[1]/table[1]/tbody/tr/td[2]/a[@name='FullTextPDF']/@href");
+				if (fullTextLinkNode != null) {
+					String href = fullTextLinkNode.getTextContent(); // ft_gateway.cfm?id=1150304&ftid=371641&dwn=1&CFID=553795364&CFTOKEN=65402853
+					if (builder.getFulltextURLs() == null)
+						builder.setFulltextURLs(new HashSet<Link>());
+					URI fulltextURI = new URI(DOMAIN + href);
+					builder.getFulltextURLs().add(new Link("ACM", fulltextURI));
+				}
+			} catch (XPathExpressionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (IOException | ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		// return a new Paper if a title and a paper was found
@@ -412,7 +456,6 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 			Attribute Attr3 = c.getStartTag().getAttributes().get("size");
 			if (Attr3 != null) {
 				if (Attr3.getValue().equals("+1")) {
-					logger.debug(c.toString());
 					// verify if there's the string "was not found"
 					if (c.toString().contains("was not found")) {
 						return true;
