@@ -131,6 +131,12 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 				try {
 					servMan.getReportService().exportToMODSFile(
 							selectedLiterature);
+					feedbackBroadcasted(new Feedback(
+							LiteratureBrowsePanel.this,
+							"Export to MODS finished for "
+									+ selectedLiterature.size()
+									+ " literature entries.",
+							FeedbackType.SUCCESS));
 				} catch (FileNotFoundException e1) {
 					feedbackBroadcasted(new Feedback(
 							LiteratureBrowsePanel.this,
@@ -138,10 +144,6 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 							e1.getMessage(), FeedbackType.ERROR));
 				}
 				feedbackRevoked(statusFeedback);
-				feedbackBroadcasted(new Feedback(LiteratureBrowsePanel.this,
-						"Export to MODS finished for "
-								+ selectedLiterature.size()
-								+ " literature entries.", FeedbackType.SUCCESS));
 			}
 		});
 
@@ -160,9 +162,7 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 				Feedback statusFeedback = new Feedback(
 						LiteratureBrowsePanel.this, "Downloading fulltext for "
 								+ selectedLiterature.size()
-								+ " literature entries.", "",
-						FeedbackType.PROGRESS.getColor(), FeedbackType.PROGRESS
-								.getIcon(), FeedbackType.PROGRESS, true);
+								+ " literature entries.", FeedbackType.PROGRESS);
 				feedbackBroadcasted(statusFeedback);
 				for (Literature lit : selectedLiterature) {
 					try {
