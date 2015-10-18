@@ -22,6 +22,7 @@ package com.github.bfour.fpliteraturecollector.gui.literature;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -103,11 +104,85 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 		});
 
 		// show default buttons for CRUD options
-		setDeleteEntityEnabled(true);
 		setEditEntityEnabled(false);
 		setCreateEntityEnabled(true);
+		setDeleteEntityEnabled(true);
 
 		// extra buttons
+		FPJGUIButton exportButton = FPJGUIButtonFactory
+				.createButton(
+						ButtonFormats.DEFAULT,
+						Lengths.LARGE_BUTTON_HEIGHT.getLength(),
+						"Export to MODS",
+						com.github.bfour.fpliteraturecollector.gui.design.Icons.EXPORT_20
+								.getIcon());
+		getMainPanel().add(exportButton, "cell 0 2");
+		exportButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				List<Literature> selectedLiterature = getValue();
+				Feedback statusFeedback = new Feedback(
+						LiteratureBrowsePanel.this, "Exporting "
+								+ selectedLiterature.size()
+								+ " literature entries to MODS.", "",
+						FeedbackType.PROGRESS.getColor(), FeedbackType.PROGRESS
+								.getIcon(), FeedbackType.PROGRESS, true);
+				feedbackBroadcasted(statusFeedback);
+				try {
+					servMan.getReportService().exportToMODSFile(
+							selectedLiterature);
+					feedbackBroadcasted(new Feedback(
+							LiteratureBrowsePanel.this,
+							"Export to MODS finished for "
+									+ selectedLiterature.size()
+									+ " literature entries.",
+							FeedbackType.SUCCESS));
+				} catch (FileNotFoundException e1) {
+					feedbackBroadcasted(new Feedback(
+							LiteratureBrowsePanel.this,
+							"Sorry, export to MODS failed, because export file not found.",
+							e1.getMessage(), FeedbackType.ERROR));
+				}
+				feedbackRevoked(statusFeedback);
+			}
+		});
+
+		FPJGUIButton downloadFullTextButton = FPJGUIButtonFactory
+				.createButton(
+						ButtonFormats.DEFAULT,
+						Lengths.LARGE_BUTTON_HEIGHT.getLength(),
+						"Download Fulltext",
+						com.github.bfour.fpliteraturecollector.gui.design.Icons.DOWNLOAD_20
+								.getIcon());
+		getMainPanel().add(downloadFullTextButton, "cell 0 2");
+		downloadFullTextButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				List<Literature> selectedLiterature = getValue();
+				Feedback statusFeedback = new Feedback(
+						LiteratureBrowsePanel.this, "Downloading fulltext for "
+								+ selectedLiterature.size()
+								+ " literature entries.", FeedbackType.PROGRESS);
+				feedbackBroadcasted(statusFeedback);
+				for (Literature lit : selectedLiterature) {
+					try {
+						servMan.getLiteratureService().downloadFullTexts(lit);
+					} catch (ServiceException e1) {
+						feedbackBroadcasted(new Feedback(
+								LiteratureBrowsePanel.this,
+								"Sorry, failed to download fulltext for literature ID "
+										+ lit.getID(), e1.getMessage(),
+								FeedbackType.ERROR));
+					}
+				}
+				feedbackRevoked(statusFeedback);
+				feedbackBroadcasted(new Feedback(LiteratureBrowsePanel.this,
+						"Fulltext download finished for "
+								+ selectedLiterature.size()
+								+ " literature entries.", FeedbackType.SUCCESS));
+			}
+		});
+
 		final FPJGUIButton tagButton = FPJGUIButtonFactory.createButton(
 				ButtonFormats.DEFAULT, Lengths.LARGE_BUTTON_HEIGHT.getLength(),
 				"Tag",
@@ -150,7 +225,7 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 					@Override
 					public String get(Literature item) {
 						Set<Author> authors = item.getAuthors();
-						if (authors == null)
+						if (authors == null || authors.isEmpty())
 							return "";
 						StringBuilder builder = new StringBuilder();
 						for (Author author : authors) {
@@ -162,12 +237,31 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 				}, true, 30, 30, "authors", false);
 		getListLikeContainer().addColumn(authorsColumn);
 
+		FPJGUITableColumn<Literature> tagsColumn = new FPJGUITableColumn<Literature>(
+				"Tags", new FPJGUITableFieldGetter<Literature>() {
+					@Override
+					public String get(Literature item) {
+						Set<Tag> tags = item.getTags();
+						if (tags == null || tags.isEmpty())
+							return "";
+						StringBuilder builder = new StringBuilder();
+						for (Tag tag : tags) {
+							builder.append(tag.getName());
+							builder.append(", ");
+						}
+						return builder.substring(0, builder.length() - 2);
+					}
+				}, true, 30, 30, "tags", false);
+		getListLikeContainer().addColumn(tagsColumn);
+
 		getListLikeContainer().setPreferredColumnWidth(titleColumn, 200);
 		getListLikeContainer().setPreferredColumnWidth(authorsColumn, 40);
+		getListLikeContainer().setPreferredColumnWidth(tagsColumn, 30);
 
 		getListLikeContainer().setMinimumColumnWidth(titleColumn, 100);
 		getListLikeContainer().setMinimumColumnWidth(authorsColumn, 40);
-		
+		getListLikeContainer().setMinimumColumnWidth(tagsColumn, 30);
+
 		load();
 
 	}

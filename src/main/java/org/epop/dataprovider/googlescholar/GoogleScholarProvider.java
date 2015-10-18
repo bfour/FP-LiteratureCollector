@@ -39,9 +39,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.http.client.methods.HttpGet;
 //import org.apache.http.client.params.ClientPNames;
@@ -49,16 +52,16 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.epop.dataprovider.DataProvider;
+import org.epop.dataprovider.HTMLPage;
 import org.epop.dataprovider.PatternMismatchException;
 import org.epop.dataprovider.Utils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import com.github.bfour.fpjcommons.lang.Tuple;
 import com.github.bfour.fpjcommons.services.DatalayerException;
-import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpliteraturecollector.domain.Author;
+import com.github.bfour.fpliteraturecollector.domain.Link;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
 import com.github.bfour.fpliteraturecollector.domain.builders.AuthorBuilder;
@@ -70,7 +73,7 @@ public class GoogleScholarProvider extends DataProvider {
 
 	private static final List<String> malformed = new LinkedList<String>();
 	private static final long DELAY = 18611;
-	private static final String SCHOLAR_GOOGLE_COM = "scholar.google.com";
+	private static final String SCHOLAR_GOOGLE_COM = "http://scholar.google.com";
 	//
 
 	Logger logger = Logger.getLogger(GoogleScholarProvider.class
@@ -94,42 +97,22 @@ public class GoogleScholarProvider extends DataProvider {
 			if (initialWait)
 				Thread.sleep(DELAY);
 
-			uri = URIUtils.createURI("http", SCHOLAR_GOOGLE_COM, -1,
-					"/scholar", htmlParams, null);
-			HttpGet httpget = new HttpGet(uri);
-			httpget.addHeader("User-Agent",
-					"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; .NET CLR 1.1.4322)");
-			// httpget.getParams().setParameter(ClientPNames.COOKIE_POLICY,
-			// CookiePolicy.IGNORE_COOKIES);
-
-			System.out.println(httpget.getURI());
-			httpclient = new DefaultHttpClient();
-
-			responseBody = Jsoup.connect(uri.toURL().toString())
-					.userAgent("Mozilla").get().html();
+			uri = new URI(SCHOLAR_GOOGLE_COM + "/scholar?" + htmlParams);
+			HTMLPage page = new HTMLPage(uri);
+			responseBody = page.getRawCode();
 
 			int counter = 0;
 			String newResponseBody = responseBody;
 			try {
 				while (counter < pageTurnLimit
-						&& newResponseBody
-								.contains("<b style=\"display:block;margin-left:50px\">Next</b>")) {
+						&& newResponseBody.contains("\">Next</b>")) {
 					counter++;
 					Thread.sleep(DELAY);
-					URI newUri = URIUtils.createURI("http", SCHOLAR_GOOGLE_COM,
-							-1, "/scholar", htmlParams + "&start="
-									+ (counter + 1) * 10, null);
-					System.out.println(newUri);
-					Document e = Jsoup.connect(newUri.toURL().toString())
-							.userAgent("Mozilla").get();
-					if (e != null) {
-						// docs.add(e);
-						newResponseBody = e.html();
-						// System.out.println(newResponseBody);
-						responseBody = responseBody + newResponseBody;
-					} else {
-						break;
-					}
+					URI newUri = new URI(SCHOLAR_GOOGLE_COM + "/scholar?"
+							+ htmlParams + "&start=" + (counter * 10)
+							+ htmlParams);
+					page = new HTMLPage(uri);
+					responseBody = responseBody + page.getRawCode();;
 				}
 			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
@@ -138,8 +121,9 @@ public class GoogleScholarProvider extends DataProvider {
 		} catch (InterruptedException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
-		} finally {
-			httpclient.getConnectionManager().shutdown();
+		} catch (ParserConfigurationException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
 		}
 		// return the result as string
 		// System.out.println("responseBody =\n" + responseBody);
@@ -187,6 +171,7 @@ public class GoogleScholarProvider extends DataProvider {
 
 				LiteratureBuilder litBuilder = new LiteratureBuilder();
 
+				// type
 				String typeString = article.select(".gs_ct2").text();
 				if (typeString == null)
 					typeString = "";
@@ -194,6 +179,7 @@ public class GoogleScholarProvider extends DataProvider {
 					continue; // skip citations
 				litBuilder.setType(getLiteratureType(typeString));
 
+				// title
 				String title = article.select(".gs_rt a").text();
 				title = title.replaceAll("\u0097", "-");
 				title = title.replaceAll("…", "...");
@@ -202,8 +188,31 @@ public class GoogleScholarProvider extends DataProvider {
 							"title retrieved by parsing is empty");
 				litBuilder.setTitle(title);
 
+				// website URL
+				if (litBuilder.getWebsiteURLs() == null)
+					litBuilder.setWebsiteURLs(new HashSet<Link>());
+				try {
+					String linkURL = article.select(".gs_rt a").attr("href");
+					litBuilder.getWebsiteURLs().add(new Link(linkURL));
+				} catch (URISyntaxException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				try {
+					String googleLinkURL = "http://scholar.google.com"
+							+ article.select(".gs_fl .gs_nph").attr("href");
+					litBuilder.getWebsiteURLs().add(
+							new Link("Google Scholar", googleLinkURL));
+				} catch (URISyntaxException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				String abstractText = article.select(".gs_rs").text();
+				litBuilder.setAbstractText(abstractText);
+
 				String rawHTML = article.select(".gs_a").html();
-				if (rawHTML.isEmpty())
+				if (rawHTML.isEmpty()) // no authors
 					continue;
 
 				// split by " - " (authors - publication, year - publisher)
@@ -214,12 +223,18 @@ public class GoogleScholarProvider extends DataProvider {
 									+ splits.length
 									+ "; maybe Google Scholar layout has changed");
 				String namesHTML = splits[0];
+				namesHTML = namesHTML.replace("…, ", "");
 				String publicationHTML = splits[1];
 				String publisherHTML = splits[2];
 
 				// authors
-				List<Author> authors = getAuthorsFromHTMLSection(namesHTML);
-				litBuilder.setAuthors(new HashSet<>(authors));
+				try {
+					List<Author> authors = getAuthorsFromHTMLSection(namesHTML);
+					litBuilder.setAuthors(new HashSet<>(authors));
+				} catch (PatternMismatchException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 
 				// publication
 				String[] commaSplit = publicationHTML.split(", ");
@@ -254,14 +269,17 @@ public class GoogleScholarProvider extends DataProvider {
 					// TODO
 				}
 
-				// website URL
-				String websiteURL = article.select(".gs_rt a").attr("href");
-				litBuilder.setWebsiteURL(websiteURL);
-
 				// fulltext
 				String fulltextURL = article.select("div.gs_md_wp.gs_ttss a")
 						.attr("href");
-				litBuilder.setFulltextURL(fulltextURL);
+				Set<Link> fullLinks = new HashSet<>();
+				try {
+					fullLinks.add(new Link(fulltextURL));
+					litBuilder.setFulltextURLs(fullLinks);
+				} catch (URISyntaxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 				papers.add(litBuilder.getObject());
 

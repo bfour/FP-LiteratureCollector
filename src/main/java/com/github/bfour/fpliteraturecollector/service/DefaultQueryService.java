@@ -265,9 +265,9 @@ public class DefaultQueryService extends EventCreatingCRUDService<Query>
 
 		if (hasUnprocessed && q.getQueuePosition() == null)
 			status = QueryStatus.IDLE;
-		else if (hasUnprocessed && q.getQueuePosition() != null) {
+		else if (hasUnprocessed && q.getQueuePosition() != null)
 			status = QueryStatus.QUEUED;
-		} else if (hasError)
+		else if (hasError)
 			status = QueryStatus.FINISHED_WITH_ERROR;
 		else
 			status = QueryStatus.FINISHED;

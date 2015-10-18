@@ -34,6 +34,7 @@ import org.jdesktop.swingx.JXPanel;
 
 import com.github.bfour.fpjcommons.lang.BuilderFactory;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
+import com.github.bfour.fpjgui.components.FPJGUILabelPanel;
 import com.github.bfour.fpjgui.components.FPJGUITextField;
 import com.github.bfour.fpjgui.components.composite.EntityEditPanel;
 import com.github.bfour.fpjgui.design.Colors;
@@ -51,7 +52,7 @@ public class QueryEditPanel extends EntityEditPanel<Query, QueryBuilder> {
 	 * Create the panel.
 	 */
 	public QueryEditPanel(ServiceManager servMan, Query query) {
-
+		
 		super(Query.class, new BuilderFactory<Query, QueryBuilder>() {
 			@Override
 			public QueryBuilder getBuilder() {
@@ -64,20 +65,14 @@ public class QueryEditPanel extends EntityEditPanel<Query, QueryBuilder> {
 			}
 
 		}, servMan.getQueryService());
-
+		
 		setCRUDButtonsVisible(false);
-		createNew(this);
-
-		getContentPane()
-				.setLayout(new MigLayout("", "[grow][]", "[]0[]8[]0[]"));
+		getContentPane().setLayout(new MigLayout("", "[grow][]", "[]"));
 
 		// name
-		JLabel lblName = new JLabel("Name");
-		lblName.setForeground(Colors.VERY_STRONG_GRAY.getColor());
-		getContentPane().add(lblName, "cell 0 0");
-
 		FPJGUITextField nameField = new FPJGUITextField();
-		getContentPane().add(nameField, "cell 0 1,growx");
+		getContentPane().add(new FPJGUILabelPanel("Name", nameField),
+				"cell 0 0,growx");
 
 		nameField.setValidationRule(new ValidationRule<String>() {
 			@Override
@@ -93,7 +88,7 @@ public class QueryEditPanel extends EntityEditPanel<Query, QueryBuilder> {
 		// atomic requests
 		JLabel lblAtomicRequests = new JLabel("Atomic Requests");
 		lblAtomicRequests.setForeground(Colors.VERY_STRONG_GRAY.getColor());
-		getContentPane().add(lblAtomicRequests, "cell 0 2 2 1");
+		getContentPane().add(lblAtomicRequests, "cell 0 1 2 1");
 
 		final AtomicRequestBrowsePanel atomReqBrowsePanel = new AtomicRequestBrowsePanel(
 				servMan, query);
@@ -156,6 +151,14 @@ public class QueryEditPanel extends EntityEditPanel<Query, QueryBuilder> {
 			}
 		};
 		getMappers().add(atomicReqMapper);
+		
+		// set mode
+		if (query == null)
+			createNew(this);
+		else {
+			setEntity(this, query);
+			edit();
+		}		
 
 	}
 

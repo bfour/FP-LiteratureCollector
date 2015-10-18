@@ -26,6 +26,8 @@ import com.github.bfour.fpliteraturecollector.domain.Literature;
 
 public interface LiteratureService extends BidirectionalCRUDService<Literature> {
 
+	void downloadFullTexts(Literature literature) throws ServiceException;
+
 	void deleteCascadeIfMaxOneAdjacentAtomicRequest(Literature literature)
 			throws ServiceException;
 

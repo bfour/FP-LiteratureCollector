@@ -42,7 +42,9 @@ import com.github.bfour.fpjpersist.neo4j.service.converters.PathToStringConverte
 import com.github.bfour.fpjpersist.neo4j.service.converters.StringToColorConverter;
 import com.github.bfour.fpjpersist.neo4j.service.converters.StringToPathConverter;
 import com.github.bfour.fpliteraturecollector.service.converters.CrawlerToStringConverter;
+import com.github.bfour.fpliteraturecollector.service.converters.LinkToStringConverter;
 import com.github.bfour.fpliteraturecollector.service.converters.StringToCrawlerConverter;
+import com.github.bfour.fpliteraturecollector.service.converters.StringToLinkConverter;
 
 // tag::config[]
 @EnableTransactionManagement
@@ -77,6 +79,8 @@ public class FPLCNeo4jConfiguration extends Neo4jConfiguration {
         registry.addConverter(new PathToStringConverter());
         registry.addConverter(new StringToColorConverter());
         registry.addConverter(new ColorToStringConverter());
+        registry.addConverter(new StringToLinkConverter());
+        registry.addConverter(new LinkToStringConverter());        
         return conversionService;
     }
     

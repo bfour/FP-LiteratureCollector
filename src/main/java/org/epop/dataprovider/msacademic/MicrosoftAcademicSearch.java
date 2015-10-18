@@ -19,9 +19,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Element;
@@ -37,11 +39,14 @@ import org.apache.http.client.utils.URIUtils;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.epop.dataprovider.DataProvider;
+import org.epop.dataprovider.HTMLPage;
 import org.epop.dataprovider.PatternMismatchException;
 import org.epop.dataprovider.Utils;
 import org.epop.utils.StringUtils;
+import org.w3c.dom.Node;
 
 import com.github.bfour.fpliteraturecollector.domain.Author;
+import com.github.bfour.fpliteraturecollector.domain.Link;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
 import com.github.bfour.fpliteraturecollector.domain.builders.AuthorBuilder;
@@ -177,6 +182,8 @@ public class MicrosoftAcademicSearch extends DataProvider {
 
 		LiteratureBuilder litBuilder = new LiteratureBuilder();
 
+		URI pageURI = null;
+
 		for (Element s : element.getAllElements(HTMLElementName.DIV)) {
 			Attribute classAttr = s.getStartTag().getAttributes().get("class");
 			if (classAttr != null) {
@@ -198,6 +205,20 @@ public class MicrosoftAcademicSearch extends DataProvider {
 										.formatInLineSingleSpace(htmlSource
 												.getTextExtractor().toString());
 								litBuilder.setTitle(paperTitle);
+								String pageURLString = "http://academic.research.microsoft.com"
+										+ a.getAttributeValue("href")
+												.substring(2);
+								if (litBuilder.getWebsiteURLs() == null)
+									litBuilder
+											.setWebsiteURLs(new HashSet<Link>());
+								try {
+									pageURI = new URI(pageURLString);
+									litBuilder.getWebsiteURLs().add(
+											new Link("MS Academic", pageURI));
+								} catch (URISyntaxException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							} else if (classAttr2.getValue().equals(
 									id + "Citation")) {
 								Source htmlSource = new Source(a.getContent()
@@ -297,6 +318,35 @@ public class MicrosoftAcademicSearch extends DataProvider {
 						// class="year"
 					}
 				}
+			}
+		}
+
+		if (pageURI != null) {
+			HTMLPage page;
+			try {
+				page = new HTMLPage(pageURI);
+				try {
+					Node abstractTextNode = page
+							.getNodeByXPath(".//div[@class='abstract']/span");
+					if (abstractTextNode != null)
+						litBuilder.setAbstractText(abstractTextNode
+								.getTextContent());
+				} catch (XPathExpressionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				try {
+					String doiString = page
+							.getStringByXPath(".//*[@id='ctl00_MainContent_PaperItem_hypDOIText']/text()");
+					if (!doiString.isEmpty())
+						litBuilder.setDOI(doiString);
+				} catch (XPathExpressionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} catch (IOException | ParserConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 

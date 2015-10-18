@@ -27,6 +27,7 @@ import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
 import com.github.bfour.fpjgui.components.FPJGUILabel;
 import com.github.bfour.fpjgui.components.FPJGUILabelPanel;
 import com.github.bfour.fpjgui.components.FPJGUIMultilineLabel;
+import com.github.bfour.fpjgui.components.FPJGUITextField;
 import com.github.bfour.fpjgui.components.ToggleEditFormComponent;
 import com.github.bfour.fpjgui.components.composite.EntityEditPanel;
 import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
@@ -39,6 +40,9 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 	private static final long serialVersionUID = -6108218045598314837L;
 	private FPJGUILabelPanel msAcademicLabelPanel;
 	private FPJGUILabelPanel gScholarIDLabelPanel;
+	private FPJGUILabelPanel acmLabelPanel;
+	private FPJGUILabelPanel pubmedLabelPanel;
+	private FPJGUILabelPanel ieeeLabelPanel;
 
 	/**
 	 * Create the panel.
@@ -59,8 +63,7 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 		}, servMan.getAuthorService());
 
 		getContentPane().setLayout(
-				new MigLayout("insets 0, w 60:80:100", "[grow]",
-						"[]8[]8[]8[]8[]"));
+				new MigLayout("insets 0, w 60:80:100", "[grow]", "[]"));
 
 		// ID
 		FPJGUILabel<String> IDLabel = new FPJGUILabel<String>();
@@ -68,7 +71,7 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 				"cell 0 0,growx");
 
 		// first name
-		FPJGUIMultilineLabel firstNameField = new FPJGUIMultilineLabel();
+		FPJGUITextField firstNameField = new FPJGUITextField();
 		FPJGUIMultilineLabel firstNameLabel = new FPJGUIMultilineLabel();
 		ToggleEditFormComponent<String> firstNameToggle = new ToggleEditFormComponent<String>(
 				firstNameLabel, firstNameField);
@@ -78,7 +81,7 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 				"cell 0 1,growx");
 
 		// last name
-		FPJGUIMultilineLabel lastNameField = new FPJGUIMultilineLabel();
+		FPJGUITextField lastNameField = new FPJGUITextField();
 		lastNameField.setValidationRule(new ValidationRule<String>() {
 			@Override
 			public ValidationRuleResult evaluate(String obj) {
@@ -96,7 +99,7 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 				"cell 0 2,growx");
 
 		// gScholarID
-		FPJGUIMultilineLabel gScholarIDField = new FPJGUIMultilineLabel();
+		FPJGUITextField gScholarIDField = new FPJGUITextField();
 		FPJGUIMultilineLabel gScholarIDLabel = new FPJGUIMultilineLabel();
 		ToggleEditFormComponent<String> gScholarIDToggle = new ToggleEditFormComponent<String>(
 				gScholarIDLabel, gScholarIDField);
@@ -106,7 +109,7 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 		getContentPane().add(gScholarIDLabelPanel, "cell 0 3,growx");
 
 		// msAcademicID
-		FPJGUIMultilineLabel msAcademicIDField = new FPJGUIMultilineLabel();
+		FPJGUITextField msAcademicIDField = new FPJGUITextField();
 		FPJGUIMultilineLabel msAcademicIDLabel = new FPJGUIMultilineLabel();
 		ToggleEditFormComponent<String> msAcademicIDToggle = new ToggleEditFormComponent<String>(
 				msAcademicIDLabel, msAcademicIDField);
@@ -114,6 +117,33 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 		msAcademicLabelPanel = new FPJGUILabelPanel("Microsoft Academic ID",
 				msAcademicIDToggle);
 		getContentPane().add(msAcademicLabelPanel, "cell 0 4,growx");
+
+		// acm
+		FPJGUITextField acmIDField = new FPJGUITextField();
+		FPJGUIMultilineLabel acmIDLabel = new FPJGUIMultilineLabel();
+		ToggleEditFormComponent<String> acmIDToggle = new ToggleEditFormComponent<String>(
+				acmIDLabel, acmIDField);
+		registerToggleComponent(acmIDToggle);
+		acmLabelPanel = new FPJGUILabelPanel("ACM ID", acmIDToggle);
+		getContentPane().add(acmLabelPanel, "cell 0 5,growx");
+
+		// pubmed
+		FPJGUITextField pubmedIDField = new FPJGUITextField();
+		FPJGUIMultilineLabel pubmedIDLabel = new FPJGUIMultilineLabel();
+		ToggleEditFormComponent<String> pubmedIDToggle = new ToggleEditFormComponent<String>(
+				pubmedIDLabel, pubmedIDField);
+		registerToggleComponent(pubmedIDToggle);
+		pubmedLabelPanel = new FPJGUILabelPanel("Pubmed ID", pubmedIDToggle);
+		getContentPane().add(pubmedLabelPanel, "cell 0 6,growx");
+
+		// ieee
+		FPJGUITextField ieeeIDField = new FPJGUITextField();
+		FPJGUIMultilineLabel ieeeIDLabel = new FPJGUIMultilineLabel();
+		ToggleEditFormComponent<String> ieeeIDToggle = new ToggleEditFormComponent<String>(
+				ieeeIDLabel, ieeeIDField);
+		registerToggleComponent(ieeeIDToggle);
+		ieeeLabelPanel = new FPJGUILabelPanel("ieee ID", ieeeIDToggle);
+		getContentPane().add(ieeeLabelPanel, "cell 0 6,growx");
 
 		// mappings
 		ObjectGraphicalValueContainerMapper<AuthorBuilder, String> IDMapper = new ObjectGraphicalValueContainerMapper<AuthorBuilder, String>(
@@ -166,7 +196,7 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 			@Override
 			public String getValue(AuthorBuilder object) {
 				if (object.getgScholarID() == null)
-					return "not defined";
+					return "-";
 				return object.getgScholarID();
 			}
 
@@ -182,7 +212,7 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 			@Override
 			public String getValue(AuthorBuilder object) {
 				if (object.getMsAcademicID() == null)
-					return "not defined";
+					return "-";
 				return object.getMsAcademicID();
 			}
 
@@ -192,6 +222,54 @@ public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 			}
 		};
 		getMappers().add(msAcademicIDMapper);
+
+		ObjectGraphicalValueContainerMapper<AuthorBuilder, String> acmIDMapper = new ObjectGraphicalValueContainerMapper<AuthorBuilder, String>(
+				acmIDToggle) {
+			@Override
+			public String getValue(AuthorBuilder object) {
+				if (object.getAcmID() == null)
+					return "-";
+				return object.getAcmID();
+			}
+
+			@Override
+			public void setValue(AuthorBuilder object, String value) {
+				object.setAcmID(value);
+			}
+		};
+		getMappers().add(acmIDMapper);
+
+		ObjectGraphicalValueContainerMapper<AuthorBuilder, String> pubmedIDMapper = new ObjectGraphicalValueContainerMapper<AuthorBuilder, String>(
+				pubmedIDToggle) {
+			@Override
+			public String getValue(AuthorBuilder object) {
+				if (object.getPubmedID() == null)
+					return "-";
+				return object.getPubmedID();
+			}
+
+			@Override
+			public void setValue(AuthorBuilder object, String value) {
+				object.setPubmedID(value);
+			}
+		};
+		getMappers().add(pubmedIDMapper);
+
+		ObjectGraphicalValueContainerMapper<AuthorBuilder, String> ieeeIDMapper = new ObjectGraphicalValueContainerMapper<AuthorBuilder, String>(
+				ieeeIDToggle) {
+			@Override
+			public String getValue(AuthorBuilder object) {
+				if (object.getIeeeID() == null)
+					return "-";
+				return object.getIeeeID();
+			}
+
+			@Override
+			public void setValue(AuthorBuilder object, String value) {
+				object.setIeeeID(value);
+			}
+		};
+		getMappers().add(ieeeIDMapper);
 
 	}
 

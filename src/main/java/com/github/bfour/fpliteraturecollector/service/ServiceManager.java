@@ -71,6 +71,8 @@ public class ServiceManager {
 	private AtomicRequestService atomReqServ;
 	private QueryService queryServ;
 	private CrawlerService crawlServ;
+	private ReportService reportServ;
+	private FileStorageService fileServ;
 
 	@Autowired
 	private Neo4JAuthorDAO authDAO;
@@ -120,6 +122,8 @@ public class ServiceManager {
 			// }
 
 			this.crawlServ = CrawlerService.getInstance();
+			this.reportServ = ReportService.getInstance();
+			this.fileServ = FileStorageService.getInstance();
 
 		} else {
 			throw new ServiceException("invalid service manager mode: " + mode);
@@ -142,7 +146,7 @@ public class ServiceManager {
 	public LiteratureService getLiteratureService() {
 		if (litServ == null)
 			litServ = DefaultLiteratureService.getInstance(literatureDAO, true,
-					getAuthorService(), getTagService());
+					getAuthorService(), getTagService(), getFileServ());
 		return litServ;
 	}
 
@@ -163,6 +167,14 @@ public class ServiceManager {
 
 	public CrawlerService getCrawlerService() {
 		return crawlServ;
+	}
+
+	public ReportService getReportService() {
+		return reportServ;
+	}
+
+	public FileStorageService getFileServ() {
+		return fileServ;
 	}
 
 	/**

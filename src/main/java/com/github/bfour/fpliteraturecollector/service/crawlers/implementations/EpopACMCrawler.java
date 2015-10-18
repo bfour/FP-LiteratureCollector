@@ -1,10 +1,10 @@
-package com.github.bfour.fpliteraturecollector.domain;
+package com.github.bfour.fpliteraturecollector.service.crawlers.implementations;
 
 /*
  * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
  * FP-LiteratureCollector
  * =================================
- * Copyright (C) 2014 - 2015 Florian Pollak
+ * Copyright (C) 2015 Florian Pollak
  * =================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,22 +20,15 @@ package com.github.bfour.fpliteraturecollector.domain;
  * -///////////////////////////////-
  */
 
-public enum SearchEngine {
+import org.epop.dataprovider.acmdigital.ACMDigitalLibrarySearch;
 
-	GOOGLE_SCHOLAR, MICROSOFT_ACADEMIC, ACM_DIGITAL_LIBRARY, PUBMED, IEEE_XPLORE;
+import com.github.bfour.fpliteraturecollector.domain.SearchEngine;
+import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
 
-	/**
-	 * A random double representing a token that is given to this engine's one
-	 * and only user, or null if there is currently no user.
-	 */
-	private Double token;
+public class EpopACMCrawler extends Crawler {
 
-	public Double getToken() {
-		return token;
-	}
-
-	public void setToken(Double token) {
-		this.token = token;
+	public EpopACMCrawler() {
+		super(new ACMDigitalLibrarySearch(), SearchEngine.ACM_DIGITAL_LIBRARY);
 	}
 
 }
