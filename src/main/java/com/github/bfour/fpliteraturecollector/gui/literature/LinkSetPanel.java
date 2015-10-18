@@ -16,7 +16,6 @@ import com.github.bfour.fpjgui.abstraction.valueChangeHandling.ValueChangeListen
 import com.github.bfour.fpjgui.abstraction.valueContainer.GraphicalValueContainer;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule.ValidationRuleResult;
-import com.github.bfour.fpjgui.abstraction.valueContainer.ValueContainer;
 import com.github.bfour.fpliteraturecollector.domain.Link;
 
 public class LinkSetPanel extends JPanel implements
