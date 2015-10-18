@@ -99,6 +99,7 @@ public class LiteraturePanel extends
 
 		// accept file drops
 		setDropTarget(new DropTarget() {
+			private static final long serialVersionUID = -679032801574638314L;
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			@Override
 			public synchronized void drop(DropTargetDropEvent event) {
