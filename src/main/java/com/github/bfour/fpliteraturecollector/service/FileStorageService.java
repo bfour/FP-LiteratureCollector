@@ -4,11 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.Normalizer;
 import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+
+import ch.qos.logback.core.util.FileUtil;
 
 import com.github.bfour.fpliteraturecollector.domain.Link;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
@@ -44,6 +48,20 @@ public class FileStorageService {
 		FileUtils.copyInputStreamToFile(conn.getInputStream(), file);
 
 		return new Link(fileName, file.toURI(), webAddress.toString());
+
+	}
+
+	public Link persist(File localFile, Literature lit) throws IOException {
+
+		String fileName = getFileNameForLiterature(lit);
+		fileName += "."
+				+ FilenameUtils.getExtension(localFile.getAbsolutePath());
+		File file = new File(rootDirectory.getAbsolutePath() + "/"
+				+ lit.getID() + "/" + fileName);
+
+		FileUtils.copyFile(localFile, file);
+
+		return new Link(fileName, file.toURI());
 
 	}
 

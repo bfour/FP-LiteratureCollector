@@ -20,7 +20,15 @@ package com.github.bfour.fpliteraturecollector.gui.literature;
  * -///////////////////////////////-
  */
 
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.font.TextAttribute;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,8 +43,11 @@ import javax.swing.JScrollPane;
 import net.miginfocom.swing.MigLayout;
 
 import com.github.bfour.fpjcommons.lang.BuilderFactory;
+import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.utils.Getter;
 import com.github.bfour.fpjgui.abstraction.EntityLoader;
+import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
+import com.github.bfour.fpjgui.abstraction.feedback.Feedback.FeedbackType;
 import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
 import com.github.bfour.fpjgui.components.FPJGUILabel;
 import com.github.bfour.fpjgui.components.FPJGUILabelPanel;
@@ -85,6 +96,69 @@ public class LiteraturePanel extends
 
 		getContentPane().setLayout(
 				new MigLayout("insets 0, w 80:100:120", "[grow]", "[]"));
+
+		// accept file drops
+		setDropTarget(new DropTarget() {
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			@Override
+			public synchronized void drop(DropTargetDropEvent event) {
+				event.acceptDrop(DnDConstants.ACTION_MOVE);
+				if (getEntityBuilder() == null) {
+					getFeedbackProxy().feedbackBroadcasted(
+							new Feedback(LiteraturePanel.this,
+									"Please select an entity to add files to.",
+									FeedbackType.ERROR));
+					return;
+				}
+				Transferable t = event.getTransferable();
+				List<File> fileList;
+				try {
+					fileList = (List) t
+							.getTransferData(DataFlavor.javaFileListFlavor);
+					for (File file : fileList) {
+						Literature oldEntity = getEntityBuilder().getObject();
+						Link link = servMan.getFileServ().persist(file,
+								oldEntity);
+						if (getEntityBuilder().getFulltextFilePaths() == null)
+							getEntityBuilder().setFulltextFilePaths(
+									new HashSet<Link>());
+						getEntityBuilder().getFulltextFilePaths().add(link);
+						try {
+							servMan.getLiteratureService().update(oldEntity,
+									getEntityBuilder().getObject());
+							getFeedbackProxy()
+									.feedbackBroadcasted(
+											new Feedback(LiteraturePanel.this,
+													"Added " + file + ".",
+													FeedbackType.SUCCESS));
+							try {
+								file.delete();
+							} catch (SecurityException e) {
+								getFeedbackProxy().feedbackBroadcasted(
+										new Feedback(LiteraturePanel.this,
+												"File added, but could not delete source file "
+														+ file + ".", e
+														.getMessage(),
+												FeedbackType.WARN));
+							}
+						} catch (ServiceException e) {
+							e.printStackTrace();
+							getFeedbackProxy().feedbackBroadcasted(
+									new Feedback(LiteraturePanel.this,
+											"Sorry, failed to add file " + file
+													+ ".", e.getMessage(),
+											FeedbackType.ERROR));
+						}
+					}
+				} catch (UnsupportedFlavorException | IOException e) {
+					e.printStackTrace();
+					getFeedbackProxy().feedbackBroadcasted(
+							new Feedback(LiteraturePanel.this,
+									"Sorry, failed to add files.", e
+											.getMessage(), FeedbackType.ERROR));
+				}
+			}
+		});
 
 		// ID
 		FPJGUILabel<String> IDLabel = new FPJGUILabel<String>();

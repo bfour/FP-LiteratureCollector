@@ -38,22 +38,24 @@ public class DefaultLiteratureService extends
 
 	private static DefaultLiteratureService instance;
 	private AuthorService authServ;
+	private FileStorageService fileServ;
 	private LiteratureDAO DAO;
 
 	private DefaultLiteratureService(LiteratureDAO DAO,
 			boolean forceCreateNewInstance, AuthorService authServ,
-			TagService tagServ) {
+			TagService tagServ, FileStorageService fileServ) {
 		super(DAO);
 		this.DAO = DAO;
 		this.authServ = authServ;
+		this.fileServ = fileServ;
 	}
 
 	public static DefaultLiteratureService getInstance(LiteratureDAO DAO,
 			boolean forceCreateNewInstance, AuthorService authServ,
-			TagService tagServ) {
+			TagService tagServ, FileStorageService fileServ) {
 		if (instance == null || forceCreateNewInstance)
 			instance = new DefaultLiteratureService(DAO,
-					forceCreateNewInstance, authServ, tagServ);
+					forceCreateNewInstance, authServ, tagServ, fileServ);
 		return instance;
 	}
 
@@ -87,8 +89,8 @@ public class DefaultLiteratureService extends
 				}
 
 			try {
-				Link fullTextFileLink = FileStorageService.getInstance()
-						.persist(fullTextURL.getUri().toURL(), literature);
+				Link fullTextFileLink = fileServ.persist(fullTextURL.getUri()
+						.toURL(), literature);
 				Set<Link> newFileLinks = new HashSet<>();
 				if (literature.getFulltextFilePaths() != null)
 					newFileLinks.addAll(literature.getFulltextFilePaths());
