@@ -37,7 +37,7 @@ public class LiteratureWindow extends FPJGUIWindow {
 	public LiteratureWindow(ServiceManager servMan,
 			EntityFilterPipeline<Literature> filters) {
 
-		super("Literature", 881, 611);
+		super("Literature", 1186, 611);
 
 		LiteratureBrowsePanel litLookPanel = new LiteratureBrowsePanel(servMan);
 		LiteraturePanel litPanel = new LiteraturePanel(servMan);

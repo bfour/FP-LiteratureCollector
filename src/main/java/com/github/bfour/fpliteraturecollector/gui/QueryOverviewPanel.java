@@ -300,7 +300,8 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 					+ ", wrap, growx");
 		} else if (query.getStatus() == QueryStatus.QUEUED) {
 			queuePanel.add(queryPanel, "cell 0 " + position + ", wrap, growx");
-		} else if (query.getStatus() == QueryStatus.FINISHED) {
+		} else if (query.getStatus() == QueryStatus.FINISHED
+				|| query.getStatus() == QueryStatus.FINISHED_WITH_ERROR) {
 			finishedPanel.add(queryPanel, "growx, wrap");
 		} else if (query.getStatus() == QueryStatus.IDLE) {
 			idlePanel.add(queryPanel, "growx, wrap");
@@ -365,7 +366,8 @@ public class QueryOverviewPanel extends JXPanel implements FeedbackProvider,
 		} else if (query.getStatus() == QueryStatus.QUEUED) {
 			PanelDecorator.decorateWithDropShadow(queryPanel,
 					Colors.QUERY_QUEUED_DROPSHADOW.getColor());
-		} else if (query.getStatus() == QueryStatus.FINISHED) {
+		} else if (query.getStatus() == QueryStatus.FINISHED
+				|| query.getStatus() == QueryStatus.FINISHED_WITH_ERROR) {
 			PanelDecorator.decorateWithDropShadow(queryPanel);
 		} else if (query.getStatus() == QueryStatus.IDLE) {
 			PanelDecorator.decorateWithDropShadow(queryPanel);

@@ -14,6 +14,16 @@ public class Link {
 	 */
 	private String reference;
 
+	public Link(URI uri) {
+		this.name = uri.getHost();
+		this.uri = uri;
+	}
+	
+	public Link(String uriString) throws URISyntaxException {
+		this.uri = new URI(uriString);
+		this.name = this.uri.getHost();
+	}	
+	
 	public Link(String name, String uriString) throws URISyntaxException {
 		this(name, new URI(uriString));
 	}
@@ -71,6 +81,11 @@ public class Link {
 		} else if (!uri.equals(other.uri))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Link [name=" + name + ", uri=" + uri + "]";
 	}
 
 }

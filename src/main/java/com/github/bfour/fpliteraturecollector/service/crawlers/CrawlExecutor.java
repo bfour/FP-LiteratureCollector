@@ -112,7 +112,7 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 								persistedResults.add(lit);
 							}
 						}
-						
+
 						results = persistedResults;
 
 						AtomicRequest newAtomReq = new AtomicRequestBuilder(
@@ -132,14 +132,14 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 					} catch (Exception e) {
 						e.printStackTrace();
 						LOGGER.error(e);
+						AtomicRequest newAtomReq = new AtomicRequestBuilder(
+								topRequest.getB()).setProcessed(true)
+								.setProcessingError(e.getMessage()).getObject();
+						atomReqServ.update(topRequest.getB(), newAtomReq);
 						List<AtomicRequest> atomReqs = new ArrayList<>(
 								topRequest.getA().getAtomicRequests());
-						atomReqs.set(
-								atomReqs.indexOf(topRequest.getB()),
-								new AtomicRequestBuilder(topRequest.getB())
-										.setProcessed(true)
-										.setProcessingError(e.getMessage())
-										.getObject());
+						atomReqs.set(atomReqs.indexOf(topRequest.getB()),
+								newAtomReq);
 						qServ.update(
 								topRequest.getA(),
 								new QueryBuilder(topRequest.getA())

@@ -160,11 +160,18 @@ public class LiteraturePanel extends
 		// authors
 		FPJGUIMultilineLabel authorLabel = new FPJGUIMultilineLabel();
 		FPJGUIMultilineLabel authorField = new FPJGUIMultilineLabel();
+		JScrollPane authorLabelScrollPane = new JScrollPane(authorLabel);
+		JScrollPane authorFieldScrollPane = new JScrollPane(authorField);
+		authorLabelScrollPane.setBorder(abstractLabel.getBorder());
+		authorFieldScrollPane.setBorder(Borders.GENERIC.getBorder());
+		authorField.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		authorLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		ToggleEditFormComponent<String> authorToggle = new ToggleEditFormComponent<String>(
-				authorLabel, authorField);
+				authorLabel, authorField, authorLabelScrollPane,
+				authorFieldScrollPane);
 		registerToggleComponent(authorToggle);
 		getContentPane().add(new FPJGUILabelPanel("Authors", authorToggle),
-				"growx,wrap");
+				"growx,wrap,w ::100%,h ::4cm");
 
 		// DOI
 		FPJGUIMultilineLabel DOILabel = new FPJGUIMultilineLabel();
