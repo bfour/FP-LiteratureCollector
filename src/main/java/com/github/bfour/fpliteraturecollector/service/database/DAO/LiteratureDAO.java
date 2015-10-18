@@ -20,12 +20,11 @@ package com.github.bfour.fpliteraturecollector.service.database.DAO;
  * -///////////////////////////////-
  */
 
-
-import com.github.bfour.fpjcommons.services.CRUD.CRUDDAO;
+import com.github.bfour.fpjcommons.services.CRUD.TransactionalCRUDDAO;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 
-public interface LiteratureDAO extends CRUDDAO<Literature> {
+public interface LiteratureDAO extends TransactionalCRUDDAO<Literature> {
 
 	boolean hasMaxOneAdjacentAtomicRequest(Literature lit);
-	
+
 }

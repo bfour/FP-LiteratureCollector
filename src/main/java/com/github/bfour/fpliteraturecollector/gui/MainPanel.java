@@ -123,6 +123,15 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 			}
 		});
 
+		browseLiteratureButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (litWindow == null)
+					litWindow = new LiteratureWindow(serviceManager);
+				litWindow.setVisible(true);
+			}
+		});
+
 		tagsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -139,12 +148,10 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 			}
 		});
 
-		browseLiteratureButton.addActionListener(new ActionListener() {
+		duplicatesButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (litWindow == null)
-					litWindow = new LiteratureWindow(serviceManager);
-				litWindow.setVisible(true);
+				DuplicateWindow.getInstance(serviceManager).setVisible(true);
 			}
 		});
 
