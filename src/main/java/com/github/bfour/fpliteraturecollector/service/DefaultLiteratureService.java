@@ -22,9 +22,15 @@ package com.github.bfour.fpliteraturecollector.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.github.bfour.fpjcommons.lang.Tuple;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Author;
@@ -108,6 +114,113 @@ public class DefaultLiteratureService extends
 	}
 
 	@Override
+	public List<Literature> autoDeleteDuplicates() throws ServiceException {
+
+		List<Literature> litList = getAll();
+		List<Literature> deleted = new LinkedList<>();
+
+		// go through list in reverse order starting with last element
+		for (int i = litList.size() - 1; i >= 0; i--) {
+			Literature focusedLit = litList.get(i);
+			// go through all preceding elements and compare
+			for (int j = i - 1; j >= 0; j--) {
+				Literature compareLit = litList.get(j);
+				if (isCertainDuplicate(focusedLit, compareLit)) {
+					// if we have a duplicate, remove focusedLit (at i)
+					litList.remove(focusedLit);
+					delete(focusedLit);
+					deleted.add(focusedLit);
+					break;
+				}
+			}
+		}
+
+		return deleted;
+
+		// try {
+		// DAO.beginTx();
+		// } catch (DatalayerException e1) {
+		// e1.printStackTrace();
+		// throw new ServiceException(e1);
+		// }
+		// int offset = 0;
+		// List<Literature> deleted = new ArrayList<>();
+		// while (true) {
+		// DataIterator<Literature> iter = getAllByStream();
+		// try {
+		// Literature focusedLit = null;
+		// for (int i = 0; i <= offset; i++) {
+		// if (!iter.hasNext()) {
+		// DAO.commitTx();
+		// return deleted;
+		// } else
+		// focusedLit = iter.next();
+		// }
+		// offset++;
+		// // go through all subsequent elements and delete matches
+		// // NB: previous elements have already been checked
+		// while (iter.hasNext()) {
+		// Literature compareLit = iter.next();
+		// if (isCertainDuplicate(focusedLit, compareLit)) {
+		// iter.remove();
+		// delete(compareLit);
+		// deleted.add(compareLit);
+		// }
+		// }
+		// } catch (DatalayerException e) {
+		// try {
+		// DAO.rollbackTx();
+		// } catch (DatalayerException e1) {
+		// e1.printStackTrace();
+		// throw new ServiceException(e);
+		// }
+		// e.printStackTrace();
+		// throw new ServiceException(e);
+		// }
+		// }
+	}
+
+	@Override
+	public List<Tuple<Literature, Literature>> getPossibleDuplicate()
+			throws ServiceException {
+
+		List<Literature> litList = getAll();
+		List<Tuple<Literature, Literature>> dups = new LinkedList<>();
+
+		// go through list in reverse order starting with last element
+		for (int i = litList.size() - 1; i >= 0; i--) {
+			Literature focusedLit = litList.get(i);
+			// go through all preceding elements and compare
+			for (int j = i - 1; j >= 0; j--) {
+				Literature compareLit = litList.get(j);
+				if (isProbableDuplicate(focusedLit, compareLit)) {
+					dups.add(new Tuple<Literature, Literature>(focusedLit,
+							compareLit));
+				}
+			}
+		}
+
+		return dups;
+
+		// DataIterator<Literature> iter = getAllByStream();
+		// try {
+		// if (!iter.hasNext())
+		// return null;
+		// Literature focusedLit = iter.next();
+		// while (iter.hasNext()) {
+		// Literature compareLit = iter.next();
+		// if (isProbableDuplicate(focusedLit, compareLit))
+		// return new Tuple<Literature, Literature>(focusedLit,
+		// compareLit);
+		// }
+		// return null;
+		// } catch (DatalayerException e) {
+		// e.printStackTrace();
+		// throw new ServiceException(e);
+		// }
+	}
+
+	@Override
 	public synchronized void deleteCascadeIfMaxOneAdjacentAtomicRequest(
 			Literature literature) throws ServiceException {
 		if (DAO.hasMaxOneAdjacentAtomicRequest(literature)) {
@@ -117,4 +230,47 @@ public class DefaultLiteratureService extends
 		}
 	}
 
+	/**
+	 * Determines whether a pair of two Literatures certainly is a duplicate
+	 * pair. Employs comparative measures to ensure only actual duplicates are
+	 * detected as such (eg. by using identifiers).
+	 * 
+	 * @param litA
+	 * @param litB
+	 * @return
+	 */
+	private boolean isCertainDuplicate(Literature litA, Literature litB) {
+		if (litA.getDOI() != null && litB.getDOI() != null
+				&& litA.getDOI().equals(litB.getDOI()))
+			return true;
+		return false;
+	}
+
+	/**
+	 * Determines whether a pair of two Literatures maybe is a duplicate pair.
+	 * Employs comparative measures that might lead to false positives.
+	 * 
+	 * @param litA
+	 * @param litB
+	 * @return
+	 */
+	private boolean isProbableDuplicate(Literature litA, Literature litB) {
+
+		if (isCertainDuplicate(litA, litB))
+			return true;
+
+		// 1 character different for every 14 characters
+		if (StringUtils.getLevenshteinDistance(
+				Normalizer.normalize(litA.getTitle(), Normalizer.Form.NFD),
+				Normalizer.normalize(litB.getTitle(), Normalizer.Form.NFD)) <= (litA
+				.getTitle().length() / 14))
+			return true;
+
+		if (litA.getISBN() != null && litB.getISBN() != null
+				&& litA.getISBN().equals(litB.getISBN()))
+			return true;
+
+		return false;
+
+	}
 }
