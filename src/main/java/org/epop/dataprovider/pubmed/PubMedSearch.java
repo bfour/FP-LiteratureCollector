@@ -47,11 +47,36 @@ import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 
 public class PubMedSearch extends DataProvider {
 
+	private static enum PubMedDisplayUnits {
+		FIVE(5), TEN(10), TWENTY(20), FIFTY(50), ONE_HUNDRED(100), TWO_HUNDRED(
+				200);
+
+		private int maxDisplayedResults;
+
+		PubMedDisplayUnits(int maxDisplayedResults) {
+			this.maxDisplayedResults = maxDisplayedResults;
+		}
+
+		public int getMaxDisplayedResults() {
+			return maxDisplayedResults;
+		}
+
+		public static PubMedDisplayUnits getDispmaxParamByDesiredResults(
+				int desiredResultNum) {
+			for (PubMedDisplayUnits unit : values()) {
+				if (unit.getMaxDisplayedResults() <= desiredResultNum)
+					return unit;
+			}
+			return null;
+		}
+
+	}
+
 	Logger logger = Logger.getLogger(PubMedSearch.class.getCanonicalName());
 
 	private static final String PUBMED_SEARCH = "http://www.ncbi.nlm.nih.gov/pubmed/";
 	private static final long DELAY = 18611;
-	private static final int searchStep = 10;
+	private static final int SEARCH_STEP = 10;
 
 	private static final String ID_PATTERN_STRING = ".*/pubmed/(\\d+).*";
 	private static Pattern ID_PATTERN;
@@ -70,13 +95,18 @@ public class PubMedSearch extends DataProvider {
 			if (initialWait)
 				Thread.sleep(DELAY);
 
-			URI uri = new URI(PUBMED_SEARCH + "?" + htmlParams); // TODO (high)
-																	// add
-																	// dispmax
-																	// param
+			// TODO (low) implemented cleaner solution (desired num. of results
+			// in AtomicRequest instead of page turns)
+			PubMedDisplayUnits desiredResultUnit = PubMedDisplayUnits
+					.getDispmaxParamByDesiredResults(pageTurnLimit
+							* SEARCH_STEP);
+
+			String uriString = PUBMED_SEARCH + "?" + htmlParams;
+			if (desiredResultUnit != null)
+				uriString += "&dispmax=" + desiredResultUnit;
+			URI uri = new URI(uriString);
 			HTMLPage page = new HTMLPage(uri);
 
-			// if (pageTurnLimit == 0)
 			return new StringReader(page.getRawCode());
 
 		} catch (URISyntaxException e) {
@@ -166,8 +196,7 @@ public class PubMedSearch extends DataProvider {
 			ParserConfigurationException, URISyntaxException,
 			XPathExpressionException, SAXException {
 
-		String pubMedURL = "http://www.ncbi.nlm.nih.gov/pubmed/"
-				+ articleID;
+		String pubMedURL = "http://www.ncbi.nlm.nih.gov/pubmed/" + articleID;
 		HTMLPage htmlPage = new HTMLPage(pubMedURL);
 
 		HTMLPage page = new HTMLPage("http://www.ncbi.nlm.nih.gov/pubmed/"
@@ -267,17 +296,17 @@ public class PubMedSearch extends DataProvider {
 
 		// URLs
 		try {
-			
+
 			NodeList nodes = htmlPage
 					.getNodeSetByXPath(".//*[@id='maincontent']//div[@class='linkoutlist']/ul[1]/li");
 			int i = 0;
 			Node node;
 			Set<Link> webSiteLinks = new HashSet<>();
 			Set<Link> fullTextLinkSet = new HashSet<Link>();
-			
+
 			// add pubmed page
 			webSiteLinks.add(new Link("PubMed", pubMedURL));
-			
+
 			while ((node = nodes.item(i)) != null) {
 
 				if (node.getFirstChild().getAttributes().getNamedItem("href") == null) {
