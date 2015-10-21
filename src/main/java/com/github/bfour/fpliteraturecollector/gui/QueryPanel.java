@@ -153,10 +153,9 @@ public class QueryPanel extends JXPanel implements FeedbackProvider {
 										// TODO optimize
 										for (AtomicRequest atomReq : query
 												.getAtomicRequests())
-											for (Literature lit : atomReq
-													.getResults())
-												if (lit.equals(entity))
-													return true;
+											if (atomReq.getResults()
+													.contains(entity))
+												return true;
 										return false;
 									}
 								}));
