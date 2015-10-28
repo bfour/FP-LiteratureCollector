@@ -243,6 +243,18 @@ public class DefaultLiteratureService extends
 		if (litA.getDOI() != null && litB.getDOI() != null
 				&& litA.getDOI().equals(litB.getDOI()))
 			return true;
+		if (litA.getgScholarID() != null && litB.getgScholarID() != null
+				&& litA.getgScholarID().equals(litB.getgScholarID()))
+			return true;
+		if (litA.getMsAcademicID() != null && litB.getMsAcademicID() != null
+				&& litA.getMsAcademicID().equals(litB.getMsAcademicID()))
+			return true;
+		if (litA.getPubmedID() != null && litB.getPubmedID() != null
+				&& litA.getPubmedID().equals(litB.getPubmedID()))
+			return true;
+		if (litA.getAcmID() != null && litB.getAcmID() != null
+				&& litA.getAcmID().equals(litB.getAcmID()))
+			return true;
 		return false;
 	}
 
