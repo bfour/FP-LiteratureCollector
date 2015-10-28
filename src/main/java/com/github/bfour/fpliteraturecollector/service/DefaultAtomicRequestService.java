@@ -24,42 +24,57 @@ import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
+import com.github.bfour.fpliteraturecollector.domain.ProtocolEntry;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.AtomicRequestDAO;
 
 public class DefaultAtomicRequestService extends
-		EventCreatingCRUDService<AtomicRequest> implements
-		AtomicRequestService {
+		EventCreatingCRUDService<AtomicRequest> implements AtomicRequestService {
 
 	private static DefaultAtomicRequestService instance;
 	private LiteratureService litServ;
+	private ProtocolEntryService protocolServ;
 
 	private DefaultAtomicRequestService(AtomicRequestDAO DAO,
 			boolean forceCreateNewInstance, LiteratureService litServ,
-			AuthorService authServ, TagService tagServ) {
+			ProtocolEntryService protocolService) {
 		super(DAO);
 		this.litServ = litServ;
+		this.protocolServ = protocolService;
 	}
 
 	public static DefaultAtomicRequestService getInstance(AtomicRequestDAO DAO,
 			boolean forceCreateNewInstance, LiteratureService litServ,
-			AuthorService authServ, TagService tagServ) {
+			ProtocolEntryService protocolService) {
 		if (instance == null || forceCreateNewInstance)
 			instance = new DefaultAtomicRequestService(DAO,
-					forceCreateNewInstance, litServ, authServ, tagServ);
+					forceCreateNewInstance, litServ, protocolService);
 		return instance;
 	}
-	
+
 	@Override
 	public AtomicRequest create(AtomicRequest entity) throws ServiceException {
 		checkIntegrity(entity);
-		return super.create(entity);
+		AtomicRequest created = super.create(entity);
+		protocolServ.create(new ProtocolEntry("created atomic request " + created.getID()
+				+ " " + created.getCrawler() + " " + created.getSearchString()));
+		return created;
 	}
 
 	@Override
 	public AtomicRequest update(AtomicRequest oldEntity, AtomicRequest newEntity)
 			throws ServiceException {
 		checkIntegrity(newEntity);
-		return super.update(oldEntity, newEntity);
+		AtomicRequest updated = super.update(oldEntity, newEntity);
+		protocolServ.create(new ProtocolEntry("updated atomic request " + updated.getID()
+				+ " " + updated.getCrawler() + " " + updated.getSearchString()));
+		return updated;
+	}
+
+	@Override
+	public void delete(AtomicRequest entity) throws ServiceException {
+		super.delete(entity);
+		protocolServ.create(new ProtocolEntry("deleted atomic request " + entity.getID()
+				+ " " + entity.getCrawler() + " " + entity.getSearchString()));
 	}
 
 	@Override
