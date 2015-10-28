@@ -42,6 +42,7 @@ import com.github.bfour.fpliteraturecollector.domain.builders.TagBuilder;
 import com.github.bfour.fpliteraturecollector.gui.authors.AuthorsWindow;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 import com.github.bfour.fpliteraturecollector.gui.literature.LiteratureWindow;
+import com.github.bfour.fpliteraturecollector.gui.protocol.ProtocolWindow;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
 public class MainPanel extends JPanel implements FeedbackProvider,
@@ -88,17 +89,17 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 		tagsButton.setMargin(new Insets(4, 16, 4, 16));
 		toolbar.add(tagsButton);
 
-		JButton duplicatesButton = new JButton("Manage duplicates",
+		JButton duplicatesButton = new JButton("Duplicates",
 				Icons.DUPLICATE.getIcon());
 		duplicatesButton.setIconTextGap(6);
 		duplicatesButton.setMargin(new Insets(4, 16, 4, 16));
 		toolbar.add(duplicatesButton);
 
-		JButton settingsButton = new JButton("Edit settings",
-				Icons.CONFIG.getIcon());
-		settingsButton.setIconTextGap(6);
-		settingsButton.setMargin(new Insets(4, 16, 4, 16));
-		toolbar.add(settingsButton);
+		JButton protocolButton = new JButton("Protocol",
+				Icons.PROTOCOL.getIcon());
+		protocolButton.setIconTextGap(6);
+		protocolButton.setMargin(new Insets(4, 16, 4, 16));
+		toolbar.add(protocolButton);
 
 		add(toolbar, "cell 0 0, grow");
 
@@ -155,10 +156,10 @@ public class MainPanel extends JPanel implements FeedbackProvider,
 			}
 		});
 
-		settingsButton.addActionListener(new ActionListener() {
+		protocolButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO
+				ProtocolWindow.getInstance(serviceManager).setVisible(true);
 			}
 		});
 

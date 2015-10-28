@@ -36,6 +36,7 @@ import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Link;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
+import com.github.bfour.fpliteraturecollector.domain.ProtocolEntry;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.LiteratureDAO;
 
@@ -43,26 +44,55 @@ public class DefaultLiteratureService extends
 		EventCreatingCRUDService<Literature> implements LiteratureService {
 
 	private static DefaultLiteratureService instance;
+	private LiteratureDAO DAO;
 	private AuthorService authServ;
 	private FileStorageService fileServ;
-	private LiteratureDAO DAO;
+	private ProtocolEntryService protocolServ;
 
 	private DefaultLiteratureService(LiteratureDAO DAO,
 			boolean forceCreateNewInstance, AuthorService authServ,
-			TagService tagServ, FileStorageService fileServ) {
+			TagService tagServ, FileStorageService fileServ,
+			ProtocolEntryService protocolServ) {
 		super(DAO);
 		this.DAO = DAO;
 		this.authServ = authServ;
 		this.fileServ = fileServ;
+		this.protocolServ = protocolServ;
 	}
 
 	public static DefaultLiteratureService getInstance(LiteratureDAO DAO,
 			boolean forceCreateNewInstance, AuthorService authServ,
-			TagService tagServ, FileStorageService fileServ) {
+			TagService tagServ, FileStorageService fileServ,
+			ProtocolEntryService protocolServ) {
 		if (instance == null || forceCreateNewInstance)
 			instance = new DefaultLiteratureService(DAO,
-					forceCreateNewInstance, authServ, tagServ, fileServ);
+					forceCreateNewInstance, authServ, tagServ, fileServ,
+					protocolServ);
 		return instance;
+	}
+
+	@Override
+	public Literature create(Literature entity) throws ServiceException {
+		Literature created = super.create(entity);
+		protocolServ.create(new ProtocolEntry("created literature "
+				+ created.getID() + " " + created.getTitle()));
+		return created;
+	}
+
+	@Override
+	public void delete(Literature entity) throws ServiceException {
+		super.delete(entity);
+		protocolServ.create(new ProtocolEntry("deleted literature "
+				+ entity.getID() + " " + entity.getTitle()));
+	}
+
+	@Override
+	public Literature update(Literature oldEntity, Literature newEntity)
+			throws ServiceException {
+		Literature updated = super.update(oldEntity, newEntity);
+		protocolServ.create(new ProtocolEntry("updated literature "
+				+ updated.getID() + " " + updated.getTitle()));
+		return updated;
 	}
 
 	@Override
@@ -126,6 +156,9 @@ public class DefaultLiteratureService extends
 			for (int j = i - 1; j >= 0; j--) {
 				Literature compareLit = litList.get(j);
 				if (isCertainDuplicate(focusedLit, compareLit)) {
+					protocolServ.create(new ProtocolEntry(focusedLit.getID()
+							+ " and " + compareLit.getID()
+							+ " are certain duplicates"));
 					// if we have a duplicate, remove focusedLit (at i)
 					litList.remove(focusedLit);
 					delete(focusedLit);

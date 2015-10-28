@@ -23,6 +23,7 @@ package com.github.bfour.fpliteraturecollector.service;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Author;
+import com.github.bfour.fpliteraturecollector.domain.ProtocolEntry;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.AuthorDAO;
 
 public class DefaultAuthorService extends EventCreatingCRUDService<Author>
@@ -30,30 +31,50 @@ public class DefaultAuthorService extends EventCreatingCRUDService<Author>
 
 	private static DefaultAuthorService instance;
 	private AuthorDAO DAO;
+	private ProtocolEntryService protocolServ;
 
-	private DefaultAuthorService(AuthorDAO DAO, boolean forceCreateNewInstance) {
+	private DefaultAuthorService(AuthorDAO DAO, boolean forceCreateNewInstance,
+			ProtocolEntryService protocolServ) {
 		super(DAO);
 		this.DAO = DAO;
+		this.protocolServ = protocolServ;
 	}
 
 	public static DefaultAuthorService getInstance(AuthorDAO DAO,
-			boolean forceCreateNewInstance) {
+			boolean forceCreateNewInstance, ProtocolEntryService protocolServ) {
 		if (instance == null || forceCreateNewInstance)
-			instance = new DefaultAuthorService(DAO, forceCreateNewInstance);
+			instance = new DefaultAuthorService(DAO, forceCreateNewInstance,
+					protocolServ);
 		return instance;
 	}
 
 	@Override
 	public Author create(Author entity) throws ServiceException {
 		checkIntegrity(entity);
-		return super.create(entity);
+		Author created = super.create(entity);
+		protocolServ.create(new ProtocolEntry("created author "
+				+ created.getID() + " " + created.getLastName() + " "
+				+ created.getFirstName()));
+		return created;
 	}
 
 	@Override
 	public Author update(Author oldEntity, Author newEntity)
 			throws ServiceException {
 		checkIntegrity(newEntity);
-		return super.update(oldEntity, newEntity);
+		Author updated = super.update(oldEntity, newEntity);
+		protocolServ.create(new ProtocolEntry("updated author "
+				+ updated.getID() + " " + updated.getLastName() + " "
+				+ updated.getFirstName()));
+		return updated;
+	}
+
+	@Override
+	public void delete(Author entity) throws ServiceException {
+		super.delete(entity);
+		protocolServ.create(new ProtocolEntry("deleted author "
+				+ entity.getID() + " " + entity.getLastName() + " "
+				+ entity.getFirstName()));
 	}
 
 	private void checkIntegrity(Author entity) throws ServiceException {

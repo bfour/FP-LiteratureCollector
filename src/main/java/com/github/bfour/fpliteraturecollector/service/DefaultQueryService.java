@@ -26,6 +26,7 @@ import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
+import com.github.bfour.fpliteraturecollector.domain.ProtocolEntry;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 import com.github.bfour.fpliteraturecollector.domain.builders.QueryBuilder;
@@ -37,20 +38,23 @@ public class DefaultQueryService extends EventCreatingCRUDService<Query>
 
 	private static DefaultQueryService instance;
 	private AtomicRequestService atomReqServ;
+	private ProtocolEntryService protocolServ;
 	private QueryDAO DAO;
 
 	private DefaultQueryService(QueryDAO DAO, boolean forceCreateNewInstance,
-			AtomicRequestService atomReqServ) {
+			AtomicRequestService atomReqServ, ProtocolEntryService protocolServ) {
 		super(DAO);
 		this.DAO = DAO;
 		this.atomReqServ = atomReqServ;
+		this.protocolServ = protocolServ;
 	}
 
 	public static DefaultQueryService getInstance(QueryDAO DAO,
-			boolean forceCreateNewInstance, AtomicRequestService atomReqServ) {
+			boolean forceCreateNewInstance, AtomicRequestService atomReqServ,
+			ProtocolEntryService protocolServ) {
 		if (instance == null || forceCreateNewInstance)
 			instance = new DefaultQueryService(DAO, forceCreateNewInstance,
-					atomReqServ);
+					atomReqServ, protocolServ);
 		return instance;
 	}
 
@@ -58,14 +62,20 @@ public class DefaultQueryService extends EventCreatingCRUDService<Query>
 	public synchronized Query create(Query entity) throws ServiceException {
 		entity = setStatus(entity);
 		checkIntegrity(entity);
-		return super.create(entity);
+		Query created = super.create(entity);
+		protocolServ.create(new ProtocolEntry("created query " + created.getID()
+				+ " " + created.getName()));
+		return created;
 	}
 
 	@Override
 	public synchronized Query update(Query oldEntity, Query newEntity)
 			throws ServiceException {
 		checkIntegrity(newEntity);
-		return super.update(oldEntity, setStatus(newEntity));
+		Query updated = super.update(oldEntity, setStatus(newEntity));
+		protocolServ.create(new ProtocolEntry("updated query " + updated.getID()
+				+ " " + updated.getName()));
+		return updated;
 	}
 
 	@Override
@@ -74,6 +84,8 @@ public class DefaultQueryService extends EventCreatingCRUDService<Query>
 			for (AtomicRequest ar : entity.getAtomicRequests())
 				atomReqServ.delete(ar);
 		super.delete(entity);
+		protocolServ.create(new ProtocolEntry("deleted query " + entity.getID()
+				+ " " + entity.getName()));
 	}
 
 	@Override

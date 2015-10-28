@@ -51,6 +51,7 @@ import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlerService;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JAtomicRequestDAO;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JAuthorDAO;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JLiteratureDAO;
+import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JProtocolEntryDAO;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JQueryDAO;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JTagDAO;
 
@@ -70,6 +71,7 @@ public class ServiceManager {
 	private LiteratureService litServ;
 	private AtomicRequestService atomReqServ;
 	private QueryService queryServ;
+	private ProtocolEntryService protocolServ;
 	private CrawlerService crawlServ;
 	private ReportService reportServ;
 	private FileStorageService fileServ;
@@ -84,6 +86,8 @@ public class ServiceManager {
 	private Neo4JAtomicRequestDAO atomReqDAO;
 	@Autowired
 	private Neo4JQueryDAO queryDAO;
+	@Autowired
+	private Neo4JProtocolEntryDAO protocolEntryDAO;
 
 	public ServiceManager() throws ServiceException {
 		this(ServiceManagerMode.TEST);
@@ -133,7 +137,8 @@ public class ServiceManager {
 
 	public AuthorService getAuthorService() {
 		if (authServ == null)
-			authServ = DefaultAuthorService.getInstance(authDAO, true);
+			authServ = DefaultAuthorService.getInstance(authDAO, true,
+					getProtocolEntryService());
 		return authServ;
 	}
 
@@ -146,23 +151,30 @@ public class ServiceManager {
 	public LiteratureService getLiteratureService() {
 		if (litServ == null)
 			litServ = DefaultLiteratureService.getInstance(literatureDAO, true,
-					getAuthorService(), getTagService(), getFileServ());
+					getAuthorService(), getTagService(), getFileServ(),
+					getProtocolEntryService());
 		return litServ;
 	}
 
 	public AtomicRequestService getAtomicRequestService() {
 		if (atomReqServ == null)
 			atomReqServ = DefaultAtomicRequestService.getInstance(atomReqDAO,
-					true, getLiteratureService(), getAuthorService(),
-					getTagService());
+					true, getLiteratureService(), getProtocolEntryService());
 		return atomReqServ;
 	}
 
 	public QueryService getQueryService() {
 		if (queryServ == null)
 			queryServ = DefaultQueryService.getInstance(queryDAO, true,
-					getAtomicRequestService());
+					getAtomicRequestService(), getProtocolEntryService());
 		return queryServ;
+	}
+
+	public ProtocolEntryService getProtocolEntryService() {
+		if (protocolServ == null)
+			protocolServ = DefaultProtocolEntryService.getInstance(
+					protocolEntryDAO, true);
+		return protocolServ;
 	}
 
 	public CrawlerService getCrawlerService() {
