@@ -100,6 +100,7 @@ public class LiteraturePanel extends
 		// accept file drops
 		setDropTarget(new DropTarget() {
 			private static final long serialVersionUID = -679032801574638314L;
+
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			@Override
 			public synchronized void drop(DropTargetDropEvent event) {
@@ -163,7 +164,7 @@ public class LiteraturePanel extends
 
 		// ID
 		FPJGUILabel<String> IDLabel = new FPJGUILabel<String>();
-		getContentPane().add(new FPJGUILabelPanel("ID", IDLabel), "growx,wrap");
+		getContentPane().add(new FPJGUILabelPanel("ID", IDLabel), "growx,spanx 2,wrap");
 
 		// title
 		FPJGUITextPane titleField = new FPJGUITextPane();
@@ -183,7 +184,7 @@ public class LiteraturePanel extends
 				titleLabel, titleField);
 		registerToggleComponent(titleToggle);
 		getContentPane().add(new FPJGUILabelPanel("Title", titleToggle),
-				"growx,wrap");
+				"growx,spanx 2,wrap");
 
 		// abstract
 		FPJGUITextPane abstractField = new FPJGUITextPane();
@@ -203,7 +204,7 @@ public class LiteraturePanel extends
 				abstractFieldScrollPane);
 		registerToggleComponent(abstractToggle);
 		getContentPane().add(new FPJGUILabelPanel("Abstract", abstractToggle),
-				"growx,wrap");
+				"growx,spanx 2,wrap");
 
 		// type
 		EntityTableBrowsePanel<LiteratureType> litTypeBrowsePanel = new EntityTableBrowsePanel<LiteratureType>(
@@ -230,7 +231,7 @@ public class LiteraturePanel extends
 				typeLabel, typeCombo);
 		registerToggleComponent(typeToggle);
 		getContentPane().add(new FPJGUILabelPanel("Type", typeToggle),
-				"growx,wrap");
+				"growx,spanx 2,wrap");
 
 		// authors
 		FPJGUIMultilineLabel authorLabel = new FPJGUIMultilineLabel();
@@ -246,7 +247,7 @@ public class LiteraturePanel extends
 				authorFieldScrollPane);
 		registerToggleComponent(authorToggle);
 		getContentPane().add(new FPJGUILabelPanel("Authors", authorToggle),
-				"growx,wrap,w ::100%,h ::4cm");
+				"growx,spanx 2,wrap,w ::100%,h ::4cm");
 
 		// DOI
 		FPJGUIMultilineLabel DOILabel = new FPJGUIMultilineLabel();
@@ -255,7 +256,7 @@ public class LiteraturePanel extends
 				DOILabel, DOIField);
 		registerToggleComponent(DOIToggle);
 		getContentPane().add(new FPJGUILabelPanel("DOI", DOIToggle),
-				"growx,wrap");
+				"growx, w 50%");
 
 		// ISBN
 		FPJGUIMultilineLabel ISBNLabel = new FPJGUIMultilineLabel();
@@ -264,7 +265,45 @@ public class LiteraturePanel extends
 				ISBNLabel, ISBNField);
 		registerToggleComponent(ISBNToggle);
 		getContentPane().add(new FPJGUILabelPanel("ISBN", ISBNToggle),
-				"growx,wrap");
+				"growx, w 50%, wrap");
+
+		// gScholarID
+		FPJGUIMultilineLabel gScholarIDLabel = new FPJGUIMultilineLabel();
+		FPJGUITextField gScholarIDField = new FPJGUITextField();
+		ToggleEditFormComponent<String> gScholarIDToggle = new ToggleEditFormComponent<String>(
+				gScholarIDLabel, gScholarIDField);
+		registerToggleComponent(gScholarIDToggle);
+		getContentPane().add(
+				new FPJGUILabelPanel("Google Scholar ID", gScholarIDToggle),
+				"growx, w 50%");
+
+		// msAcademicID
+		FPJGUIMultilineLabel msAcademicIDLabel = new FPJGUIMultilineLabel();
+		FPJGUITextField msAcademicIDField = new FPJGUITextField();
+		ToggleEditFormComponent<String> msAcademicIDToggle = new ToggleEditFormComponent<String>(
+				msAcademicIDLabel, msAcademicIDField);
+		registerToggleComponent(msAcademicIDToggle);
+		getContentPane().add(
+				new FPJGUILabelPanel("MS Academic ID", msAcademicIDToggle),
+				"growx, w 50%, wrap");
+
+		// pubMedID
+		FPJGUIMultilineLabel pubMedIDLabel = new FPJGUIMultilineLabel();
+		FPJGUITextField pubMedIDField = new FPJGUITextField();
+		ToggleEditFormComponent<String> pubMedIDToggle = new ToggleEditFormComponent<String>(
+				pubMedIDLabel, pubMedIDField);
+		registerToggleComponent(pubMedIDToggle);
+		getContentPane().add(new FPJGUILabelPanel("PubMed ID", pubMedIDToggle),
+				"growx, w 50%");
+
+		// acmID
+		FPJGUIMultilineLabel acmIDLabel = new FPJGUIMultilineLabel();
+		FPJGUITextField acmIDField = new FPJGUITextField();
+		ToggleEditFormComponent<String> acmIDToggle = new ToggleEditFormComponent<String>(
+				acmIDLabel, acmIDField);
+		registerToggleComponent(acmIDToggle);
+		getContentPane().add(new FPJGUILabelPanel("ACM ID", acmIDToggle),
+				"growx, w 50%, wrap");
 
 		// tags
 		TagTilePanel<Tag> tagLabel = new TagTilePanel<>(false);
@@ -273,7 +312,7 @@ public class LiteraturePanel extends
 				tagLabel, tagField);
 		registerToggleComponent(tagToggle);
 		getContentPane().add(new FPJGUILabelPanel("Tags", tagToggle),
-				"growx,wrap");
+				"growx,spanx 2,wrap");
 
 		// website URL
 		LinkSetPanel websiteURLPanel = new LinkSetPanel();
@@ -282,7 +321,7 @@ public class LiteraturePanel extends
 				websiteURLPanel, websiteURLEditPanel);
 		registerToggleComponent(websiteURLToggle);
 		getContentPane().add(new FPJGUILabelPanel("Website", websiteURLToggle),
-				"growx,wrap,w ::100%");
+				"growx,spanx 2,wrap,w ::100%");
 
 		// fulltextURL
 		LinkSetPanel fulltextURLPanel = new LinkSetPanel();
@@ -292,7 +331,7 @@ public class LiteraturePanel extends
 		registerToggleComponent(fulltextURLToggle);
 		getContentPane().add(
 				new FPJGUILabelPanel("Full Text URL", fulltextURLToggle),
-				"growx,wrap,w ::100%");
+				"growx,spanx 2,wrap,w ::100%");
 
 		// fulltextPath
 		LinkSetPanel fulltextPathPanel = new LinkSetPanel();
@@ -302,7 +341,7 @@ public class LiteraturePanel extends
 		registerToggleComponent(fulltextPathToggle);
 		getContentPane().add(
 				new FPJGUILabelPanel("Full Text Files", fulltextPathToggle),
-				"growx,wrap,w ::100%");
+				"growx,spanx 2,wrap,w ::100%");
 
 		// notes
 		FPJGUIMultilineLabel notesLabel = new FPJGUIMultilineLabel();
@@ -318,7 +357,7 @@ public class LiteraturePanel extends
 				notesFieldScrollPane);
 		registerToggleComponent(notesToggle);
 		getContentPane().add(new FPJGUILabelPanel("Notes", notesToggle),
-				"growx,wrap,w ::100%");
+				"growx,wrap,spanx 2,w ::100%");
 
 		// mappings
 		ObjectGraphicalValueContainerMapper<LiteratureBuilder, String> IDMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, String>(
@@ -436,6 +475,62 @@ public class LiteraturePanel extends
 			}
 		};
 		getMappers().add(ISBNMapper);
+
+		ObjectGraphicalValueContainerMapper<LiteratureBuilder, String> gScholarIDMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, String>(
+				gScholarIDToggle) {
+			@Override
+			public String getValue(LiteratureBuilder object) {
+				return object.getgScholarID();
+			}
+
+			@Override
+			public void setValue(LiteratureBuilder object, String value) {
+				object.setgScholarID(value);
+			}
+		};
+		getMappers().add(gScholarIDMapper);
+
+		ObjectGraphicalValueContainerMapper<LiteratureBuilder, String> msAcademicIDMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, String>(
+				msAcademicIDToggle) {
+			@Override
+			public String getValue(LiteratureBuilder object) {
+				return object.getMsAcademicID();
+			}
+
+			@Override
+			public void setValue(LiteratureBuilder object, String value) {
+				object.setMsAcademicID(value);
+			}
+		};
+		getMappers().add(msAcademicIDMapper);
+
+		ObjectGraphicalValueContainerMapper<LiteratureBuilder, String> pubMedIDMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, String>(
+				pubMedIDToggle) {
+			@Override
+			public String getValue(LiteratureBuilder object) {
+				return object.getPubmedID();
+			}
+
+			@Override
+			public void setValue(LiteratureBuilder object, String value) {
+				object.setPubmedID(value);
+			}
+		};
+		getMappers().add(pubMedIDMapper);
+
+		ObjectGraphicalValueContainerMapper<LiteratureBuilder, String> acmIDMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, String>(
+				acmIDToggle) {
+			@Override
+			public String getValue(LiteratureBuilder object) {
+				return object.getAcmID();
+			}
+
+			@Override
+			public void setValue(LiteratureBuilder object, String value) {
+				object.setAcmID(value);
+			}
+		};
+		getMappers().add(acmIDMapper);
 
 		ObjectGraphicalValueContainerMapper<LiteratureBuilder, List<Tag>> tagMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, List<Tag>>(
 				tagToggle) {
