@@ -40,6 +40,10 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 	private Set<Author> authors;
 	private String DOI;
 	private ISBN ISBN;
+	private String gScholarID;
+	private String msAcademicID;
+	private String pubmedID;
+	private String acmID;
 	private Integer year;
 	private String publicationContext;
 	private String publisher;
@@ -70,6 +74,10 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		setAuthors(l.getAuthors());
 		setDOI(l.getDOI());
 		setISBN(l.getISBN());
+		setgScholarID(l.getgScholarID());
+		setMsAcademicID(l.getMsAcademicID());
+		setPubmedID(l.getPubmedID());
+		setAcmID(l.getAcmID());
 		setYear(l.getYear());
 		setPublicationContext(l.getPublicationContext());
 		setPublisher(l.getPublisher());
@@ -92,7 +100,8 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 	public Literature getObject() {
 		return new Literature(getID(), getCreationTime(), getLastChangeTime(),
 				getTitle(), getAbstractText(), getType(), getAuthors(),
-				getDOI(), getISBN(), getYear(), getPublicationContext(),
+				getDOI(), getISBN(), getgScholarID(), getMsAcademicID(),
+				getPubmedID(), getAcmID(), getYear(), getPublicationContext(),
 				getPublisher(), getWebsiteURLs(), getFulltextURLs(),
 				getFulltextFilePaths(), getgScholarNumCitations(),
 				getMsAcademicNumCitations(), getAcmNumCitations(),
@@ -151,6 +160,38 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 	public LiteratureBuilder setISBN(ISBN iSBN) {
 		ISBN = iSBN;
 		return this;
+	}
+
+	public String getgScholarID() {
+		return gScholarID;
+	}
+
+	public void setgScholarID(String gScholarID) {
+		this.gScholarID = gScholarID;
+	}
+
+	public String getMsAcademicID() {
+		return msAcademicID;
+	}
+
+	public void setMsAcademicID(String msAcademicID) {
+		this.msAcademicID = msAcademicID;
+	}
+
+	public String getPubmedID() {
+		return pubmedID;
+	}
+
+	public void setPubmedID(String pubmedID) {
+		this.pubmedID = pubmedID;
+	}
+
+	public String getAcmID() {
+		return acmID;
+	}
+
+	public void setAcmID(String acmID) {
+		this.acmID = acmID;
 	}
 
 	public Integer getYear() {

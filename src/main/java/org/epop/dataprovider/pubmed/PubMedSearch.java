@@ -165,7 +165,8 @@ public class PubMedSearch extends DataProvider {
 					.get(0).getAttributeValue("href"));
 			if (matcher.find()) {
 				String id = matcher.group(1);
-				String entryLink = PUBMED_SEARCH + id;
+				// String entryLink = PUBMED_SEARCH + id;
+				litBuilder.setPubmedID(id);
 				try {
 					articleToLiterature(id, litBuilder);
 				} catch (URISyntaxException | IOException e) {
