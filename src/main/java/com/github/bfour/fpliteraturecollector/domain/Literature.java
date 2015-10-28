@@ -69,8 +69,11 @@ public class Literature extends Neo4JEntity implements Searchable {
 	private Set<Author> authors;
 
 	private String DOI;
-
 	private ISBN ISBN;
+	private String gScholarID;
+	private String msAcademicID;
+	private String pubmedID;
+	private String acmID;
 
 	private Integer year;
 
@@ -104,8 +107,9 @@ public class Literature extends Neo4JEntity implements Searchable {
 			String title, String abstractText, LiteratureType type,
 			Set<Author> authors, String dOI,
 			com.github.bfour.fpliteraturecollector.domain.ISBN iSBN,
-			Integer year, String publicationContext, String publisher,
-			Set<Link> websiteURLs, Set<Link> fulltextURLs,
+			String gScholarID, String msAcademicID, String pubmedID,
+			String acmID, Integer year, String publicationContext,
+			String publisher, Set<Link> websiteURLs, Set<Link> fulltextURLs,
 			Set<Link> fulltextFilePaths, Integer gScholarNumCitations,
 			Integer msAcademicNumCitations, Integer acmNumCitations,
 			Integer pubmedNumCitations, Integer ieeeNumCitations,
@@ -117,6 +121,10 @@ public class Literature extends Neo4JEntity implements Searchable {
 		this.authors = authors;
 		DOI = dOI;
 		ISBN = iSBN;
+		this.gScholarID = gScholarID;
+		this.msAcademicID = msAcademicID;
+		this.pubmedID = pubmedID;
+		this.acmID = acmID;
 		this.year = year;
 		this.publicationContext = publicationContext;
 		this.publisher = publisher;
@@ -131,6 +139,8 @@ public class Literature extends Neo4JEntity implements Searchable {
 		this.tags = tags;
 		this.notes = notes;
 	}
+
+
 
 	public String getTitle() {
 		return title;
@@ -154,6 +164,22 @@ public class Literature extends Neo4JEntity implements Searchable {
 
 	public ISBN getISBN() {
 		return ISBN;
+	}
+
+	public String getgScholarID() {
+		return gScholarID;
+	}
+
+	public String getMsAcademicID() {
+		return msAcademicID;
+	}
+
+	public String getPubmedID() {
+		return pubmedID;
+	}
+
+	public String getAcmID() {
+		return acmID;
 	}
 
 	public Integer getYear() {

@@ -60,6 +60,8 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 	private static Pattern AUTHOR_ID_PATTERN;
 	private static final String CITATION_COUNT_PATTERN_STRING = ".*Citation Count: (\\d+).*";
 	private static Pattern CITATION_COUNT_PATTERN;
+	private static final String ID_PATTERN_STRING = ".*[?&]id=(\\d+).*";
+	private static Pattern ID_PATTERN;
 
 	static private Logger logger = Logger
 			.getLogger(ACMDigitalLibrarySearch.class);
@@ -238,6 +240,18 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 						pageURI = new URI(DOMAIN + href + "&preflayout=flat");
 						builder.getWebsiteURLs().add(new Link("ACM", pageURI));
 					} catch (URISyntaxException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					try {
+						if (ID_PATTERN == null)
+							ID_PATTERN = Pattern.compile(ID_PATTERN_STRING);
+						Matcher idMatcher = ID_PATTERN.matcher(href);
+						if (idMatcher.find())
+							builder.setAcmID(idMatcher.group(1));
+						// else
+						// TODO error handling
+					} catch (PatternSyntaxException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}

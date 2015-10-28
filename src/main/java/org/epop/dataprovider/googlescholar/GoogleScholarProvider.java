@@ -46,11 +46,6 @@ import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.http.client.methods.HttpGet;
-//import org.apache.http.client.params.ClientPNames;
-//import org.apache.http.client.params.CookiePolicy;
-import org.apache.http.client.utils.URIUtils;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.epop.dataprovider.DataProvider;
 import org.epop.dataprovider.HTMLPage;
 import org.epop.dataprovider.PatternMismatchException;
@@ -66,19 +61,21 @@ import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
 import com.github.bfour.fpliteraturecollector.domain.builders.AuthorBuilder;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
+//import org.apache.http.client.params.ClientPNames;
+//import org.apache.http.client.params.CookiePolicy;
 
 public class GoogleScholarProvider extends DataProvider {
 
-	private static final Pattern citespattern = Pattern.compile("(\\d+)");
+	private static final Pattern CITES_PATTERN = Pattern.compile("(\\d+)");
+	private static final Pattern ID_PATTERN = Pattern
+			.compile(".*cluster=(\\d+).*");
 
 	private static final List<String> malformed = new LinkedList<String>();
 	private static final long DELAY = 18611;
 	private static final String SCHOLAR_GOOGLE_COM = "http://scholar.google.com";
-	//
 
 	Logger logger = Logger.getLogger(GoogleScholarProvider.class
 			.getCanonicalName());
-	private DefaultHttpClient httpclient;
 
 	@Override
 	public String getDescription() {
@@ -111,8 +108,9 @@ public class GoogleScholarProvider extends DataProvider {
 					URI newUri = new URI(SCHOLAR_GOOGLE_COM + "/scholar?"
 							+ htmlParams + "&start=" + (counter * 10)
 							+ htmlParams);
-					page = new HTMLPage(uri);
-					responseBody = responseBody + page.getRawCode();;
+					page = new HTMLPage(newUri);
+					responseBody = responseBody + page.getRawCode();
+					;
 				}
 			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
@@ -199,10 +197,17 @@ public class GoogleScholarProvider extends DataProvider {
 					e2.printStackTrace();
 				}
 				try {
+					// cluster link
 					String googleLinkURL = "http://scholar.google.com"
 							+ article.select(".gs_fl .gs_nph").attr("href");
 					litBuilder.getWebsiteURLs().add(
 							new Link("Google Scholar", googleLinkURL));
+					// scholar ID
+					Matcher idMatcher = ID_PATTERN.matcher(googleLinkURL);
+					if (idMatcher.find())
+						litBuilder.setgScholarID(idMatcher.group(1));
+					// else
+					// TODO error handling
 				} catch (URISyntaxException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -261,7 +266,7 @@ public class GoogleScholarProvider extends DataProvider {
 
 				// citations
 				String citedby = article.select(".gs_fl a[href*=cites]").text();
-				Matcher cm = citespattern.matcher(citedby);
+				Matcher cm = CITES_PATTERN.matcher(citedby);
 				try {
 					int cites = cm.find() ? Integer.parseInt(cm.group(1)) : 0;
 					litBuilder.setgScholarNumCitations(cites);

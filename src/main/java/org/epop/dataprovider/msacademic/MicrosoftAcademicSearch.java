@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -62,6 +63,7 @@ public class MicrosoftAcademicSearch extends DataProvider {
 
 	private static final Pattern AUTHOR_ID_PATTERN = Pattern
 			.compile(".*academic\\.research\\.microsoft\\.com/Author/(\\d+)/.*");
+	private static final Pattern ID_PATTERN = Pattern.compile(".*Publication/(\\d+)/.*");
 
 	@Override
 	public String getDescription() {
@@ -219,6 +221,11 @@ public class MicrosoftAcademicSearch extends DataProvider {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
+								Matcher idMatcher = ID_PATTERN.matcher(pageURLString);
+								if (idMatcher.find())
+									litBuilder.setMsAcademicID(idMatcher.group(1));
+								// else
+								// TODO error handling
 							} else if (classAttr2.getValue().equals(
 									id + "Citation")) {
 								Source htmlSource = new Source(a.getContent()
