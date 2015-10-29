@@ -24,7 +24,7 @@ public class Utils {
 			NAME_PATTERN = Pattern.compile("(((\\S+) )*)((\\S+)? )(\\S+)");
 		Matcher matcher = NAME_PATTERN.matcher(name);
 		if (!matcher.find())
-			throw new PatternMismatchException("NAME_PATTERN did not match");
+			throw new PatternMismatchException("NAME_PATTERN did not match with "+name);
 		String first = matcher.group(1).trim();
 		String middle = matcher.group(5).trim();
 		String last = matcher.group(6).trim();
