@@ -278,18 +278,18 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 						try {
 							Utils.setFirstMiddleLastNameFromNameString(
 									authBuilder, paperAuthor);
+							Matcher matcher = AUTHOR_ID_PATTERN.matcher(q
+									.getAttributeValue("href"));
+							if (matcher.find()) {
+								authBuilder.setAcmID(matcher.group(1));
+							} else {
+								// TODO error handling
+							}
+							authors.add(authBuilder.getObject());
 						} catch (PatternMismatchException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						Matcher matcher = AUTHOR_ID_PATTERN.matcher(q
-								.getAttributeValue("href"));
-						if (matcher.find()) {
-							authBuilder.setAcmID(matcher.group(1));
-						} else {
-							// TODO error handling
-						}
-						authors.add(authBuilder.getObject());
 					}
 					builder.setAuthors(authors);
 					/**
