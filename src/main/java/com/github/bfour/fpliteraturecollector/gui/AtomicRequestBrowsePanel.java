@@ -102,12 +102,23 @@ public class AtomicRequestBrowsePanel extends
 				}, true, 30, 30, "requestStrings", false);
 		getListLikeContainer().addColumn(requestStringColumn);
 
+		FPJGUITableColumn<AtomicRequest> errorColumn = new FPJGUITableColumn<AtomicRequest>(
+				"Error", new FPJGUITableFieldGetter<AtomicRequest>() {
+					@Override
+					public String get(AtomicRequest item) {
+						return item.getProcessingError();
+					}
+				}, true, 30, 30, "error", false);
+		getListLikeContainer().addColumn(errorColumn);
+
 		getListLikeContainer().setPreferredColumnWidth(crawlerColumn, 100);
 		getListLikeContainer()
 				.setPreferredColumnWidth(requestStringColumn, 400);
+		getListLikeContainer().setPreferredColumnWidth(errorColumn, 100);
 
 		getListLikeContainer().setMinimumColumnWidth(crawlerColumn, 100);
 		getListLikeContainer().setMinimumColumnWidth(requestStringColumn, 200);
+		getListLikeContainer().setMinimumColumnWidth(errorColumn, 50);
 
 		// ==== loader ====
 		setLoader(new EntityLoader<AtomicRequest>() {

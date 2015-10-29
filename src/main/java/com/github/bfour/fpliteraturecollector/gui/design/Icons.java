@@ -45,6 +45,7 @@ public enum Icons {
 	DUPLICATE("classpath:icons/column_double.png"),
 	CONFIG("classpath:icons/setting_tools_32.png"),
 	PROTOCOL("classpath:icons/script.png"),
+	MERGE("classpath:icons/merge.png"),
 	
 	TAG_16("classpath:icons/three_tags_16.png"),
 	TAG_32("classpath:icons/three_tags_32.png"),

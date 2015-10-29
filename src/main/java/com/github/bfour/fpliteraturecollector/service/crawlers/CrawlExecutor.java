@@ -39,6 +39,7 @@ import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
+import com.github.bfour.fpliteraturecollector.domain.ProtocolEntry;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.domain.builders.AtomicRequestBuilder;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
@@ -46,6 +47,7 @@ import com.github.bfour.fpliteraturecollector.domain.builders.QueryBuilder;
 import com.github.bfour.fpliteraturecollector.service.AtomicRequestService;
 import com.github.bfour.fpliteraturecollector.service.AuthorService;
 import com.github.bfour.fpliteraturecollector.service.LiteratureService;
+import com.github.bfour.fpliteraturecollector.service.ProtocolEntryService;
 import com.github.bfour.fpliteraturecollector.service.QueryService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.abstraction.BackgroundWorker;
@@ -60,6 +62,7 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 		private AtomicRequestService atomReqServ;
 		private AuthorService authServ;
 		private LiteratureService litServ;
+		private ProtocolEntryService protocolServ;
 		private List<Exception> errors;
 		private Crawler crawler;
 
@@ -68,6 +71,7 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 			this.atomReqServ = servMan.getAtomicRequestService();
 			this.litServ = servMan.getLiteratureService();
 			this.authServ = servMan.getAuthorService();
+			this.protocolServ = servMan.getProtocolEntryService();
 			this.errors = new ArrayList<Exception>();
 			this.crawler = crawler;
 		}
@@ -89,6 +93,12 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 						// get results and update
 						List<Literature> results = crawler.process(topRequest
 								.getB());
+						protocolServ.create(new ProtocolEntry(
+								"crawler finished with " + results.size()
+										+ " results for atomic request "
+										+ topRequest.getB().getID() + " "
+										+ topRequest.getB().getCrawler() + " "
+										+ topRequest.getB().getSearchString()));
 
 						List<Literature> persistedResults = new ArrayList<Literature>(
 								results.size());
@@ -132,6 +142,12 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 					} catch (Exception e) {
 						e.printStackTrace();
 						LOGGER.error(e);
+						protocolServ.create(new ProtocolEntry(
+								"crawler encountered an error for atomic request "
+										+ topRequest.getB().getID() + " "
+										+ topRequest.getB().getCrawler() + " "
+										+ topRequest.getB().getSearchString()
+										+ ": " + e.getMessage()));
 						AtomicRequest newAtomReq = new AtomicRequestBuilder(
 								topRequest.getB()).setProcessed(true)
 								.setProcessingError(e.getMessage()).getObject();
@@ -309,7 +325,7 @@ public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider 
 		try {
 			setState(BackgroundWorkerState.FINISHED);
 			feedbackProxy.feedbackBroadcasted(new Feedback(null,
-					"Crawling has been finished.", FeedbackType.SUCCESS));
+					"Crawling has finished.", FeedbackType.SUCCESS));
 		} catch (InvalidStateTransitionException e) {
 			feedbackProxy
 					.feedbackBroadcasted(new Feedback(

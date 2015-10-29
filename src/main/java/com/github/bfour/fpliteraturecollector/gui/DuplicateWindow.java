@@ -7,13 +7,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 
-import org.jdesktop.swingx.JXPanel;
-
-import com.github.bfour.fpjcommons.events.BatchCreateEvent;
-import com.github.bfour.fpjcommons.events.BatchDeleteEvent;
-import com.github.bfour.fpjcommons.events.BatchUpdateEvent;
 import com.github.bfour.fpjcommons.events.ChangeHandler;
-import com.github.bfour.fpjcommons.events.ChangeListener;
 import com.github.bfour.fpjcommons.events.CreateEvent;
 import com.github.bfour.fpjcommons.events.DeleteEvent;
 import com.github.bfour.fpjcommons.events.NonBatchChangeListener;
@@ -83,11 +77,11 @@ public class DuplicateWindow extends FPJGUIWindow {
 
 		litPanelA = new LiteraturePanel(servMan);
 		PanelDecorator.decorateWithDropShadow(litPanelA);
-		add(litPanelA, "w 50%, h :16cm:16cm");
+		add(litPanelA, "w 50%, growy, h 16cm::");
 
 		litPanelB = new LiteraturePanel(servMan);
 		PanelDecorator.decorateWithDropShadow(litPanelB);
-		add(litPanelB, "w 50%, h :16cm:16cm");
+		add(litPanelB, "w 50%, growy, h 16cm::, wrap");
 
 		ChangeHandler.getInstance(Literature.class).addEventListener(
 				new NonBatchChangeListener<Literature>() {
@@ -112,6 +106,48 @@ public class DuplicateWindow extends FPJGUIWindow {
 				});
 
 		refreshProbableDuplicates();
+
+		JButton mergeIntoAButton = new JButton("Merge into this entry",
+				Icons.MERGE.getIcon());
+		mergeIntoAButton.setIconTextGap(6);
+		mergeIntoAButton.setMargin(new Insets(4, 16, 4, 16));
+		add(mergeIntoAButton, "alingy center, cell 0 2");
+
+		JButton mergeIntoBButton = new JButton("Merge into this entry",
+				Icons.MERGE.getIcon());
+		mergeIntoBButton.setIconTextGap(6);
+		mergeIntoBButton.setMargin(new Insets(4, 16, 4, 16));
+		add(mergeIntoBButton, "alingy center, cell 1 2");
+
+		mergeIntoAButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					servMan.getLiteratureService().mergeInto(currentLitB,
+							currentLitA);
+				} catch (ServiceException e1) {
+					e1.printStackTrace();
+					feedbackBroadcasted(new Feedback(mergeIntoAButton,
+							"Sorry, merging failed.", e1.getMessage(),
+							FeedbackType.ERROR));
+				}
+			}
+		});
+
+		mergeIntoBButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					servMan.getLiteratureService().mergeInto(currentLitA,
+							currentLitB);
+				} catch (ServiceException e1) {
+					e1.printStackTrace();
+					feedbackBroadcasted(new Feedback(mergeIntoAButton,
+							"Sorry, merging failed.", e1.getMessage(),
+							FeedbackType.ERROR));
+				}
+			}
+		});
 
 	}
 
