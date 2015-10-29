@@ -68,8 +68,8 @@ public class Literature extends Neo4JEntity implements Searchable {
 	@RelatedTo(type = "AUTHORS", direction = Direction.OUTGOING)
 	private Set<Author> authors;
 
-	private String DOI;
 	private ISBN ISBN;
+	private String DOI;
 	private String gScholarID;
 	private String msAcademicID;
 	private String pubmedID;

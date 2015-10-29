@@ -46,4 +46,16 @@ public interface LiteratureService extends BidirectionalCRUDService<Literature> 
 	void deleteCascadeIfMaxOneAdjacentAtomicRequest(Literature literature)
 			throws ServiceException;
 
+	/**
+	 * Merges one literature (A) into another (B) and deletes the former (A).
+	 * Merging means fields that are not defined in B but in A are copied from A
+	 * to B. If a field is a collection, the entries of that collection that
+	 * exist in A but not in B will be copied to the collection in B.
+	 * 
+	 * @param fromLit
+	 * @param intoLit
+	 * @throws ServiceException 
+	 */
+	void mergeInto(Literature fromLit, Literature intoLit) throws ServiceException;
+
 }

@@ -33,10 +33,13 @@ import org.apache.commons.lang.StringUtils;
 import com.github.bfour.fpjcommons.lang.Tuple;
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
+import com.github.bfour.fpjcommons.utils.Getter;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Link;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
+import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
 import com.github.bfour.fpliteraturecollector.domain.ProtocolEntry;
+import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.LiteratureDAO;
 
@@ -158,7 +161,9 @@ public class DefaultLiteratureService extends
 				if (isCertainDuplicate(focusedLit, compareLit)) {
 					protocolServ.create(new ProtocolEntry(focusedLit.getID()
 							+ " and " + compareLit.getID()
-							+ " are certain duplicates"));
+							+ " are certain duplicates ("
+							+ focusedLit.getTitle() + " | "
+							+ compareLit.getTitle() + ")"));
 					// if we have a duplicate, remove focusedLit (at i)
 					litList.remove(focusedLit);
 					delete(focusedLit);
@@ -274,18 +279,23 @@ public class DefaultLiteratureService extends
 	 */
 	private boolean isCertainDuplicate(Literature litA, Literature litB) {
 		if (litA.getDOI() != null && litB.getDOI() != null
+				&& !litA.getDOI().isEmpty()
 				&& litA.getDOI().equals(litB.getDOI()))
 			return true;
 		if (litA.getgScholarID() != null && litB.getgScholarID() != null
+				&& !litA.getgScholarID().isEmpty()
 				&& litA.getgScholarID().equals(litB.getgScholarID()))
 			return true;
 		if (litA.getMsAcademicID() != null && litB.getMsAcademicID() != null
+				&& !litA.getMsAcademicID().isEmpty()
 				&& litA.getMsAcademicID().equals(litB.getMsAcademicID()))
 			return true;
 		if (litA.getPubmedID() != null && litB.getPubmedID() != null
+				&& !litA.getPubmedID().isEmpty()
 				&& litA.getPubmedID().equals(litB.getPubmedID()))
 			return true;
 		if (litA.getAcmID() != null && litB.getAcmID() != null
+				&& !litA.getAcmID().isEmpty()
 				&& litA.getAcmID().equals(litB.getAcmID()))
 			return true;
 		return false;
@@ -318,4 +328,144 @@ public class DefaultLiteratureService extends
 		return false;
 
 	}
+
+	@Override
+	public synchronized void mergeInto(Literature fromLit, Literature intoLit)
+			throws ServiceException {
+
+		LiteratureBuilder intoBuilder = new LiteratureBuilder(intoLit);
+
+		if (fromLit.getAbstractText() != null
+				&& !fromLit.getAbstractText().isEmpty()
+				&& (intoLit.getAbstractText() == null
+						|| intoLit.getAbstractText().isEmpty() || fromLit
+						.getAbstractText().length() > intoLit.getAbstractText()
+						.length()))
+			intoBuilder.setAbstractText(fromLit.getAbstractText());
+
+		if (fromLit.getType() != null
+				&& (intoLit.getType() == null || intoLit.getType() == LiteratureType.UNKNOWN))
+			intoBuilder.setType(fromLit.getType());
+
+		intoBuilder.setAuthors(getMergeValue(fromLit, intoLit,
+				new Getter<Literature, Set<Author>>() {
+					@Override
+					public Set<Author> get(Literature input) {
+						return input.getAuthors();
+					}
+				}));
+
+		intoBuilder
+				.setISBN(getMergeValue(fromLit.getISBN(), intoLit.getISBN()));
+
+		intoBuilder.setDOI(getMergeValue(fromLit.getDOI(), intoLit.getDOI()));
+		intoBuilder.setgScholarID(getMergeValue(fromLit.getgScholarID(),
+				intoLit.getgScholarID()));
+		intoBuilder.setMsAcademicID(getMergeValue(fromLit.getMsAcademicID(),
+				intoLit.getMsAcademicID()));
+		intoBuilder.setPubmedID(getMergeValue(fromLit.getPubmedID(),
+				intoLit.getPubmedID()));
+		intoBuilder.setAcmID(getMergeValue(fromLit.getAcmID(),
+				intoLit.getAcmID()));
+
+		intoBuilder
+				.setYear(getMergeValue(fromLit.getYear(), intoLit.getYear()));
+		intoBuilder.setPublicationContext(getMergeValue(
+				fromLit.getPublicationContext(),
+				intoLit.getPublicationContext()));
+		intoBuilder.setPublisher(getMergeValue(fromLit.getPublisher(),
+				intoLit.getPublisher()));
+
+		intoBuilder.setWebsiteURLs(getMergeValue(fromLit, intoLit,
+				new Getter<Literature, Set<Link>>() {
+					@Override
+					public Set<Link> get(Literature input) {
+						return input.getWebsiteURLs();
+					}
+				}));
+		intoBuilder.setFulltextURLs(getMergeValue(fromLit, intoLit,
+				new Getter<Literature, Set<Link>>() {
+					@Override
+					public Set<Link> get(Literature input) {
+						return input.getFulltextURLs();
+					}
+				}));
+		intoBuilder.setFulltextFilePaths(getMergeValue(fromLit, intoLit,
+				new Getter<Literature, Set<Link>>() {
+					@Override
+					public Set<Link> get(Literature input) {
+						return input.getFulltextFilePaths();
+					}
+				}));
+
+		intoBuilder.setgScholarNumCitations(getMergeValue(
+				fromLit.getgScholarNumCitations(),
+				intoLit.getgScholarNumCitations()));
+		intoBuilder.setMsAcademicNumCitations(getMergeValue(
+				fromLit.getMsAcademicNumCitations(),
+				intoLit.getMsAcademicNumCitations()));
+		intoBuilder.setAcmNumCitations(getMergeValue(
+				fromLit.getAcmNumCitations(), intoLit.getAcmNumCitations()));
+		intoBuilder.setPubmedNumCitations(getMergeValue(
+				fromLit.getPubmedNumCitations(),
+				intoLit.getPubmedNumCitations()));
+		intoBuilder.setIeeeNumCitations(getMergeValue(
+				fromLit.getIeeeNumCitations(), intoLit.getIeeeNumCitations()));
+
+		intoBuilder.setTags(getMergeValue(fromLit, intoLit,
+				new Getter<Literature, Set<Tag>>() {
+					@Override
+					public Set<Tag> get(Literature input) {
+						return input.getTags();
+					}
+				}));
+
+		intoBuilder.setNotes(getMergeValue(fromLit.getNotes(),
+				intoLit.getNotes()));
+
+		update(intoLit, intoBuilder.getObject());
+		delete(fromLit);
+		protocolServ.create(new ProtocolEntry("merged literature "
+				+ fromLit.getID() + " into " + intoLit.getID()));
+
+	}
+
+	private String getMergeValue(String from, String to) {
+		if (from == null || from.isEmpty())
+			return to;
+		if (to == null || to.isEmpty())
+			return from;
+		return to;
+	}
+
+	private <X> X getMergeValue(X from, X to) {
+		if (from == null)
+			return to;
+		if (to == null)
+			return from;
+		return to;
+	}
+
+	private <X> Set<X> getMergeValue(Literature from, Literature to,
+			Getter<Literature, Set<X>> getter) {
+
+		Set<X> toSet = getter.get(to);
+
+		// from set is 0
+		if (getter.get(from) == null || getter.get(from).isEmpty())
+			return toSet;
+
+		// from set is not 0
+		if (toSet == null)
+			toSet = new HashSet<X>();
+
+		for (X x : getter.get(from)) {
+			if (!toSet.contains(x))
+				toSet.add(x);
+		}
+
+		return toSet;
+
+	}
+
 }
