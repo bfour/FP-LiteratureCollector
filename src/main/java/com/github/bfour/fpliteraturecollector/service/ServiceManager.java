@@ -47,7 +47,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Service;
 
 import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlerService;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JAtomicRequestDAO;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JAuthorDAO;

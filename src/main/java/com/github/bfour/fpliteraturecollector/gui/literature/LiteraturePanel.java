@@ -433,7 +433,10 @@ public class LiteraturePanel extends
 					builder.append(auth.getLastName());
 					builder.append(", ");
 				}
-				return builder.substring(0, builder.length() - 2);
+				if (builder.length() > 2)
+					return builder.substring(0, builder.length() - 2);
+				else
+					return "";
 			}
 
 			@Override

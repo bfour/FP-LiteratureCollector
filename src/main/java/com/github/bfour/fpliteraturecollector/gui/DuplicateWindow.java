@@ -1,5 +1,6 @@
 package com.github.bfour.fpliteraturecollector.gui;
 
+import java.awt.Component;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,6 +22,7 @@ import com.github.bfour.fpjgui.components.PlainToolbar;
 import com.github.bfour.fpjgui.design.PanelDecorator;
 import com.github.bfour.fpjgui.layout.Orientation;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
+import com.github.bfour.fpliteraturecollector.domain.ProtocolEntry;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 import com.github.bfour.fpliteraturecollector.gui.literature.LiteraturePanel;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
@@ -34,6 +36,7 @@ public class DuplicateWindow extends FPJGUIWindow {
 	private LiteraturePanel litPanelB;
 	private Literature currentLitA;
 	private Literature currentLitB;
+	private List<Tuple<Literature, Literature>> duplicates;
 
 	private DuplicateWindow(ServiceManager servMan) {
 
@@ -83,27 +86,27 @@ public class DuplicateWindow extends FPJGUIWindow {
 		PanelDecorator.decorateWithDropShadow(litPanelB);
 		add(litPanelB, "w 50%, growy, h 16cm::, wrap");
 
-		ChangeHandler.getInstance(Literature.class).addEventListener(
-				new NonBatchChangeListener<Literature>() {
-
-					@Override
-					public void handle(UpdateEvent<Literature> ev) {
-						if (ev.getOldObject().equals(currentLitA)
-								|| ev.getOldObject().equals(currentLitB))
-							refreshProbableDuplicates();
-					}
-
-					@Override
-					public void handle(DeleteEvent<Literature> ev) {
-						if (ev.getDeletedObject().equals(currentLitA)
-								|| ev.getDeletedObject().equals(currentLitB))
-							refreshProbableDuplicates();
-					}
-
-					@Override
-					public void handle(CreateEvent<Literature> ev) {
-					}
-				});
+		// ChangeHandler.getInstance(Literature.class).addEventListener(
+		// new NonBatchChangeListener<Literature>() {
+		//
+		// @Override
+		// public void handle(UpdateEvent<Literature> ev) {
+		// if (ev.getOldObject().equals(currentLitA)
+		// || ev.getOldObject().equals(currentLitB))
+		// refreshProbableDuplicates();
+		// }
+		//
+		// @Override
+		// public void handle(DeleteEvent<Literature> ev) {
+		// if (ev.getDeletedObject().equals(currentLitA)
+		// || ev.getDeletedObject().equals(currentLitB))
+		// refreshProbableDuplicates();
+		// }
+		//
+		// @Override
+		// public void handle(CreateEvent<Literature> ev) {
+		// }
+		// });
 
 		refreshProbableDuplicates();
 
@@ -111,43 +114,60 @@ public class DuplicateWindow extends FPJGUIWindow {
 				Icons.MERGE.getIcon());
 		mergeIntoAButton.setIconTextGap(6);
 		mergeIntoAButton.setMargin(new Insets(4, 16, 4, 16));
-		add(mergeIntoAButton, "alingy center, cell 0 2");
+		add(mergeIntoAButton, "cell 0 2");
 
 		JButton mergeIntoBButton = new JButton("Merge into this entry",
 				Icons.MERGE.getIcon());
 		mergeIntoBButton.setIconTextGap(6);
 		mergeIntoBButton.setMargin(new Insets(4, 16, 4, 16));
-		add(mergeIntoBButton, "alingy center, cell 1 2");
+		add(mergeIntoBButton, "cell 1 2");
 
 		mergeIntoAButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					servMan.getLiteratureService().mergeInto(currentLitB,
-							currentLitA);
-				} catch (ServiceException e1) {
-					e1.printStackTrace();
-					feedbackBroadcasted(new Feedback(mergeIntoAButton,
-							"Sorry, merging failed.", e1.getMessage(),
-							FeedbackType.ERROR));
-				}
+				merge(mergeIntoAButton, currentLitB, currentLitA);
 			}
 		});
 
 		mergeIntoBButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					servMan.getLiteratureService().mergeInto(currentLitA,
-							currentLitB);
-				} catch (ServiceException e1) {
-					e1.printStackTrace();
-					feedbackBroadcasted(new Feedback(mergeIntoAButton,
-							"Sorry, merging failed.", e1.getMessage(),
-							FeedbackType.ERROR));
-				}
+				merge(mergeIntoBButton, currentLitA, currentLitB);
 			}
 		});
+
+	}
+
+	private void merge(Component source, Literature from, Literature into) {
+
+		Feedback statusFeedback = new Feedback(source, "Merging.",
+				FeedbackType.PROGRESS);
+
+		try {
+			feedbackBroadcasted(statusFeedback);
+			servMan.getLiteratureService().mergeInto(from, into);
+			servMan.getProtocolEntryService().create(
+					new ProtocolEntry("manually merged " + from.getID()
+							+ " into " + into.getID()));
+			feedbackRevoked(statusFeedback);
+			feedbackBroadcasted(new Feedback(source,
+					"<html>Manually merged <br/>" + from + " into <br/>" + into
+							+ ".</html>", FeedbackType.SUCCESS));
+		} catch (ServiceException e1) {
+			e1.printStackTrace();
+			feedbackRevoked(statusFeedback);
+			feedbackBroadcasted(new Feedback(source, "Sorry, merging failed.",
+					e1.getMessage(), FeedbackType.ERROR));
+		}
+
+		try {
+			setNextDuplicate();
+		} catch (ServiceException e) {
+			e.printStackTrace();
+			feedbackBroadcasted(new Feedback(source,
+					"Sorry, failed to set next duplicate.", e.getMessage(),
+					FeedbackType.ERROR));
+		}
 
 	}
 
@@ -157,18 +177,32 @@ public class DuplicateWindow extends FPJGUIWindow {
 		return instance;
 	}
 
-	private void refreshProbableDuplicates() {
-		try {
-			List<Tuple<Literature, Literature>> dups = servMan
-					.getLiteratureService().getPossibleDuplicate();
+	private void setNextDuplicate() throws ServiceException {
+		if (duplicates.isEmpty()) {
 			this.currentLitA = null;
 			this.currentLitB = null;
-			if (!dups.isEmpty()) {
-				this.currentLitA = dups.get(0).getA();
-				this.currentLitB = dups.get(0).getB();
-			}
 			litPanelA.setEntity(DuplicateWindow.this, this.currentLitA);
 			litPanelB.setEntity(DuplicateWindow.this, this.currentLitB);
+		} else if (!servMan.getLiteratureService().exists(
+				duplicates.get(0).getA())
+				|| !servMan.getLiteratureService().exists(
+						duplicates.get(0).getB())) {
+			// skip this entry
+			duplicates.remove(0);
+			setNextDuplicate();
+		} else {
+			this.currentLitA = duplicates.get(0).getA();
+			this.currentLitB = duplicates.get(0).getB();
+			duplicates.remove(0);
+		}
+	}
+
+	private void refreshProbableDuplicates() {
+		try {
+			duplicates = servMan.getLiteratureService().getPossibleDuplicates();
+			this.currentLitA = null;
+			this.currentLitB = null;
+			setNextDuplicate();
 		} catch (ServiceException e) {
 			e.printStackTrace();
 			feedbackBroadcasted(new Feedback(DuplicateWindow.this,
