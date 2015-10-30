@@ -166,7 +166,7 @@ public class DefaultLiteratureService extends
 							+ compareLit.getTitle() + ")"));
 					// if we have a duplicate, remove focusedLit (at i)
 					litList.remove(focusedLit);
-					delete(focusedLit);
+					mergeInto(focusedLit, compareLit);
 					deleted.add(focusedLit);
 					break;
 				}
@@ -219,7 +219,30 @@ public class DefaultLiteratureService extends
 	}
 
 	@Override
-	public List<Tuple<Literature, Literature>> getPossibleDuplicate()
+	public Tuple<Literature, Literature> getPossibleDuplicate()
+			throws ServiceException {
+
+		List<Literature> litList = getAll();
+
+		// go through list in reverse order starting with last element
+		for (int i = litList.size() - 1; i >= 0; i--) {
+			Literature focusedLit = litList.get(i);
+			// go through all preceding elements and compare
+			for (int j = i - 1; j >= 0; j--) {
+				Literature compareLit = litList.get(j);
+				if (isProbableDuplicate(focusedLit, compareLit)) {
+					return new Tuple<Literature, Literature>(focusedLit,
+							compareLit);
+				}
+			}
+		}
+
+		return null;
+
+	}
+
+	@Override
+	public List<Tuple<Literature, Literature>> getPossibleDuplicates()
 			throws ServiceException {
 
 		List<Literature> litList = getAll();
@@ -278,27 +301,91 @@ public class DefaultLiteratureService extends
 	 * @return
 	 */
 	private boolean isCertainDuplicate(Literature litA, Literature litB) {
+
+		int matches = 0;
+
 		if (litA.getDOI() != null && litB.getDOI() != null
 				&& !litA.getDOI().isEmpty()
-				&& litA.getDOI().equals(litB.getDOI()))
-			return true;
+				&& litA.getDOI().equals(litB.getDOI())) {
+			try {
+				protocolServ.create(new ProtocolEntry(
+						"certain duplicate determined based on DOI "
+								+ litA.getDOI()));
+			} catch (ServiceException e) {
+				e.printStackTrace();
+			}
+			matches++;
+		}
+
 		if (litA.getgScholarID() != null && litB.getgScholarID() != null
 				&& !litA.getgScholarID().isEmpty()
-				&& litA.getgScholarID().equals(litB.getgScholarID()))
-			return true;
+				&& litA.getgScholarID().equals(litB.getgScholarID())) {
+			try {
+				protocolServ.create(new ProtocolEntry(
+						"certain duplicate determined based on gScholarID "
+								+ litA.getgScholarID()));
+			} catch (ServiceException e) {
+				e.printStackTrace();
+			}
+			matches++;
+		}
+
 		if (litA.getMsAcademicID() != null && litB.getMsAcademicID() != null
 				&& !litA.getMsAcademicID().isEmpty()
-				&& litA.getMsAcademicID().equals(litB.getMsAcademicID()))
-			return true;
+				&& litA.getMsAcademicID().equals(litB.getMsAcademicID())) {
+			try {
+				protocolServ.create(new ProtocolEntry(
+						"certain duplicate determined based on MsAcademicID "
+								+ litA.getMsAcademicID()));
+			} catch (ServiceException e) {
+				e.printStackTrace();
+			}
+			matches++;
+		}
+
 		if (litA.getPubmedID() != null && litB.getPubmedID() != null
 				&& !litA.getPubmedID().isEmpty()
-				&& litA.getPubmedID().equals(litB.getPubmedID()))
-			return true;
+				&& litA.getPubmedID().equals(litB.getPubmedID())) {
+			try {
+				protocolServ.create(new ProtocolEntry(
+						"certain duplicate determined based on PubmedID "
+								+ litA.getPubmedID()));
+			} catch (ServiceException e) {
+				e.printStackTrace();
+			}
+			matches++;
+		}
+
 		if (litA.getAcmID() != null && litB.getAcmID() != null
 				&& !litA.getAcmID().isEmpty()
-				&& litA.getAcmID().equals(litB.getAcmID()))
+				&& litA.getAcmID().equals(litB.getAcmID())) {
+			try {
+				protocolServ.create(new ProtocolEntry(
+						"certain duplicate determined based on AcmID "
+								+ litA.getAcmID()));
+			} catch (ServiceException e) {
+				e.printStackTrace();
+			}
+			matches++;
+		}
+
+		if (matches > 0) {
+			if (!litA.getTitle().equals(litB.getTitle())) {
+				try {
+					protocolServ.create(new ProtocolEntry(
+							"certain duplicate despite mismatch of titles "
+									+ litA.getID() + ":" + litB.getID() + " ("
+									+ litA.getTitle() + " | " + litB.getTitle()
+									+ ")"));
+				} catch (ServiceException e) {
+					e.printStackTrace();
+				}
+			}
 			return true;
+		}
+
 		return false;
+
 	}
 
 	/**
@@ -347,16 +434,15 @@ public class DefaultLiteratureService extends
 				&& (intoLit.getType() == null || intoLit.getType() == LiteratureType.UNKNOWN))
 			intoBuilder.setType(fromLit.getType());
 
-		intoBuilder.setAuthors(getMergeValue(fromLit, intoLit,
-				new Getter<Literature, Set<Author>>() {
-					@Override
-					public Set<Author> get(Literature input) {
-						return input.getAuthors();
-					}
-				}));
+		// TODO (low) we'd first have to find a way to determine equality of
+		// authors
+		if (fromLit.getAuthors() != null
+				&& (intoLit.getAuthors() == null || intoLit.getAuthors().size() < fromLit
+						.getAuthors().size()))
+			intoBuilder.setAuthors(fromLit.getAuthors());
 
-		intoBuilder
-				.setISBN(getMergeValue(fromLit.getISBN(), intoLit.getISBN()));
+		intoBuilder.setISBN(getMergeValue(fromLit.getISBN(),
+					intoLit.getISBN()));
 
 		intoBuilder.setDOI(getMergeValue(fromLit.getDOI(), intoLit.getDOI()));
 		intoBuilder.setgScholarID(getMergeValue(fromLit.getgScholarID(),

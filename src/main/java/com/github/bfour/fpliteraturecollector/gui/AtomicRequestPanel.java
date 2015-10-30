@@ -269,7 +269,18 @@ public class AtomicRequestPanel extends
 
 			@Override
 			public void setValue(AtomicRequestBuilder object, String value) {
+				if (value != null)
+					value = value.replace("\"", "%22");
 				object.setSearchString(value);
+				// try {
+				// object.setSearchString(URLEncoder.encode(value, "UTF-8"));
+				// } catch (UnsupportedEncodingException e) {
+				// e.printStackTrace();
+				// getFeedbackProxy().feedbackBroadcasted(
+				// new Feedback(requestStringToggle,
+				// "URL cannot be encoded", e.getMessage(),
+				// FeedbackType.ERROR));
+				// }
 			}
 		};
 		getMappers().add(requestStringMapper);

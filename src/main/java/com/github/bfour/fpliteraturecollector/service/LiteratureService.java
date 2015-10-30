@@ -40,7 +40,10 @@ public interface LiteratureService extends BidirectionalCRUDService<Literature> 
 	 */
 	List<Literature> autoDeleteDuplicates() throws ServiceException;
 
-	List<Tuple<Literature, Literature>> getPossibleDuplicate()
+	Tuple<Literature, Literature> getPossibleDuplicate()
+			throws ServiceException;
+	
+	List<Tuple<Literature, Literature>> getPossibleDuplicates()
 			throws ServiceException;
 
 	void deleteCascadeIfMaxOneAdjacentAtomicRequest(Literature literature)
