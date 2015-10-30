@@ -273,14 +273,13 @@ public class MicrosoftAcademicSearch extends DataProvider {
 						try {
 							Utils.setFirstMiddleLastNameFromNameString(
 									authBuilder, nameString);
+							if (litBuilder.getAuthors() == null)
+								litBuilder.setAuthors(new HashSet<Author>());
+							litBuilder.getAuthors().add(authBuilder.getObject());
 						} catch (PatternMismatchException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-
-						if (litBuilder.getAuthors() == null)
-							litBuilder.setAuthors(new HashSet<Author>());
-						litBuilder.getAuthors().add(authBuilder.getObject());
 					}
 
 				} else if (classAttr.getValue().equals("conference")) {
@@ -331,6 +330,11 @@ public class MicrosoftAcademicSearch extends DataProvider {
 		if (pageURI != null) {
 			HTMLPage page;
 			try {
+				try {
+					Thread.sleep(1861);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
 				page = new HTMLPage(pageURI);
 				try {
 					Node abstractTextNode = page

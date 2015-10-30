@@ -55,12 +55,12 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 
 	private static final String DOMAIN = "http://dl.acm.org/";
 	private static final String BASE_URL = "http://dl.acm.org/results.cfm";
-	private static final long DELAY = 18611;
+	private static final long DELAY = 28611;
 	private static final String AUTHOR_ID_PATTERN_STRING = ".*author_page\\.cfm\\?id=(\\d+).*";
 	private static Pattern AUTHOR_ID_PATTERN;
 	private static final String CITATION_COUNT_PATTERN_STRING = ".*Citation Count: (\\d+).*";
 	private static Pattern CITATION_COUNT_PATTERN;
-	private static final String ID_PATTERN_STRING = ".*[?&]id=(\\d+).*";
+	private static final String ID_PATTERN_STRING = ".*[?&]id=((\\d+)\\.?(\\d+)?).*";
 	private static Pattern ID_PATTERN;
 
 	static private Logger logger = Logger
@@ -247,8 +247,9 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 						if (ID_PATTERN == null)
 							ID_PATTERN = Pattern.compile(ID_PATTERN_STRING);
 						Matcher idMatcher = ID_PATTERN.matcher(href);
-						if (idMatcher.find())
+						if (idMatcher.find()) {
 							builder.setAcmID(idMatcher.group(1));
+						}
 						// else
 						// TODO error handling
 					} catch (PatternSyntaxException e) {
@@ -357,6 +358,11 @@ public class ACMDigitalLibrarySearch extends DataProvider {
 		}
 
 		try {
+			try {
+				Thread.sleep(2861);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
 			HTMLPage entryPage = new HTMLPage(pageURI);
 			try {
 				Node abstractTextNode = entryPage

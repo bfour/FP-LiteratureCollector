@@ -71,7 +71,7 @@ public class GoogleScholarProvider extends DataProvider {
 			.compile(".*cluster=(\\d+).*");
 
 	private static final List<String> malformed = new LinkedList<String>();
-	private static final long DELAY = 18611;
+	private static final long DELAY = 28611;
 	private static final String SCHOLAR_GOOGLE_COM = "http://scholar.google.com";
 
 	Logger logger = Logger.getLogger(GoogleScholarProvider.class
@@ -222,15 +222,23 @@ public class GoogleScholarProvider extends DataProvider {
 
 				// split by " - " (authors - publication, year - publisher)
 				String[] splits = rawHTML.split(" - ");
-				if (splits.length != 3)
-					throw new DatalayerException(
-							"dashTokenizer should have three sections (authors - publication, year - publisher), found "
-									+ splits.length
-									+ "; maybe Google Scholar layout has changed");
-				String namesHTML = splits[0];
-				namesHTML = namesHTML.replace("…, ", "");
-				String publicationHTML = splits[1];
-				String publisherHTML = splits[2];
+//				if (splits.length != 3)
+//					throw new DatalayerException(
+//							"dashTokenizer should have three sections (authors - publication, year - publisher), found "
+//									+ splits.length
+//									+ "; maybe Google Scholar layout has changed");
+				String namesHTML = "", publicationHTML = "", publisherHTML = "";
+				if (splits.length > 0) {
+					namesHTML = splits[0];
+					namesHTML = namesHTML.replace("…, ", "");
+				}
+				if (splits.length == 2) {
+					publisherHTML = splits[1];
+				}
+				if (splits.length > 3) {
+					publicationHTML = splits[1];
+					publisherHTML = splits[2];
+				}
 
 				// authors
 				try {
