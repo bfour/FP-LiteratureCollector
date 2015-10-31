@@ -136,6 +136,25 @@ public class DuplicateWindow extends FPJGUIWindow {
 			}
 		});
 
+		JButton skipButton = new JButton("Skip", Icons.MERGE.getIcon());
+		skipButton.setIconTextGap(6);
+		skipButton.setMargin(new Insets(4, 16, 4, 16));
+		add(skipButton, "cell 1 2");
+
+		skipButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					setNextDuplicate();
+				} catch (ServiceException e1) {
+					e1.printStackTrace();
+					feedbackBroadcasted(new Feedback(skipButton,
+							"Sorry, failed to set next duplicate.", e1
+									.getMessage(), FeedbackType.ERROR));
+				}
+			}
+		});
+
 	}
 
 	private void merge(Component source, Literature from, Literature into) {
@@ -193,6 +212,8 @@ public class DuplicateWindow extends FPJGUIWindow {
 		} else {
 			this.currentLitA = duplicates.get(0).getA();
 			this.currentLitB = duplicates.get(0).getB();
+			litPanelA.setEntity(DuplicateWindow.this, this.currentLitA);
+			litPanelB.setEntity(DuplicateWindow.this, this.currentLitB);
 			duplicates.remove(0);
 		}
 	}

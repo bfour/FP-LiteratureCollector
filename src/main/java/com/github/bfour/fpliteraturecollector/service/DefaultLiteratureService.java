@@ -403,9 +403,10 @@ public class DefaultLiteratureService extends
 
 		// 1 character different for every 14 characters
 		if (StringUtils.getLevenshteinDistance(
-				Normalizer.normalize(litA.getTitle(), Normalizer.Form.NFD),
-				Normalizer.normalize(litB.getTitle(), Normalizer.Form.NFD)) <= (litA
-				.getTitle().length() / 14))
+				Normalizer.normalize(litA.getTitle(), Normalizer.Form.NFD)
+						.toLowerCase(),
+				Normalizer.normalize(litB.getTitle(), Normalizer.Form.NFD)
+						.toLowerCase()) <= (litA.getTitle().length() / 14))
 			return true;
 
 		if (litA.getISBN() != null && litB.getISBN() != null
@@ -441,8 +442,8 @@ public class DefaultLiteratureService extends
 						.getAuthors().size()))
 			intoBuilder.setAuthors(fromLit.getAuthors());
 
-		intoBuilder.setISBN(getMergeValue(fromLit.getISBN(),
-					intoLit.getISBN()));
+		intoBuilder
+				.setISBN(getMergeValue(fromLit.getISBN(), intoLit.getISBN()));
 
 		intoBuilder.setDOI(getMergeValue(fromLit.getDOI(), intoLit.getDOI()));
 		intoBuilder.setgScholarID(getMergeValue(fromLit.getgScholarID(),
