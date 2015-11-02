@@ -58,6 +58,8 @@ import com.github.bfour.fpjgui.components.SearchComboBox;
 import com.github.bfour.fpjgui.components.ToggleEditFormComponent;
 import com.github.bfour.fpjgui.components.composite.EntityEditPanel;
 import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
+import com.github.bfour.fpjgui.components.table.FPJGUITable;
+import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
 import com.github.bfour.fpjgui.design.Borders;
 import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
 import com.github.bfour.fpjguiextended.tagging.TagTilePanel;
@@ -164,7 +166,8 @@ public class LiteraturePanel extends
 
 		// ID
 		FPJGUILabel<String> IDLabel = new FPJGUILabel<String>();
-		getContentPane().add(new FPJGUILabelPanel("ID", IDLabel), "growx,spanx 2,wrap");
+		getContentPane().add(new FPJGUILabelPanel("ID", IDLabel),
+				"growx,spanx 2,wrap");
 
 		// title
 		FPJGUITextPane titleField = new FPJGUITextPane();
@@ -210,6 +213,17 @@ public class LiteraturePanel extends
 		EntityTableBrowsePanel<LiteratureType> litTypeBrowsePanel = new EntityTableBrowsePanel<LiteratureType>(
 				LiteratureType.class);
 		litTypeBrowsePanel
+				.getListLikeContainer()
+				.addColumn(
+						new FPJGUITableColumn<LiteratureType>(
+								"Name",
+								new FPJGUITable.FPJGUITableFieldGetter<LiteratureType>() {
+									@Override
+									public String get(LiteratureType item) {
+										return item.getTellingName();
+									}
+								}));
+		litTypeBrowsePanel
 				.setLoader(new EntityLoader<Literature.LiteratureType>() {
 					private final List<LiteratureType> list = new ArrayList<LiteratureType>(
 							Arrays.asList(LiteratureType.values()));
@@ -219,6 +233,7 @@ public class LiteraturePanel extends
 						return list;
 					}
 				});
+		litTypeBrowsePanel.load();
 		SearchComboBox<LiteratureType> typeCombo = new SearchComboBox<LiteratureType>(
 				litTypeBrowsePanel, new Getter<LiteratureType, String>() {
 					@Override
@@ -226,12 +241,21 @@ public class LiteraturePanel extends
 						return type.getTellingName();
 					}
 				});
+		typeCombo.setEditable(true);
 		FPJGUILabel<LiteratureType> typeLabel = new FPJGUILabel<>();
 		ToggleEditFormComponent<LiteratureType> typeToggle = new ToggleEditFormComponent<LiteratureType>(
 				typeLabel, typeCombo);
 		registerToggleComponent(typeToggle);
-		getContentPane().add(new FPJGUILabelPanel("Type", typeToggle),
-				"growx,spanx 2,wrap");
+		getContentPane().add(new FPJGUILabelPanel("Type", typeToggle), "w 50%");
+
+		// year
+		FPJGUITextField yearField = new FPJGUITextField();
+		FPJGUILabel<String> yearLabel = new FPJGUILabel<>();
+		ToggleEditFormComponent<String> yearToggle = new ToggleEditFormComponent<String>(
+				yearLabel, yearField);
+		registerToggleComponent(yearToggle);
+		getContentPane().add(new FPJGUILabelPanel("Year", yearToggle),
+				"w 50%,wrap");
 
 		// authors
 		FPJGUIMultilineLabel authorLabel = new FPJGUIMultilineLabel();
@@ -418,6 +442,27 @@ public class LiteraturePanel extends
 			}
 		};
 		getMappers().add(typeMapper);
+
+		ObjectGraphicalValueContainerMapper<LiteratureBuilder, String> yearMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, String>(
+				yearToggle) {
+			@Override
+			public String getValue(LiteratureBuilder object) {
+				return object.getYear() + "";
+			}
+
+			@Override
+			public void setValue(LiteratureBuilder object, String value) {
+				try {
+					object.setYear(Integer.parseInt(value));
+				} catch (NumberFormatException e) {
+					getFeedbackProxy().feedbackBroadcasted(
+							new Feedback(yearToggle,
+									"The year value you entered is invalid.", e
+											.getMessage(), FeedbackType.ERROR));
+				}
+			}
+		};
+		getMappers().add(yearMapper);
 
 		ObjectGraphicalValueContainerMapper<LiteratureBuilder, String> authorMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, String>(
 				authorToggle) {

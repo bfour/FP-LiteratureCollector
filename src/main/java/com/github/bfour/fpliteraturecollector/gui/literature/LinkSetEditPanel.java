@@ -34,6 +34,7 @@ public class LinkSetEditPanel extends JPanel implements
 	private FeedbackProviderProxy feedbackProxy = new FeedbackProviderProxy();
 	private ValidationRule<Set<Link>> rule;
 	private GraphicalValueContainerValidationFeedbackHandler<Set<Link>> validationFeedbackHandler;
+	private Set<Link> value;
 
 	public LinkSetEditPanel() {
 		setLayout(new MigLayout("insets 0", "[]", "[]"));
@@ -48,11 +49,16 @@ public class LinkSetEditPanel extends JPanel implements
 			if (comp instanceof LinkEditPanel)
 				links.add(((LinkEditPanel) comp).getValue());
 		}
+		if (links.isEmpty())
+			return value; // this is necessary as the initially set value might
+							// have been null
 		return links;
 	}
 
 	@Override
 	public void setValue(Set<Link> value) {
+
+		this.value = value;
 
 		for (Component comp : getComponents()) {
 			remove(comp);
