@@ -102,6 +102,9 @@ public class DefaultLiteratureService extends
 	public synchronized void downloadFullTexts(Literature literature)
 			throws ServiceException {
 
+		if (literature.getFulltextURLs() == null)
+			return;
+		
 		outerloop: for (Link fullTextURL : literature.getFulltextURLs()) {
 
 			if (literature.getFulltextFilePaths() != null)
@@ -136,8 +139,9 @@ public class DefaultLiteratureService extends
 				newFileLinks.add(fullTextFileLink);
 				update(literature, new LiteratureBuilder(literature)
 						.setFulltextFilePaths(newFileLinks).getObject());
-			} catch (IOException e) {
+			} catch (IOException | IllegalArgumentException e) {
 				// TODO Auto-generated catch block
+				System.err.println(fullTextURL);
 				e.printStackTrace();
 				throw new ServiceException(e);
 			}
