@@ -44,6 +44,7 @@ public class LinkPanel extends JPanel implements ValueContainer<Link>,
 		setLayout(new MigLayout("insets 0"));
 
 		fulltextURLLabel = FPJGUIButtonFactory.createButton(ButtonFormats.LINK);
+		fulltextURLLabel.setFocusable(false);
 		fulltextURLLabel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

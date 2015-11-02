@@ -254,13 +254,26 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 				}, true, 30, 30, "tags", false);
 		getListLikeContainer().addColumn(tagsColumn);
 
+		FPJGUITableColumn<Literature> yearColumn = new FPJGUITableColumn<Literature>(
+				"Year", new FPJGUITableFieldGetter<Literature>() {
+					@Override
+					public String get(Literature item) {
+						if (item.getYear() == null)
+							return "";
+						return item.getYear() + "";
+					}
+				}, true, 30, 30, "year", false);
+		getListLikeContainer().addColumn(yearColumn);
+
 		getListLikeContainer().setPreferredColumnWidth(titleColumn, 200);
 		getListLikeContainer().setPreferredColumnWidth(authorsColumn, 40);
 		getListLikeContainer().setPreferredColumnWidth(tagsColumn, 30);
+		getListLikeContainer().setPreferredColumnWidth(yearColumn, 30);
 
 		getListLikeContainer().setMinimumColumnWidth(titleColumn, 100);
 		getListLikeContainer().setMinimumColumnWidth(authorsColumn, 40);
 		getListLikeContainer().setMinimumColumnWidth(tagsColumn, 30);
+		getListLikeContainer().setMinimumColumnWidth(yearColumn, 30);
 
 		load();
 
