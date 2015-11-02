@@ -38,7 +38,8 @@ public class Literature extends Neo4JEntity implements Searchable {
 		UNKNOWN("unknown"), BOOK("book"), DISSERTATION("dissertation"), JOURNAL_PAPER(
 				"journal paper"), CONFERENCE_PAPER("conference paper"), PATENT(
 				"patent"), BOOK_CHAPTER("book chapter"), WORKING_PAPER(
-				"working paper");
+				"working paper"), MASTERS_THESIS("master's thesis"), BACHELORS_THESIS(
+				"bachelor's thesis");
 
 		private String tellingName;
 
@@ -139,8 +140,6 @@ public class Literature extends Neo4JEntity implements Searchable {
 		this.tags = tags;
 		this.notes = notes;
 	}
-
-
 
 	public String getTitle() {
 		return title;
