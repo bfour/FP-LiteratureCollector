@@ -30,13 +30,8 @@ public class ReportService {
 		return instance;
 	}
 
-	public void exportToMODSFile(List<Literature> literature)
+	public void exportToMODSFile(List<Literature> literature, File file)
 			throws FileNotFoundException {
-
-		JFileChooser fileChooser = new JFileChooser();
-		if (fileChooser.showSaveDialog(null) != JFileChooser.APPROVE_OPTION)
-			return;
-		File file = fileChooser.getSelectedFile();
 
 		PrintWriter writer = new PrintWriter(new FileOutputStream(file));
 		Properties outputProperties = new Properties();
