@@ -22,15 +22,18 @@ package com.github.bfour.fpliteraturecollector.gui.literature;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JFileChooser;
 import javax.swing.ListSelectionModel;
 
 import com.github.bfour.fpjcommons.services.ServiceException;
+import com.github.bfour.fpjcommons.utils.Getter;
 import com.github.bfour.fpjgui.abstraction.EntityFilterPipeline;
 import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
 import com.github.bfour.fpjgui.abstraction.feedback.Feedback.FeedbackType;
@@ -38,11 +41,19 @@ import com.github.bfour.fpjgui.components.FPJGUIButton;
 import com.github.bfour.fpjgui.components.FPJGUIButton.ButtonFormats;
 import com.github.bfour.fpjgui.components.FPJGUIButton.FPJGUIButtonFactory;
 import com.github.bfour.fpjgui.components.FPJGUIPopover;
+import com.github.bfour.fpjgui.components.composite.EntityCheckboxTreeBrowsePanel;
 import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
 import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGetter;
 import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
 import com.github.bfour.fpjgui.design.Lengths;
+import com.github.bfour.fpjgui.events.SelectionChangeEvent;
+import com.github.bfour.fpjgui.events.SelectionChangeSubscriber;
 import com.github.bfour.fpjguiextended.tagging.TaggingPanel;
+import com.github.bfour.fpjsearch.SearchEvent;
+import com.github.bfour.fpjsearch.SearchException;
+import com.github.bfour.fpjsearch.fpjsearch.ContainsExpression;
+import com.github.bfour.fpjsearch.fpjsearch.OrExpression;
+import com.github.bfour.fpjsearch.fpjsearch.SearchSpecification;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
@@ -129,14 +140,22 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 								.getIcon(), FeedbackType.PROGRESS, true);
 				feedbackBroadcasted(statusFeedback);
 				try {
-					servMan.getReportService().exportToMODSFile(
-							selectedLiterature);
-					feedbackBroadcasted(new Feedback(
-							LiteratureBrowsePanel.this,
-							"Export to MODS finished for "
-									+ selectedLiterature.size()
-									+ " literature entries.",
-							FeedbackType.SUCCESS));
+					JFileChooser fileChooser = new JFileChooser();
+					if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+						File file = fileChooser.getSelectedFile();
+						servMan.getReportService().exportToMODSFile(
+								selectedLiterature, file);
+						feedbackBroadcasted(new Feedback(
+								LiteratureBrowsePanel.this,
+								"Export to MODS finished for "
+										+ selectedLiterature.size()
+										+ " literature entries.",
+								FeedbackType.SUCCESS));
+					} else {
+						feedbackBroadcasted(new Feedback(
+								LiteratureBrowsePanel.this,
+								"Export to MODS cancelled.", FeedbackType.WARN));
+					}
 				} catch (FileNotFoundException e1) {
 					feedbackBroadcasted(new Feedback(
 							LiteratureBrowsePanel.this,
@@ -209,6 +228,47 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 		// selection mode
 		getListLikeContainer().setSelectionMode(
 				ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+		// additional search controls
+		EntityCheckboxTreeBrowsePanel<Tag> categoryTree = new EntityCheckboxTreeBrowsePanel<>(
+				Tag.class, new Getter<Tag, Tag>() {
+					@Override
+					public Tag get(Tag input) {
+						return null;
+					}
+				}, servMan.getTagService(), true);
+		categoryTree.setEditEntityEnabled(false);
+		categoryTree.setCreateEntityEnabled(false);
+		categoryTree.setDeleteEntityEnabled(false);
+		getSidebarPanel().add(categoryTree, "grow, w 2cm:4cm:");
+		setSidebarVisible(true);
+
+		categoryTree.getListLikeContainer().addTreeCheckingListener(
+				new SelectionChangeSubscriber<Tag>() {
+					@Override
+					public void receive(SelectionChangeEvent<Tag> ev) {
+						OrExpression orExpr = new OrExpression();
+						for (Tag tag : ev.getEntity()) {
+							orExpr.addExpression(new ContainsExpression("tags",
+									tag));
+						}
+						try {
+							getSearchHandler().searchPerformed(
+									new SearchEvent<SearchSpecification>(this,
+											new SearchSpecification(null,
+													orExpr)));
+						} catch (SearchException e) {
+							e.printStackTrace();
+							feedbackBroadcasted(new Feedback(
+									categoryTree,
+									"Sorry, something went wrong with your search.",
+									e.getMessage(), FeedbackType.ERROR));
+						}
+					}
+				});
+
+		// load
+		load();
 
 		// ==== columns ====
 		FPJGUITableColumn<Literature> titleColumn = new FPJGUITableColumn<Literature>(
