@@ -61,6 +61,7 @@ public class FPLCNeo4jConfiguration extends Neo4jConfiguration {
 
     @Bean
     public GraphDatabaseService graphDatabaseService() {
+//    	return new GraphDatabaseFactory().newEmbeddedDatabase("mainDB");
     	return new GraphDatabaseFactory().newEmbeddedDatabase("debugDB");
     }
 
