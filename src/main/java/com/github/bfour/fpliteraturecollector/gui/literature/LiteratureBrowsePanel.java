@@ -20,6 +20,7 @@ package com.github.bfour.fpliteraturecollector.gui.literature;
  * -///////////////////////////////-
  */
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -31,6 +32,7 @@ import java.util.Set;
 
 import javax.swing.JFileChooser;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingWorker;
 
 import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.utils.Getter;
@@ -62,6 +64,54 @@ import com.github.bfour.fpliteraturecollector.service.LiteratureService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 
 public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
+
+	private class DownloaderWorker extends SwingWorker<Void, Void> {
+
+		private ServiceManager servMan;
+		private Component button;
+
+		public DownloaderWorker(Component button, ServiceManager servMan) {
+			this.button = button;
+			this.servMan = servMan;
+		}
+
+		@Override
+		protected Void doInBackground() throws Exception {
+			List<Literature> selectedLiterature = getValue();
+			Feedback statusFeedback = new Feedback(LiteratureBrowsePanel.this,
+					"Downloading fulltext for " + selectedLiterature.size()
+							+ " literature entries.", FeedbackType.PROGRESS);
+			feedbackBroadcasted(statusFeedback);
+			long count = 0;
+			for (Literature lit : selectedLiterature) {
+				try {
+					servMan.getLiteratureService().downloadFullTexts(lit);
+				} catch (Exception e1) {
+					// feedbackBroadcasted(new Feedback(
+					// LiteratureBrowsePanel.this,
+					// "Sorry, failed to download fulltext for literature ID "
+					// + lit.getID(), e1.getMessage(),
+					// FeedbackType.ERROR));
+				}
+				count++;
+				Feedback newStatusFeedback = new Feedback(
+						LiteratureBrowsePanel.this, count + " of "
+								+ selectedLiterature.size()
+								+ " fulltexts downloaded.",
+						FeedbackType.PROGRESS);
+				feedbackChanged(statusFeedback, newStatusFeedback);
+				statusFeedback = newStatusFeedback;
+			}
+			feedbackRevoked(statusFeedback);
+			feedbackBroadcasted(new Feedback(LiteratureBrowsePanel.this,
+					"Fulltext download finished for "
+							+ selectedLiterature.size()
+							+ " literature entries.", FeedbackType.SUCCESS));
+			button.setEnabled(true);
+			return null;
+		}
+
+	}
 
 	private static final long serialVersionUID = 4500980555674670335L;
 
@@ -177,28 +227,10 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 		downloadFullTextButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				List<Literature> selectedLiterature = getValue();
-				Feedback statusFeedback = new Feedback(
-						LiteratureBrowsePanel.this, "Downloading fulltext for "
-								+ selectedLiterature.size()
-								+ " literature entries.", FeedbackType.PROGRESS);
-				feedbackBroadcasted(statusFeedback);
-				for (Literature lit : selectedLiterature) {
-					try {
-						servMan.getLiteratureService().downloadFullTexts(lit);
-					} catch (ServiceException e1) {
-						feedbackBroadcasted(new Feedback(
-								LiteratureBrowsePanel.this,
-								"Sorry, failed to download fulltext for literature ID "
-										+ lit.getID(), e1.getMessage(),
-								FeedbackType.ERROR));
-					}
-				}
-				feedbackRevoked(statusFeedback);
-				feedbackBroadcasted(new Feedback(LiteratureBrowsePanel.this,
-						"Fulltext download finished for "
-								+ selectedLiterature.size()
-								+ " literature entries.", FeedbackType.SUCCESS));
+				downloadFullTextButton.setEnabled(false);
+				DownloaderWorker worker = new DownloaderWorker(
+						downloadFullTextButton, servMan);
+				worker.execute();
 			}
 		});
 
