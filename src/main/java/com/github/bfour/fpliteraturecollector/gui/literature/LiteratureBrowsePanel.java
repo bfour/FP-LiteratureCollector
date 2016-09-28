@@ -303,6 +303,15 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 		load();
 
 		// ==== columns ====
+		FPJGUITableColumn<Literature> idColumn = new FPJGUITableColumn<Literature>(
+				"ID", new FPJGUITableFieldGetter<Literature>() {
+					@Override
+					public String get(Literature item) {
+						return item.getID()+"";
+					}
+				}, true, 30, 30, "id", false);
+		getListLikeContainer().addColumn(idColumn);
+		
 		FPJGUITableColumn<Literature> titleColumn = new FPJGUITableColumn<Literature>(
 				"Title", new FPJGUITableFieldGetter<Literature>() {
 					@Override
@@ -357,11 +366,13 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 				}, true, 30, 30, "year", false);
 		getListLikeContainer().addColumn(yearColumn);
 
+		getListLikeContainer().setPreferredColumnWidth(idColumn, 30);
 		getListLikeContainer().setPreferredColumnWidth(titleColumn, 200);
 		getListLikeContainer().setPreferredColumnWidth(authorsColumn, 40);
 		getListLikeContainer().setPreferredColumnWidth(tagsColumn, 30);
 		getListLikeContainer().setPreferredColumnWidth(yearColumn, 30);
 
+		getListLikeContainer().setMinimumColumnWidth(idColumn, 30);
 		getListLikeContainer().setMinimumColumnWidth(titleColumn, 100);
 		getListLikeContainer().setMinimumColumnWidth(authorsColumn, 40);
 		getListLikeContainer().setMinimumColumnWidth(tagsColumn, 30);
