@@ -1,24 +1,20 @@
-package com.github.bfour.fpliteraturecollector.gui.literature;
-
 /*
- * -\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-
- * FP-LiteratureCollector
- * =================================
- * Copyright (C) 2015 Florian Pollak
- * =================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * -///////////////////////////////-
+ * Copyright 2016 Florian Pollak
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
+
+package com.github.bfour.fpliteraturecollector.gui.literature;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -251,7 +247,7 @@ public class LiteraturePanel extends
 		// year
 		FPJGUITextField yearField = new FPJGUITextField();
 		FPJGUILabel<String> yearLabel = new FPJGUILabel<>();
-		ToggleEditFormComponent<String> yearToggle = new ToggleEditFormComponent<String>(
+		ToggleEditFormComponent<String> yearToggle = new ToggleEditFormComponent<>(
 				yearLabel, yearField);
 		registerToggleComponent(yearToggle);
 		getContentPane().add(new FPJGUILabelPanel("Year", yearToggle),
@@ -266,7 +262,7 @@ public class LiteraturePanel extends
 		authorFieldScrollPane.setBorder(Borders.GENERIC.getBorder());
 		authorField.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		authorLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-		ToggleEditFormComponent<String> authorToggle = new ToggleEditFormComponent<String>(
+		ToggleEditFormComponent<String> authorToggle = new ToggleEditFormComponent<>(
 				authorLabel, authorField, authorLabelScrollPane,
 				authorFieldScrollPane);
 		registerToggleComponent(authorToggle);
@@ -276,7 +272,7 @@ public class LiteraturePanel extends
 		// DOI
 		FPJGUIMultilineLabel DOILabel = new FPJGUIMultilineLabel();
 		FPJGUITextField DOIField = new FPJGUITextField();
-		ToggleEditFormComponent<String> DOIToggle = new ToggleEditFormComponent<String>(
+		ToggleEditFormComponent<String> DOIToggle = new ToggleEditFormComponent<>(
 				DOILabel, DOIField);
 		registerToggleComponent(DOIToggle);
 		getContentPane().add(new FPJGUILabelPanel("DOI", DOIToggle),
@@ -285,7 +281,7 @@ public class LiteraturePanel extends
 		// ISBN
 		FPJGUIMultilineLabel ISBNLabel = new FPJGUIMultilineLabel();
 		FPJGUITextField ISBNField = new FPJGUITextField();
-		ToggleEditFormComponent<String> ISBNToggle = new ToggleEditFormComponent<String>(
+		ToggleEditFormComponent<String> ISBNToggle = new ToggleEditFormComponent<>(
 				ISBNLabel, ISBNField);
 		registerToggleComponent(ISBNToggle);
 		getContentPane().add(new FPJGUILabelPanel("ISBN", ISBNToggle),
@@ -294,7 +290,7 @@ public class LiteraturePanel extends
 		// gScholarID
 		FPJGUIMultilineLabel gScholarIDLabel = new FPJGUIMultilineLabel();
 		FPJGUITextField gScholarIDField = new FPJGUITextField();
-		ToggleEditFormComponent<String> gScholarIDToggle = new ToggleEditFormComponent<String>(
+		ToggleEditFormComponent<String> gScholarIDToggle = new ToggleEditFormComponent<>(
 				gScholarIDLabel, gScholarIDField);
 		registerToggleComponent(gScholarIDToggle);
 		getContentPane().add(
@@ -304,7 +300,7 @@ public class LiteraturePanel extends
 		// msAcademicID
 		FPJGUIMultilineLabel msAcademicIDLabel = new FPJGUIMultilineLabel();
 		FPJGUITextField msAcademicIDField = new FPJGUITextField();
-		ToggleEditFormComponent<String> msAcademicIDToggle = new ToggleEditFormComponent<String>(
+		ToggleEditFormComponent<String> msAcademicIDToggle = new ToggleEditFormComponent<>(
 				msAcademicIDLabel, msAcademicIDField);
 		registerToggleComponent(msAcademicIDToggle);
 		getContentPane().add(
@@ -314,7 +310,7 @@ public class LiteraturePanel extends
 		// pubMedID
 		FPJGUIMultilineLabel pubMedIDLabel = new FPJGUIMultilineLabel();
 		FPJGUITextField pubMedIDField = new FPJGUITextField();
-		ToggleEditFormComponent<String> pubMedIDToggle = new ToggleEditFormComponent<String>(
+		ToggleEditFormComponent<String> pubMedIDToggle = new ToggleEditFormComponent<>(
 				pubMedIDLabel, pubMedIDField);
 		registerToggleComponent(pubMedIDToggle);
 		getContentPane().add(new FPJGUILabelPanel("PubMed ID", pubMedIDToggle),
@@ -323,7 +319,7 @@ public class LiteraturePanel extends
 		// acmID
 		FPJGUIMultilineLabel acmIDLabel = new FPJGUIMultilineLabel();
 		FPJGUITextField acmIDField = new FPJGUITextField();
-		ToggleEditFormComponent<String> acmIDToggle = new ToggleEditFormComponent<String>(
+		ToggleEditFormComponent<String> acmIDToggle = new ToggleEditFormComponent<>(
 				acmIDLabel, acmIDField);
 		registerToggleComponent(acmIDToggle);
 		getContentPane().add(new FPJGUILabelPanel("ACM ID", acmIDToggle),
@@ -332,7 +328,7 @@ public class LiteraturePanel extends
 		// tags
 		TagTilePanel<Tag> tagLabel = new TagTilePanel<>(false);
 		TagTilePanel<Tag> tagField = new TagTilePanel<>(false);
-		ToggleEditFormComponent<List<Tag>> tagToggle = new ToggleEditFormComponent<List<Tag>>(
+		ToggleEditFormComponent<List<Tag>> tagToggle = new ToggleEditFormComponent<>(
 				tagLabel, tagField);
 		registerToggleComponent(tagToggle);
 		getContentPane().add(new FPJGUILabelPanel("Tags", tagToggle),
@@ -588,7 +584,7 @@ public class LiteraturePanel extends
 				if (set != null)
 					return new ArrayList<>(set);
 				else
-					return new ArrayList<Tag>(0);
+					return new ArrayList<>(0);
 			}
 
 			@Override
