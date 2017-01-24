@@ -35,7 +35,8 @@ public class Literature extends Neo4JEntity implements Searchable {
 				"journal paper"), CONFERENCE_PAPER("conference paper"), PATENT(
 				"patent"), BOOK_CHAPTER("book chapter"), WORKING_PAPER(
 				"working paper"), MASTERS_THESIS("master's thesis"), BACHELORS_THESIS(
-				"bachelor's thesis");
+				"bachelor's thesis"), PROCEEDINGS("proceedings"), PRESENTATION(
+				"presentation");
 
 		private String tellingName;
 
