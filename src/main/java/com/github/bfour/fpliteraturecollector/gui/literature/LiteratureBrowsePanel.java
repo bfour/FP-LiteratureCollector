@@ -35,9 +35,12 @@ import com.github.bfour.fpjcommons.utils.Getter;
 import com.github.bfour.fpjgui.abstraction.EntityFilterPipeline;
 import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
 import com.github.bfour.fpjgui.abstraction.feedback.Feedback.FeedbackType;
+import com.github.bfour.fpjgui.abstraction.valueChangeHandling.ValueChangeEvent;
+import com.github.bfour.fpjgui.abstraction.valueChangeHandling.ValueChangeListener;
 import com.github.bfour.fpjgui.components.FPJGUIButton;
 import com.github.bfour.fpjgui.components.FPJGUIButton.ButtonFormats;
 import com.github.bfour.fpjgui.components.FPJGUIButton.FPJGUIButtonFactory;
+import com.github.bfour.fpjgui.components.FPJGUILabel;
 import com.github.bfour.fpjgui.components.FPJGUIPopover;
 import com.github.bfour.fpjgui.components.composite.EntityCheckboxTreeBrowsePanel;
 import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
@@ -303,11 +306,11 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 				"ID", new FPJGUITableFieldGetter<Literature>() {
 					@Override
 					public String get(Literature item) {
-						return item.getID()+"";
+						return item.getID() + "";
 					}
 				}, true, 30, 30, "id", false);
 		getListLikeContainer().addColumn(idColumn);
-		
+
 		FPJGUITableColumn<Literature> titleColumn = new FPJGUITableColumn<Literature>(
 				"Title", new FPJGUITableFieldGetter<Literature>() {
 					@Override
@@ -373,6 +376,19 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 		getListLikeContainer().setMinimumColumnWidth(authorsColumn, 40);
 		getListLikeContainer().setMinimumColumnWidth(tagsColumn, 30);
 		getListLikeContainer().setMinimumColumnWidth(yearColumn, 30);
+
+		// stats
+		FPJGUILabel<String> statsLabel = new FPJGUILabel<>();
+		getMainPanel().add(statsLabel, "cell 0 2");
+		addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChanged(ValueChangeEvent event) {
+				String text = "";
+				List<Literature> selection = getListLikeContainer().getSelectedItems();
+				text += selection.size() + " selected";
+				statsLabel.setText(text);
+			}
+		});
 
 		load();
 

@@ -16,6 +16,13 @@
 
 package com.github.bfour.fpliteraturecollector.gui.protocol;
 
+import java.util.List;
+
+import javax.swing.ListSelectionModel;
+
+import com.github.bfour.fpjgui.abstraction.valueChangeHandling.ValueChangeEvent;
+import com.github.bfour.fpjgui.abstraction.valueChangeHandling.ValueChangeListener;
+import com.github.bfour.fpjgui.components.FPJGUILabel;
 import com.github.bfour.fpjgui.components.FPJGUIWindow;
 import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
 import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGetter;
@@ -57,6 +64,22 @@ public class ProtocolWindow extends FPJGUIWindow {
 		browsePanel.setEditEntityEnabled(false);
 		getContentPane().add(browsePanel, "grow");
 
+		// stats
+		browsePanel.getListLikeContainer().setSelectionMode(
+				ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		
+		FPJGUILabel<String> statsLabel = new FPJGUILabel<>();
+		browsePanel.getMainPanel().add(statsLabel, "cell 0 2");
+		browsePanel.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChanged(ValueChangeEvent event) {
+				String text = "";
+				List<ProtocolEntry> selection = browsePanel.getListLikeContainer().getSelectedItems();
+				text += selection.size() + " selected";
+				statsLabel.setText(text);
+			}
+		});
+		
 	}
 
 	public static ProtocolWindow getInstance(ServiceManager servMan) {
