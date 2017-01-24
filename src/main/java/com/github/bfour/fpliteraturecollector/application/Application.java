@@ -51,9 +51,6 @@ public class Application {
 			builder.headless(false);
 			ConfigurableApplicationContext context = builder.run(args);
 
-			// ConfigurableApplicationContext context;
-			// context = new ClassPathXmlApplicationContext("SpringConfig.xml");
-
 			// Neo4jResource myBean = context.getBean(Neo4jResource.class);
 			// myBean.functionThatUsesTheRepo();
 
