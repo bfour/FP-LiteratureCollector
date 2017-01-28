@@ -432,6 +432,18 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 				"IsDone", new FPJGUITableFieldGetter<Literature>() {
 					@Override
 					public String get(Literature item) {
+
+						try {
+							if (!SemanticValidator.getInstance(servMan)
+									.isComplete(item)
+									|| SemanticValidator.getInstance(servMan)
+											.isValid(item))
+								return "no";
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
 						if (item.getYear() != null && item.getYear() < 2014)
 							return "no";
 
@@ -441,6 +453,8 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 							if (tag.getName().equals("Topic: off-topic"))
 								return "yes";
 							// servMan.getTagService().g
+
+							// TODO complete
 						}
 
 						return "no";

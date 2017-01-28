@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -15,8 +16,13 @@ import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
 import com.github.bfour.fpjgui.abstraction.feedback.Feedback.FeedbackType;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
 import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
+import com.github.bfour.fpjgui.components.FPJGUIButton;
+import com.github.bfour.fpjgui.components.FPJGUIButton.ButtonFormats;
+import com.github.bfour.fpjgui.components.FPJGUIButton.FPJGUIButtonFactory;
 import com.github.bfour.fpjgui.components.FPJGUIPopover;
 import com.github.bfour.fpjgui.components.composite.EntityConfirmableOperationPanel;
+import com.github.bfour.fpjgui.design.Icons;
+import com.github.bfour.fpjgui.design.Lengths;
 import com.github.bfour.fpjsearch.SearchException;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
@@ -61,33 +67,34 @@ public class SemanticTaggingPopover extends FPJGUIPopover implements
 				SemanticValidator validator = SemanticValidator
 						.getInstance(servMan);
 				if (validator.isComplete(entity))
-					getContentPanel().add(new JLabel("tagging is complete"));
+					getContentPanel().add(
+							new JLabel("tagging is complete",
+									Icons.GREENTICK_16.getIcon(),
+									SwingConstants.LEFT), "wrap");
 				else
-					getContentPanel().add(new JLabel("tagging is incomplete"));
+					getContentPanel().add(
+							new JLabel("tagging is incomplete",
+									Icons.EXCLAMATION_20.getIcon(),
+									SwingConstants.LEFT), "wrap");
 				if (validator.isValid(entity))
-					getContentPanel().add(new JLabel("tagging is valid"));
+					getContentPanel().add(
+							new JLabel("tagging is valid",
+									Icons.GREENTICK_16.getIcon(),
+									SwingConstants.LEFT), "wrap");
 				else
-					getContentPanel().add(new JLabel("tagging is invalid"));
+					getContentPanel().add(
+							new JLabel("tagging is invalid",
+									Icons.EXCLAMATION_20.getIcon(),
+									SwingConstants.LEFT), "wrap");
 
-				// int row = 0;
-				// for (Tag tag : servMan.getTagService().getAll()) {
-				// if (contains(tagsToSet, "Quality")) {
-				// remove("Quality");
-				// } if (contains(tagsToSet, "Quality")
-				// tag.getName().startsWith("Quality")) {
-				// FPJGUIButton qualityButton = FPJGUIButtonFactory
-				// .createButton(
-				// ButtonFormats.DEFAULT,
-				// Lengths.LARGE_BUTTON_HEIGHT.getLength(),
-				// "Semantic Tagging",
-				// com.github.bfour.fpliteraturecollector.gui.design.Icons.TAG_16
-				// .getIcon());
-				// getContentPanel().add(semanticsButton, "cell 0 2");
-				// row++;
-				// } else if (tag.getName().startsWith("Access")) {
-				//
-				// }
-				// }
+				if (!validator.isTopicComplete("Year", entity)) {
+					FPJGUIButton yearButton = FPJGUIButtonFactory.createButton(
+							ButtonFormats.DEFAULT,
+							Lengths.LARGE_BUTTON_HEIGHT.getLength(),
+							"Semantic Tagging", Icons.GREENTICK_20.getIcon());
+					getContentPanel().add(yearButton, "cell 0 2");
+				}
+
 			} catch (SearchException e) {
 				e.printStackTrace();
 				getFeedbackProxy().feedbackBroadcasted(
