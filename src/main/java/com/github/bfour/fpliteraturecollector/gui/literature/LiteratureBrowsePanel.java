@@ -46,6 +46,7 @@ import com.github.bfour.fpjgui.components.composite.EntityCheckboxTreeBrowsePane
 import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
 import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGetter;
 import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
+import com.github.bfour.fpjgui.design.Icons;
 import com.github.bfour.fpjgui.design.Lengths;
 import com.github.bfour.fpjgui.events.SelectionChangeEvent;
 import com.github.bfour.fpjgui.events.SelectionChangeSubscriber;
@@ -256,6 +257,71 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 			}
 		});
 
+		// semantic tagging
+		SemanticTaggingPopover semanticsPopover = new SemanticTaggingPopover(
+				servMan, new Getter<Void, Literature>() {
+					@Override
+					public Literature get(Void arg0) {
+						return getListLikeContainer().getSelectedItem();
+					}
+
+				});
+
+		final FPJGUIButton semanticsButton = FPJGUIButtonFactory.createButton(
+				ButtonFormats.DEFAULT, Lengths.LARGE_BUTTON_HEIGHT.getLength(),
+				"Semantic Tagging",
+				com.github.bfour.fpliteraturecollector.gui.design.Icons.TAG_16
+						.getIcon());
+		getMainPanel().add(semanticsButton, "cell 0 2");
+		semanticsButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				List<Literature> selectedLiterature = getValue();
+				if (selectedLiterature.isEmpty()) {
+					feedbackBroadcasted(new Feedback(semanticsButton,
+							"Please select a literature entry.",
+							FeedbackType.WARN));
+					return;
+				}
+				if (selectedLiterature.size() > 1) {
+					feedbackBroadcasted(new Feedback(semanticsButton,
+							"Please select only one literature entry.",
+							FeedbackType.WARN));
+					return;
+				}
+				semanticsPopover.setValue(selectedLiterature.get(0));
+				semanticsPopover.pack();
+				semanticsPopover.showPopup(tagButton);
+			}
+		});
+
+		addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChanged(ValueChangeEvent event) {
+				List<Literature> selection = getListLikeContainer()
+						.getSelectedItems();
+				if (selection.isEmpty() || selection.size() > 1)
+					semanticsButton.setIcon(Icons.ORANGEFLAG_20.getIcon());
+				else {
+					Literature lit = selection.get(0);
+					try {
+						if (!SemanticValidator.getInstance(servMan).isComplete(
+								lit)
+								|| !SemanticValidator.getInstance(servMan)
+										.isValid(lit))
+							semanticsButton.setIcon(Icons.EXCLAMATION_20
+									.getIcon());
+					} catch (SearchException e) {
+						e.printStackTrace();
+						feedbackBroadcasted(new Feedback(semanticsButton,
+								"Failed to evaluate semantic tagging.",
+								e.getMessage(), FeedbackType.ERROR));
+					}
+				}
+
+			}
+		});
+
 		// selection mode
 		getListLikeContainer().setSelectionMode(
 				ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -297,9 +363,6 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 						}
 					}
 				});
-
-		// load
-		load();
 
 		// ==== columns ====
 		FPJGUITableColumn<Literature> idColumn = new FPJGUITableColumn<Literature>(
@@ -365,6 +428,26 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 				}, true, 30, 30, "year", false);
 		getListLikeContainer().addColumn(yearColumn);
 
+		FPJGUITableColumn<Literature> isDoneColumn = new FPJGUITableColumn<Literature>(
+				"IsDone", new FPJGUITableFieldGetter<Literature>() {
+					@Override
+					public String get(Literature item) {
+						if (item.getYear() != null && item.getYear() < 2014)
+							return "no";
+
+						for (Tag tag : item.getTags()) {
+							if (tag.getName().equals("Access: inaccessible"))
+								return "yes";
+							if (tag.getName().equals("Topic: off-topic"))
+								return "yes";
+							// servMan.getTagService().g
+						}
+
+						return "no";
+					}
+				}, true, 30, 30, "isDone", false);
+		getListLikeContainer().addColumn(isDoneColumn);
+
 		getListLikeContainer().setPreferredColumnWidth(idColumn, 30);
 		getListLikeContainer().setPreferredColumnWidth(titleColumn, 200);
 		getListLikeContainer().setPreferredColumnWidth(authorsColumn, 40);
@@ -384,7 +467,8 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 			@Override
 			public void valueChanged(ValueChangeEvent event) {
 				String text = "";
-				List<Literature> selection = getListLikeContainer().getSelectedItems();
+				List<Literature> selection = getListLikeContainer()
+						.getSelectedItems();
 				text += selection.size() + " selected";
 				statsLabel.setText(text);
 			}

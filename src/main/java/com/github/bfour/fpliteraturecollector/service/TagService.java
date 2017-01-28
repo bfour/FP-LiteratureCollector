@@ -16,9 +16,14 @@
 
 package com.github.bfour.fpliteraturecollector.service;
 
+import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpjcommons.services.CRUD.BidirectionalCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
 
 public interface TagService extends BidirectionalCRUDService<Tag> {
+
+	Tag getByName(String name) throws ServiceException;
+
+	Tag getByPrefix(String prefix) throws ServiceException;
 
 }

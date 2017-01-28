@@ -55,5 +55,21 @@ public class DefaultTagService extends EventCreatingCRUDService<Tag> implements
 		if (tag.getColour() == null)
 			throw new ServiceException("colour of tag must be specified");
 	}
+	
+	@Override
+	public Tag getByName(String name) throws ServiceException {
+		for (Tag tag : getAll())
+			if (tag.getName().equals(name))
+				return tag;
+		return null;
+	}
+	
+	@Override
+	public Tag getByPrefix(String prefix) throws ServiceException {
+		for (Tag tag : getAll())
+			if (tag.getName().startsWith(prefix))
+				return tag;
+		return null;
+	}
 
 }
