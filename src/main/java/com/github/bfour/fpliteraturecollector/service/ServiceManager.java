@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Service;
 
-import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlerService;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JAtomicRequestDAO;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JAuthorDAO;
@@ -28,6 +27,7 @@ import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JLiteratu
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JProtocolEntryDAO;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JQueryDAO;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JTagDAO;
+import com.github.bfour.jlib.commons.services.ServiceException;
 
 @Service
 @Configurable

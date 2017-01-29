@@ -20,8 +20,8 @@ import java.util.Date;
 
 import org.springframework.data.neo4j.annotation.Indexed;
 
-import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
-import com.github.bfour.fpjsearch.fpjsearch.Searchable;
+import com.github.bfour.jlib.persist.neo4j.model.Neo4JEntity;
+import com.github.bfour.jlib.search.lang.Searchable;
 
 public class Author extends Neo4JEntity implements Searchable {
 

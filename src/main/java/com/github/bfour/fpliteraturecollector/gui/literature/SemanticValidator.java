@@ -3,32 +3,30 @@ package com.github.bfour.fpliteraturecollector.gui.literature;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.ReadService;
-import com.github.bfour.fpjsearch.SearchException;
-import com.github.bfour.fpjsearch.fpjsearch.AndExpression;
-import com.github.bfour.fpjsearch.fpjsearch.AtomicExpression;
-import com.github.bfour.fpjsearch.fpjsearch.ContainsExpression;
-import com.github.bfour.fpjsearch.fpjsearch.EqualsExpression;
-import com.github.bfour.fpjsearch.fpjsearch.ImpliesExpression;
-import com.github.bfour.fpjsearch.fpjsearch.LessThanOrEqualExpression;
-import com.github.bfour.fpjsearch.fpjsearch.NotExpression;
-import com.github.bfour.fpjsearch.fpjsearch.OrExpression;
-import com.github.bfour.fpjsearch.fpjsearch.SearchExpression;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
-import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.TagService;
+import com.github.bfour.jlib.commons.services.ServiceException;
+import com.github.bfour.jlib.search.SearchException;
+import com.github.bfour.jlib.search.lang.AndExpression;
+import com.github.bfour.jlib.search.lang.AtomicExpression;
+import com.github.bfour.jlib.search.lang.BooleanExpression;
+import com.github.bfour.jlib.search.lang.ContainsExpression;
+import com.github.bfour.jlib.search.lang.EqualsExpression;
+import com.github.bfour.jlib.search.lang.ImpliesExpression;
+import com.github.bfour.jlib.search.lang.LessThanOrEqualExpression;
+import com.github.bfour.jlib.search.lang.NotExpression;
+import com.github.bfour.jlib.search.lang.OrExpression;
 
 public class SemanticValidator {
 
 	private static SemanticValidator instance;
 
-	private SearchExpression isCompleteExpression;
+	private BooleanExpression isCompleteExpression;
 	private AndExpression isValidExpression;
 
-	private Map<String, SearchExpression> topicMapForCompleteness = new HashMap<>();
-	private Map<String, SearchExpression> topicMapForValidity = new HashMap<>();
+	private Map<String, BooleanExpression> topicMapForCompleteness = new HashMap<>();
+	private Map<String, BooleanExpression> topicMapForValidity = new HashMap<>();
 
 	private SemanticValidator(ServiceManager servMan) {
 
@@ -54,7 +52,7 @@ public class SemanticValidator {
 
 			// add all completeness-expressions to main completeness expression
 			AndExpression andExpr = new AndExpression();
-			for (SearchExpression expr : topicMapForCompleteness.values())
+			for (BooleanExpression expr : topicMapForCompleteness.values())
 				andExpr.addExpression(expr);
 			isCompleteExpression = new AndExpression().addExpression(
 					isCompleteExpression).addExpression(andExpr);
@@ -64,8 +62,16 @@ public class SemanticValidator {
 					.addExpression(new EqualsExpression("year", null))
 					.addExpression(new LessThanOrEqualExpression("year", 2013))
 					.addExpression(
-							new NotExpression(new ContainsExpression("tags",
-									tagServ.getByName("Quality: OK"))))
+							new AndExpression()
+									.addExpression(
+											new NotExpression(
+													new ContainsExpression(
+															"tags",
+															tagServ.getByName("Quality: OK"))))
+									.addExpression(
+											new ContainsExpression(
+													"tags",
+													tagServ.getByPrefix("Quality"))))
 					.addExpression(
 							new ContainsExpression("tags", tagServ
 									.getByName("Topic: off-topic")))
@@ -155,7 +161,7 @@ public class SemanticValidator {
 	 */
 	public boolean isTopicComplete(String topic, Literature lit)
 			throws SearchException {
-		SearchExpression expr = topicMapForCompleteness.get(topic);
+		BooleanExpression expr = topicMapForCompleteness.get(topic);
 		expr.setVariables(lit.getSearchData());
 		return expr.evaluate();
 	}
@@ -169,7 +175,7 @@ public class SemanticValidator {
 	 */
 	public boolean isTopicValid(String topic, Literature lit)
 			throws SearchException {
-		SearchExpression expr = topicMapForValidity.get(topic);
+		BooleanExpression expr = topicMapForValidity.get(topic);
 		expr.setVariables(lit.getSearchData());
 		return expr.evaluate();
 	}

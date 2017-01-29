@@ -21,12 +21,12 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.github.bfour.fpjcommons.services.ServiceException;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.ISBN;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 import com.github.bfour.fpliteraturecollector.service.AuthorService;
+import com.github.bfour.jlib.commons.services.ServiceException;
 
 public class TestDataCreator {
 

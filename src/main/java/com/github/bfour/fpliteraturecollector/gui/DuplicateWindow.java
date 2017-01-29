@@ -24,24 +24,19 @@ import java.util.List;
 
 import javax.swing.JButton;
 
-import com.github.bfour.fpjcommons.events.ChangeHandler;
-import com.github.bfour.fpjcommons.events.CreateEvent;
-import com.github.bfour.fpjcommons.events.DeleteEvent;
-import com.github.bfour.fpjcommons.events.NonBatchChangeListener;
-import com.github.bfour.fpjcommons.events.UpdateEvent;
-import com.github.bfour.fpjcommons.lang.Tuple;
-import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
-import com.github.bfour.fpjgui.abstraction.feedback.Feedback.FeedbackType;
-import com.github.bfour.fpjgui.components.FPJGUIWindow;
-import com.github.bfour.fpjgui.components.PlainToolbar;
-import com.github.bfour.fpjgui.design.PanelDecorator;
-import com.github.bfour.fpjgui.layout.Orientation;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.ProtocolEntry;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 import com.github.bfour.fpliteraturecollector.gui.literature.LiteraturePanel;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
+import com.github.bfour.jlib.commons.lang.Tuple;
+import com.github.bfour.jlib.commons.services.ServiceException;
+import com.github.bfour.jlib.gui.abstraction.feedback.Feedback;
+import com.github.bfour.jlib.gui.abstraction.feedback.Feedback.FeedbackType;
+import com.github.bfour.jlib.gui.components.FPJGUIWindow;
+import com.github.bfour.jlib.gui.components.PlainToolbar;
+import com.github.bfour.jlib.gui.design.PanelDecorator;
+import com.github.bfour.jlib.gui.layout.Orientation;
 
 public class DuplicateWindow extends FPJGUIWindow {
 

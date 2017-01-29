@@ -18,14 +18,14 @@ package com.github.bfour.fpliteraturecollector.domain.builders;
 
 import java.util.Set;
 
-import com.github.bfour.fpjcommons.lang.Builder;
-import com.github.bfour.fpjcommons.model.EntityBuilder;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.ISBN;
 import com.github.bfour.fpliteraturecollector.domain.Link;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
+import com.github.bfour.jlib.commons.lang.Builder;
+import com.github.bfour.jlib.commons.model.EntityBuilder;
 
 public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		Builder<Literature> {

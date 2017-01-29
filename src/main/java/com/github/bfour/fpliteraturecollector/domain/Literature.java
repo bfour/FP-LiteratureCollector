@@ -25,8 +25,8 @@ import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 import org.springframework.data.neo4j.support.index.IndexType;
 
-import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
-import com.github.bfour.fpjsearch.fpjsearch.Searchable;
+import com.github.bfour.jlib.persist.neo4j.model.Neo4JEntity;
+import com.github.bfour.jlib.search.lang.Searchable;
 
 public class Literature extends Neo4JEntity implements Searchable {
 

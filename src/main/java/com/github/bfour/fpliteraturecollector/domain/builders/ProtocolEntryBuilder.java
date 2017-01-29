@@ -16,9 +16,9 @@
 
 package com.github.bfour.fpliteraturecollector.domain.builders;
 
-import com.github.bfour.fpjcommons.lang.Builder;
-import com.github.bfour.fpjcommons.model.EntityBuilder;
 import com.github.bfour.fpliteraturecollector.domain.ProtocolEntry;
+import com.github.bfour.jlib.commons.lang.Builder;
+import com.github.bfour.jlib.commons.model.EntityBuilder;
 
 public class ProtocolEntryBuilder extends EntityBuilder<ProtocolEntry>
 		implements Builder<ProtocolEntry> {

@@ -26,10 +26,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.github.bfour.fpjcommons.lang.Tuple;
-import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
-import com.github.bfour.fpjcommons.utils.Getter;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Link;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
@@ -38,6 +34,10 @@ import com.github.bfour.fpliteraturecollector.domain.ProtocolEntry;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.LiteratureDAO;
+import com.github.bfour.jlib.commons.lang.Tuple;
+import com.github.bfour.jlib.commons.services.ServiceException;
+import com.github.bfour.jlib.commons.services.CRUD.EventCreatingCRUDService;
+import com.github.bfour.jlib.commons.utils.Getter;
 
 public class DefaultLiteratureService extends
 		EventCreatingCRUDService<Literature> implements LiteratureService {

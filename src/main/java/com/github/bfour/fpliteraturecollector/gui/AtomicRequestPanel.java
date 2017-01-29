@@ -22,28 +22,28 @@ import java.util.List;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.github.bfour.fpjcommons.lang.BuilderFactory;
-import com.github.bfour.fpjcommons.services.DatalayerException;
-import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.CRUDService;
-import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
-import com.github.bfour.fpjcommons.utils.Getter;
-import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
-import com.github.bfour.fpjgui.components.FPJGUILabel;
-import com.github.bfour.fpjgui.components.FPJGUILabelPanel;
-import com.github.bfour.fpjgui.components.FPJGUIMultilineLabel;
-import com.github.bfour.fpjgui.components.FPJGUIScrollableTextPane;
-import com.github.bfour.fpjgui.components.FPJGUITextField;
-import com.github.bfour.fpjgui.components.SearchComboBox;
-import com.github.bfour.fpjgui.components.ToggleEditFormComponent;
-import com.github.bfour.fpjgui.components.composite.EntityEditPanel;
-import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
-import com.github.bfour.fpjgui.components.table.FPJGUITable;
-import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.builders.AtomicRequestBuilder;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
+import com.github.bfour.jlib.commons.lang.BuilderFactory;
+import com.github.bfour.jlib.commons.services.DatalayerException;
+import com.github.bfour.jlib.commons.services.ServiceException;
+import com.github.bfour.jlib.commons.services.CRUD.CRUDService;
+import com.github.bfour.jlib.commons.services.CRUD.DataIterator;
+import com.github.bfour.jlib.commons.utils.Getter;
+import com.github.bfour.jlib.gui.abstraction.valueContainer.ValidationRule;
+import com.github.bfour.jlib.gui.components.FPJGUILabel;
+import com.github.bfour.jlib.gui.components.FPJGUILabelPanel;
+import com.github.bfour.jlib.gui.components.FPJGUIMultilineLabel;
+import com.github.bfour.jlib.gui.components.FPJGUIScrollableTextPane;
+import com.github.bfour.jlib.gui.components.FPJGUITextField;
+import com.github.bfour.jlib.gui.components.SearchComboBox;
+import com.github.bfour.jlib.gui.components.ToggleEditFormComponent;
+import com.github.bfour.jlib.gui.components.composite.EntityEditPanel;
+import com.github.bfour.jlib.gui.components.composite.EntityTableBrowsePanel;
+import com.github.bfour.jlib.gui.components.table.FPJGUITable;
+import com.github.bfour.jlib.gui.util.ObjectGraphicalValueContainerMapper;
 
 public class AtomicRequestPanel extends
 		EntityEditPanel<AtomicRequest, AtomicRequestBuilder> {

@@ -16,12 +16,12 @@
 
 package com.github.bfour.fpliteraturecollector.service;
 
-import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.ProtocolEntry;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.AtomicRequestDAO;
+import com.github.bfour.jlib.commons.services.ServiceException;
+import com.github.bfour.jlib.commons.services.CRUD.EventCreatingCRUDService;
 
 public class DefaultAtomicRequestService extends
 		EventCreatingCRUDService<AtomicRequest> implements AtomicRequestService {

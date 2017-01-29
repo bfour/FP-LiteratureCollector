@@ -16,8 +16,8 @@
 
 package com.github.bfour.fpliteraturecollector.service.database.DAO;
 
-import com.github.bfour.fpjcommons.services.CRUD.CRUDDAO;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
+import com.github.bfour.jlib.commons.services.CRUD.CRUDDAO;
 
 public interface TagDAO extends CRUDDAO<Tag> {
 

@@ -38,27 +38,6 @@ import javax.swing.JScrollPane;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.github.bfour.fpjcommons.lang.BuilderFactory;
-import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.utils.Getter;
-import com.github.bfour.fpjgui.abstraction.EntityLoader;
-import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
-import com.github.bfour.fpjgui.abstraction.feedback.Feedback.FeedbackType;
-import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
-import com.github.bfour.fpjgui.components.FPJGUILabel;
-import com.github.bfour.fpjgui.components.FPJGUILabelPanel;
-import com.github.bfour.fpjgui.components.FPJGUIMultilineLabel;
-import com.github.bfour.fpjgui.components.FPJGUITextField;
-import com.github.bfour.fpjgui.components.FPJGUITextPane;
-import com.github.bfour.fpjgui.components.SearchComboBox;
-import com.github.bfour.fpjgui.components.ToggleEditFormComponent;
-import com.github.bfour.fpjgui.components.composite.EntityEditPanel;
-import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
-import com.github.bfour.fpjgui.components.table.FPJGUITable;
-import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
-import com.github.bfour.fpjgui.design.Borders;
-import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
-import com.github.bfour.fpjguiextended.tagging.TagTilePanel;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.ISBN;
 import com.github.bfour.fpliteraturecollector.domain.Link;
@@ -67,6 +46,27 @@ import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
+import com.github.bfour.jlib.commons.lang.BuilderFactory;
+import com.github.bfour.jlib.commons.services.ServiceException;
+import com.github.bfour.jlib.commons.utils.Getter;
+import com.github.bfour.jlib.gui.abstraction.EntityLoader;
+import com.github.bfour.jlib.gui.abstraction.feedback.Feedback;
+import com.github.bfour.jlib.gui.abstraction.feedback.Feedback.FeedbackType;
+import com.github.bfour.jlib.gui.abstraction.valueContainer.ValidationRule;
+import com.github.bfour.jlib.gui.components.FPJGUILabel;
+import com.github.bfour.jlib.gui.components.FPJGUILabelPanel;
+import com.github.bfour.jlib.gui.components.FPJGUIMultilineLabel;
+import com.github.bfour.jlib.gui.components.FPJGUITextField;
+import com.github.bfour.jlib.gui.components.FPJGUITextPane;
+import com.github.bfour.jlib.gui.components.SearchComboBox;
+import com.github.bfour.jlib.gui.components.ToggleEditFormComponent;
+import com.github.bfour.jlib.gui.components.composite.EntityEditPanel;
+import com.github.bfour.jlib.gui.components.composite.EntityTableBrowsePanel;
+import com.github.bfour.jlib.gui.components.table.FPJGUITable;
+import com.github.bfour.jlib.gui.components.table.FPJGUITableColumn;
+import com.github.bfour.jlib.gui.design.Borders;
+import com.github.bfour.jlib.gui.util.ObjectGraphicalValueContainerMapper;
+import com.github.bfour.jlib.guiextended.tagging.TagTilePanel;
 
 public class LiteraturePanel extends
 		EntityEditPanel<Literature, LiteratureBuilder> {

@@ -16,9 +16,9 @@
 
 package com.github.bfour.fpliteraturecollector.service.database.DAO;
 
-import com.github.bfour.fpjcommons.services.DatalayerException;
-import com.github.bfour.fpjcommons.services.CRUD.CRUDDAO;
 import com.github.bfour.fpliteraturecollector.domain.Query;
+import com.github.bfour.jlib.commons.services.DatalayerException;
+import com.github.bfour.jlib.commons.services.CRUD.CRUDDAO;
 
 public interface QueryDAO extends CRUDDAO<Query> {
 

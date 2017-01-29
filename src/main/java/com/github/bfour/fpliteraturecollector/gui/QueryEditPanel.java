@@ -28,17 +28,17 @@ import net.miginfocom.swing.MigLayout;
 
 import org.jdesktop.swingx.JXPanel;
 
-import com.github.bfour.fpjcommons.lang.BuilderFactory;
-import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
-import com.github.bfour.fpjgui.components.FPJGUILabelPanel;
-import com.github.bfour.fpjgui.components.FPJGUITextField;
-import com.github.bfour.fpjgui.components.composite.EntityEditPanel;
-import com.github.bfour.fpjgui.design.Colors;
-import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.domain.builders.QueryBuilder;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
+import com.github.bfour.jlib.commons.lang.BuilderFactory;
+import com.github.bfour.jlib.gui.abstraction.valueContainer.ValidationRule;
+import com.github.bfour.jlib.gui.components.FPJGUILabelPanel;
+import com.github.bfour.jlib.gui.components.FPJGUITextField;
+import com.github.bfour.jlib.gui.components.composite.EntityEditPanel;
+import com.github.bfour.jlib.gui.design.Colors;
+import com.github.bfour.jlib.gui.util.ObjectGraphicalValueContainerMapper;
 
 public class QueryEditPanel extends EntityEditPanel<Query, QueryBuilder> {
 

@@ -16,8 +16,8 @@
 
 package com.github.bfour.fpliteraturecollector.service.database.DAO;
 
-import com.github.bfour.fpjcommons.services.CRUD.CRUDDAO;
 import com.github.bfour.fpliteraturecollector.domain.Author;
+import com.github.bfour.jlib.commons.services.CRUD.CRUDDAO;
 
 public interface AuthorDAO extends CRUDDAO<Author> {
 

@@ -23,13 +23,13 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.github.bfour.fpjcommons.services.DatalayerException;
-import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.service.AuthorService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager.ServiceManagerMode;
+import com.github.bfour.jlib.commons.services.DatalayerException;
+import com.github.bfour.jlib.commons.services.ServiceException;
+import com.github.bfour.jlib.commons.services.CRUD.DataIterator;
 
 public class PersonTest {
 

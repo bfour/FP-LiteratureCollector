@@ -16,9 +16,9 @@
 
 package com.github.bfour.fpliteraturecollector.service;
 
-import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.ProtocolEntry;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.ProtocolEntryDAO;
+import com.github.bfour.jlib.commons.services.CRUD.EventCreatingCRUDService;
 
 public class DefaultProtocolEntryService extends
 		EventCreatingCRUDService<ProtocolEntry> implements

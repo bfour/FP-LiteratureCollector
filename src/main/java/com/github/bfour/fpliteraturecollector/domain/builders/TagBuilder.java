@@ -18,15 +18,15 @@ package com.github.bfour.fpliteraturecollector.domain.builders;
 
 import java.awt.Color;
 
-import com.github.bfour.fpjcommons.utils.Getter;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
+import com.github.bfour.jlib.commons.utils.Getter;
 
 public class TagBuilder extends
-		com.github.bfour.fpjguiextended.tagging.TagBuilder<Tag> {
+		com.github.bfour.jlib.guiextended.tagging.TagBuilder<Tag> {
 
-	private static Getter<com.github.bfour.fpjguiextended.tagging.Tag, Tag> tagGetter = new Getter<com.github.bfour.fpjguiextended.tagging.Tag, Tag>() {
+	private static Getter<com.github.bfour.jlib.guiextended.tagging.Tag, Tag> tagGetter = new Getter<com.github.bfour.jlib.guiextended.tagging.Tag, Tag>() {
 		@Override
-		public Tag get(com.github.bfour.fpjguiextended.tagging.Tag input) {
+		public Tag get(com.github.bfour.jlib.guiextended.tagging.Tag input) {
 			return new Tag(input.getID(), input.getCreationTime(),
 					input.getLastChangeTime(), input.getName(),
 					input.getColour());

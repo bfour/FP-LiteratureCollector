@@ -23,11 +23,11 @@ import java.util.List;
 import org.epop.dataprovider.DataProvider;
 import org.epop.dataprovider.DataUnavailableException;
 
-import com.github.bfour.fpjcommons.services.DatalayerException;
-import com.github.bfour.fpjsearch.fpjsearch.Searchable;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.SearchEngine;
+import com.github.bfour.jlib.commons.services.DatalayerException;
+import com.github.bfour.jlib.search.lang.Searchable;
 
 public class Crawler implements Searchable {
 

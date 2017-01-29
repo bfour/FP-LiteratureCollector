@@ -20,13 +20,13 @@ import javax.swing.JFrame;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.github.bfour.fpjcommons.services.localization.LocalizationService;
-import com.github.bfour.fpjgui.FPJGUIManager;
-import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
-import com.github.bfour.fpjgui.abstraction.feedback.StaticLocationFeedbackNotificationSpawner;
-import com.github.bfour.fpjgui.design.Icons;
+import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
+import com.github.bfour.jlib.commons.services.localization.LocalizationService;
+import com.github.bfour.jlib.gui.FPJGUIManager;
+import com.github.bfour.jlib.gui.abstraction.feedback.Feedback;
+import com.github.bfour.jlib.gui.abstraction.feedback.FeedbackListener;
+import com.github.bfour.jlib.gui.abstraction.feedback.StaticLocationFeedbackNotificationSpawner;
 
 /**
  * 

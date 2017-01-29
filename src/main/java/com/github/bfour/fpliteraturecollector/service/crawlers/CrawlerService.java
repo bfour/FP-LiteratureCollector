@@ -20,14 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.CRUDService;
-import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
-import com.github.bfour.fpjcommons.services.CRUD.DataIteratorWrapper;
 import com.github.bfour.fpliteraturecollector.service.crawlers.implementations.EpopACMCrawler;
 import com.github.bfour.fpliteraturecollector.service.crawlers.implementations.EpopMSAcademicCrawler;
 import com.github.bfour.fpliteraturecollector.service.crawlers.implementations.EpopScholarCrawler;
 import com.github.bfour.fpliteraturecollector.service.crawlers.implementations.PubMedCrawler;
+import com.github.bfour.jlib.commons.services.ServiceException;
+import com.github.bfour.jlib.commons.services.CRUD.CRUDService;
+import com.github.bfour.jlib.commons.services.CRUD.DataIterator;
+import com.github.bfour.jlib.commons.services.CRUD.DataIteratorWrapper;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 

@@ -16,12 +16,12 @@
 
 package com.github.bfour.fpliteraturecollector.gui.authors;
 
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
-import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
-import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGetter;
-import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
+import com.github.bfour.jlib.gui.abstraction.feedback.FeedbackProvider;
+import com.github.bfour.jlib.gui.components.composite.EntityTableBrowsePanel;
+import com.github.bfour.jlib.gui.components.table.FPJGUITable.FPJGUITableFieldGetter;
+import com.github.bfour.jlib.gui.components.table.FPJGUITableColumn;
 
 public class AuthorsBrowsePanel extends EntityTableBrowsePanel<Author>
 		implements FeedbackProvider {

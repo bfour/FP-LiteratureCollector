@@ -37,7 +37,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Link;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
@@ -46,6 +45,7 @@ import com.github.bfour.fpliteraturecollector.domain.builders.AuthorBuilder;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 //import org.apache.http.client.params.ClientPNames;
 //import org.apache.http.client.params.CookiePolicy;
+import com.github.bfour.jlib.commons.services.DatalayerException;
 
 public class GoogleScholarProvider extends DataProvider {
 

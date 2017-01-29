@@ -16,8 +16,8 @@
 
 package com.github.bfour.fpliteraturecollector.service.database.DAO;
 
-import com.github.bfour.fpjcommons.services.CRUD.TransactionalCRUDDAO;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
+import com.github.bfour.jlib.commons.services.CRUD.TransactionalCRUDDAO;
 
 public interface LiteratureDAO extends TransactionalCRUDDAO<Literature> {
 

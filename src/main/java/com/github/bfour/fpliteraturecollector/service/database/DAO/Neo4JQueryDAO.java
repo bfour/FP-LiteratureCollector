@@ -24,9 +24,9 @@ import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.stereotype.Service;
 
-import com.github.bfour.fpjcommons.services.DatalayerException;
-import com.github.bfour.fpjpersist.neo4j.service.AbstractNeo4JDAO;
 import com.github.bfour.fpliteraturecollector.domain.Query;
+import com.github.bfour.jlib.commons.services.DatalayerException;
+import com.github.bfour.jlib.persist.neo4j.service.AbstractNeo4JDAO;
 
 @Service
 @Configurable

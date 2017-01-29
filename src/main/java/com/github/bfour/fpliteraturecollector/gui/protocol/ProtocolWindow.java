@@ -20,16 +20,16 @@ import java.util.List;
 
 import javax.swing.ListSelectionModel;
 
-import com.github.bfour.fpjgui.abstraction.valueChangeHandling.ValueChangeEvent;
-import com.github.bfour.fpjgui.abstraction.valueChangeHandling.ValueChangeListener;
-import com.github.bfour.fpjgui.components.FPJGUILabel;
-import com.github.bfour.fpjgui.components.FPJGUIWindow;
-import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
-import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGetter;
-import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
-import com.github.bfour.fpjgui.design.PanelDecorator;
 import com.github.bfour.fpliteraturecollector.domain.ProtocolEntry;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
+import com.github.bfour.jlib.gui.abstraction.valueChangeHandling.ValueChangeEvent;
+import com.github.bfour.jlib.gui.abstraction.valueChangeHandling.ValueChangeListener;
+import com.github.bfour.jlib.gui.components.FPJGUILabel;
+import com.github.bfour.jlib.gui.components.FPJGUIWindow;
+import com.github.bfour.jlib.gui.components.composite.EntityTableBrowsePanel;
+import com.github.bfour.jlib.gui.components.table.FPJGUITable.FPJGUITableFieldGetter;
+import com.github.bfour.jlib.gui.components.table.FPJGUITableColumn;
+import com.github.bfour.jlib.gui.design.PanelDecorator;
 
 public class ProtocolWindow extends FPJGUIWindow {
 

@@ -16,8 +16,8 @@
 
 package com.github.bfour.fpliteraturecollector.service;
 
-import com.github.bfour.fpjcommons.services.CRUD.BidirectionalCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.ProtocolEntry;
+import com.github.bfour.jlib.commons.services.CRUD.BidirectionalCRUDService;
 
 public interface ProtocolEntryService extends BidirectionalCRUDService<ProtocolEntry> {
 

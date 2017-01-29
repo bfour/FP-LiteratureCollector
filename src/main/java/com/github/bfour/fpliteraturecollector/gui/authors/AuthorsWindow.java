@@ -16,9 +16,9 @@
 
 package com.github.bfour.fpliteraturecollector.gui.authors;
 
-import com.github.bfour.fpjgui.components.FPJGUIWindow;
-import com.github.bfour.fpjgui.components.composite.EntityCRUDPanel;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
+import com.github.bfour.jlib.gui.components.FPJGUIWindow;
+import com.github.bfour.jlib.gui.components.composite.EntityCRUDPanel;
 
 public class AuthorsWindow extends FPJGUIWindow {
 

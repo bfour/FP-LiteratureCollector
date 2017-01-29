@@ -28,23 +28,23 @@ import javax.swing.JMenuItem;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-import com.github.bfour.fpjcommons.events.BatchCreateEvent;
-import com.github.bfour.fpjcommons.events.BatchDeleteEvent;
-import com.github.bfour.fpjcommons.events.BatchUpdateEvent;
-import com.github.bfour.fpjcommons.events.ChangeHandler;
-import com.github.bfour.fpjcommons.events.ChangeListener;
-import com.github.bfour.fpjcommons.events.CreateEvent;
-import com.github.bfour.fpjcommons.events.DeleteEvent;
-import com.github.bfour.fpjcommons.events.UpdateEvent;
-import com.github.bfour.fpjgui.abstraction.EntityLoader;
-import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
-import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGetter;
-import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
-import com.github.bfour.fpjgui.util.DefaultActionInterfaceHandler;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.service.AtomicRequestService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
+import com.github.bfour.jlib.commons.events.BatchCreateEvent;
+import com.github.bfour.jlib.commons.events.BatchDeleteEvent;
+import com.github.bfour.jlib.commons.events.BatchUpdateEvent;
+import com.github.bfour.jlib.commons.events.ChangeHandler;
+import com.github.bfour.jlib.commons.events.ChangeListener;
+import com.github.bfour.jlib.commons.events.CreateEvent;
+import com.github.bfour.jlib.commons.events.DeleteEvent;
+import com.github.bfour.jlib.commons.events.UpdateEvent;
+import com.github.bfour.jlib.gui.abstraction.EntityLoader;
+import com.github.bfour.jlib.gui.components.composite.EntityTableBrowsePanel;
+import com.github.bfour.jlib.gui.components.table.FPJGUITable.FPJGUITableFieldGetter;
+import com.github.bfour.jlib.gui.components.table.FPJGUITableColumn;
+import com.github.bfour.jlib.gui.util.DefaultActionInterfaceHandler;
 
 /**
  * This class deals with the presentation of a list of AtomicRequests

@@ -16,9 +16,9 @@
 
 package com.github.bfour.fpliteraturecollector.service;
 
-import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.BidirectionalCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
+import com.github.bfour.jlib.commons.services.ServiceException;
+import com.github.bfour.jlib.commons.services.CRUD.BidirectionalCRUDService;
 
 public interface AtomicRequestService extends
 		BidirectionalCRUDService<AtomicRequest> {

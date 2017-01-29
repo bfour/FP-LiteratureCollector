@@ -25,13 +25,6 @@ import javax.swing.SwingWorker;
 
 import org.apache.log4j.Logger;
 
-import com.github.bfour.fpjcommons.lang.Tuple;
-import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
-import com.github.bfour.fpjgui.abstraction.feedback.Feedback.FeedbackType;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
@@ -47,6 +40,13 @@ import com.github.bfour.fpliteraturecollector.service.ProtocolEntryService;
 import com.github.bfour.fpliteraturecollector.service.QueryService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.abstraction.BackgroundWorker;
+import com.github.bfour.jlib.commons.lang.Tuple;
+import com.github.bfour.jlib.commons.services.ServiceException;
+import com.github.bfour.jlib.gui.abstraction.feedback.Feedback;
+import com.github.bfour.jlib.gui.abstraction.feedback.Feedback.FeedbackType;
+import com.github.bfour.jlib.gui.abstraction.feedback.FeedbackListener;
+import com.github.bfour.jlib.gui.abstraction.feedback.FeedbackProvider;
+import com.github.bfour.jlib.gui.abstraction.feedback.FeedbackProviderProxy;
 
 public class CrawlExecutor extends BackgroundWorker implements FeedbackProvider {
 

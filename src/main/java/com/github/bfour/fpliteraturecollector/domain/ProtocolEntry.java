@@ -18,8 +18,8 @@ package com.github.bfour.fpliteraturecollector.domain;
 
 import java.util.Date;
 
-import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
-import com.github.bfour.fpjsearch.fpjsearch.Searchable;
+import com.github.bfour.jlib.persist.neo4j.model.Neo4JEntity;
+import com.github.bfour.jlib.search.lang.Searchable;
 
 public class ProtocolEntry extends Neo4JEntity implements Searchable {
 

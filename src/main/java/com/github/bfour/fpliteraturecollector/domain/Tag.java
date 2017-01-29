@@ -19,11 +19,11 @@ package com.github.bfour.fpliteraturecollector.domain;
 import java.awt.Color;
 import java.util.Date;
 
-import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
-import com.github.bfour.fpjsearch.fpjsearch.Searchable;
+import com.github.bfour.jlib.persist.neo4j.model.Neo4JEntity;
+import com.github.bfour.jlib.search.lang.Searchable;
 
 public class Tag extends Neo4JEntity implements
-		com.github.bfour.fpjguiextended.tagging.Tag, Searchable {
+		com.github.bfour.jlib.guiextended.tagging.Tag, Searchable {
 
 	private String name;
 	private Color colour;

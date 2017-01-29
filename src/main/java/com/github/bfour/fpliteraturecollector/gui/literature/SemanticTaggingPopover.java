@@ -11,22 +11,33 @@ import javax.swing.SwingConstants;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.github.bfour.fpjcommons.utils.Getter;
-import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
-import com.github.bfour.fpjgui.abstraction.feedback.Feedback.FeedbackType;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
-import com.github.bfour.fpjgui.components.FPJGUIButton;
-import com.github.bfour.fpjgui.components.FPJGUIButton.ButtonFormats;
-import com.github.bfour.fpjgui.components.FPJGUIButton.FPJGUIButtonFactory;
-import com.github.bfour.fpjgui.components.FPJGUIPopover;
-import com.github.bfour.fpjgui.components.composite.EntityConfirmableOperationPanel;
-import com.github.bfour.fpjgui.design.Icons;
-import com.github.bfour.fpjgui.design.Lengths;
-import com.github.bfour.fpjsearch.SearchException;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
+import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
+import com.github.bfour.jlib.commons.events.BatchCreateEvent;
+import com.github.bfour.jlib.commons.events.BatchDeleteEvent;
+import com.github.bfour.jlib.commons.events.BatchUpdateEvent;
+import com.github.bfour.jlib.commons.events.ChangeHandler;
+import com.github.bfour.jlib.commons.events.ChangeListener;
+import com.github.bfour.jlib.commons.events.CreateEvent;
+import com.github.bfour.jlib.commons.events.DeleteEvent;
+import com.github.bfour.jlib.commons.events.UpdateEvent;
+import com.github.bfour.jlib.commons.services.ServiceException;
+import com.github.bfour.jlib.commons.utils.Getter;
+import com.github.bfour.jlib.gui.abstraction.feedback.Feedback;
+import com.github.bfour.jlib.gui.abstraction.feedback.Feedback.FeedbackType;
+import com.github.bfour.jlib.gui.abstraction.feedback.FeedbackListener;
+import com.github.bfour.jlib.gui.abstraction.feedback.FeedbackProvider;
+import com.github.bfour.jlib.gui.components.FPJGUIButton;
+import com.github.bfour.jlib.gui.components.FPJGUIButton.ButtonFormats;
+import com.github.bfour.jlib.gui.components.FPJGUIButton.FPJGUIButtonFactory;
+import com.github.bfour.jlib.gui.components.FPJGUIPopover;
+import com.github.bfour.jlib.gui.components.FPJGUITextField;
+import com.github.bfour.jlib.gui.components.composite.EntityConfirmableOperationPanel;
+import com.github.bfour.jlib.gui.design.Icons;
+import com.github.bfour.jlib.gui.design.Lengths;
+import com.github.bfour.jlib.search.SearchException;
 
 public class SemanticTaggingPopover extends FPJGUIPopover implements
 		FeedbackProvider {
@@ -50,6 +61,55 @@ public class SemanticTaggingPopover extends FPJGUIPopover implements
 
 			this.servMan = servMan;
 
+			// register for entity change handling
+			ChangeHandler.getInstance(Literature.class).addEventListener(
+					new ChangeListener<Literature>() {
+						@Override
+						public void handle(BatchCreateEvent<Literature> arg0) {
+						}
+
+						@Override
+						public void handle(BatchDeleteEvent<Literature> arg0) {
+							if (arg0.getAffectedObjects().contains(getValue()))
+								getContentPanel()
+										.add(new JLabel(
+												"The literature entry was deleted!",
+												Icons.EXCLAMATION_20.getIcon(),
+												SwingConstants.LEFT), "wrap");
+						}
+
+						@Override
+						public void handle(BatchUpdateEvent<Literature> arg0) {
+							for (UpdateEvent<Literature> ev : arg0.getChanges())
+								if (ev.getOldObject().equals(getValue())) {
+									setValue(ev.getNewObject());
+									return;
+								}
+						}
+
+						@Override
+						public void handle(CreateEvent<Literature> arg0) {
+						}
+
+						@Override
+						public void handle(DeleteEvent<Literature> arg0) {
+							if (arg0.getDeletedObject().equals(getValue()))
+								getContentPanel()
+										.add(new JLabel(
+												"The literature entry was deleted!",
+												Icons.EXCLAMATION_20.getIcon(),
+												SwingConstants.LEFT), "wrap");
+						}
+
+						@Override
+						public void handle(UpdateEvent<Literature> arg0) {
+							if (arg0.getOldObject().equals(getValue())) {
+								setValue(arg0.getNewObject());
+								return;
+							}
+						}
+					});
+
 			// assemble
 			getContentPanel().setLayout(
 					new MigLayout("insets 0", "[grow]", "[][]"));
@@ -64,6 +124,7 @@ public class SemanticTaggingPopover extends FPJGUIPopover implements
 			getContentPanel().removeAll();
 
 			try {
+
 				SemanticValidator validator = SemanticValidator
 						.getInstance(servMan);
 				if (validator.isComplete(entity))
@@ -87,12 +148,48 @@ public class SemanticTaggingPopover extends FPJGUIPopover implements
 									Icons.EXCLAMATION_20.getIcon(),
 									SwingConstants.LEFT), "wrap");
 
+				// buttons
 				if (!validator.isTopicComplete("Year", entity)) {
+					FPJGUITextField yearField = new FPJGUITextField();
 					FPJGUIButton yearButton = FPJGUIButtonFactory.createButton(
 							ButtonFormats.DEFAULT,
 							Lengths.LARGE_BUTTON_HEIGHT.getLength(),
 							"Semantic Tagging", Icons.GREENTICK_20.getIcon());
-					getContentPanel().add(yearButton, "cell 0 2");
+					getContentPanel().add(yearField, "grow x");
+					getContentPanel().add(yearButton, "wrap");
+					yearButton.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							try {
+								int year = Integer.parseInt(yearField
+										.getValue());
+								servMan.getLiteratureService().update(
+										entity,
+										new LiteratureBuilder(entity).setYear(
+												year).getObject());
+								getFeedbackProxy().feedbackBroadcasted(
+										new Feedback(yearField, "Year set.",
+												FeedbackType.SUCCESS));
+							} catch (NumberFormatException numFormE) {
+								numFormE.printStackTrace();
+								getFeedbackProxy().feedbackBroadcasted(
+										new Feedback(yearField,
+												"Please enter a valid year.",
+												numFormE.getMessage(),
+												FeedbackType.ERROR));
+							} catch (ServiceException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+								getFeedbackProxy()
+										.feedbackBroadcasted(
+												new Feedback(
+														yearField,
+														"Failed to update literature entry.",
+														e1.getMessage(),
+														FeedbackType.ERROR));
+							}
+						}
+					});
 				}
 
 			} catch (SearchException e) {

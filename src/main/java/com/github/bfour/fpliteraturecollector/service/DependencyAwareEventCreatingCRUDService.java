@@ -24,11 +24,11 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 
-import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.BidirectionalCRUDService;
-import com.github.bfour.fpjcommons.services.CRUD.CRUDDAO;
-import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
-import com.github.bfour.fpjcommons.utils.Getter;
+import com.github.bfour.jlib.commons.services.ServiceException;
+import com.github.bfour.jlib.commons.services.CRUD.BidirectionalCRUDService;
+import com.github.bfour.jlib.commons.services.CRUD.CRUDDAO;
+import com.github.bfour.jlib.commons.services.CRUD.EventCreatingCRUDService;
+import com.github.bfour.jlib.commons.utils.Getter;
 
 public class DependencyAwareEventCreatingCRUDService<E> extends
 		EventCreatingCRUDService<E> {

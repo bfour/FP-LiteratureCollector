@@ -17,8 +17,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import com.github.bfour.fpjcommons.services.DatalayerException;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
+import com.github.bfour.jlib.commons.services.DatalayerException;
 
 /**
  * given a query return the data

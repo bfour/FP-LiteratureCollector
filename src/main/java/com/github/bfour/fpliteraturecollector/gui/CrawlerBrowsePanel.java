@@ -19,13 +19,13 @@ package com.github.bfour.fpliteraturecollector.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.bfour.fpjgui.abstraction.EntityLoader;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
-import com.github.bfour.fpjgui.components.composite.EntityTableBrowsePanel;
-import com.github.bfour.fpjgui.components.table.FPJGUITable.FPJGUITableFieldGetter;
-import com.github.bfour.fpjgui.components.table.FPJGUITableColumn;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
+import com.github.bfour.jlib.gui.abstraction.EntityLoader;
+import com.github.bfour.jlib.gui.abstraction.feedback.FeedbackProvider;
+import com.github.bfour.jlib.gui.components.composite.EntityTableBrowsePanel;
+import com.github.bfour.jlib.gui.components.table.FPJGUITable.FPJGUITableFieldGetter;
+import com.github.bfour.jlib.gui.components.table.FPJGUITableColumn;
 
 public class CrawlerBrowsePanel extends EntityTableBrowsePanel<Crawler>
 		implements FeedbackProvider {

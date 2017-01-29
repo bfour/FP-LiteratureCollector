@@ -25,14 +25,6 @@ import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.github.bfour.fpjcommons.utils.Getter;
-import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
-import com.github.bfour.fpjgui.components.PlainToolbar;
-import com.github.bfour.fpjgui.layout.Orientation;
-import com.github.bfour.fpjguiextended.tagging.TagsWindow;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.domain.builders.TagBuilder;
 import com.github.bfour.fpliteraturecollector.gui.authors.AuthorsWindow;
@@ -40,6 +32,14 @@ import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 import com.github.bfour.fpliteraturecollector.gui.literature.LiteratureWindow;
 import com.github.bfour.fpliteraturecollector.gui.protocol.ProtocolWindow;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
+import com.github.bfour.jlib.commons.utils.Getter;
+import com.github.bfour.jlib.gui.abstraction.feedback.Feedback;
+import com.github.bfour.jlib.gui.abstraction.feedback.FeedbackListener;
+import com.github.bfour.jlib.gui.abstraction.feedback.FeedbackProvider;
+import com.github.bfour.jlib.gui.abstraction.feedback.FeedbackProviderProxy;
+import com.github.bfour.jlib.gui.components.PlainToolbar;
+import com.github.bfour.jlib.gui.layout.Orientation;
+import com.github.bfour.jlib.guiextended.tagging.TagsWindow;
 
 public class MainPanel extends JPanel implements FeedbackProvider,
 		FeedbackListener {

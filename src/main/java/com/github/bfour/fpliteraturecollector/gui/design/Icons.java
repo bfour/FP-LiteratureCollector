@@ -22,7 +22,7 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 
-import com.github.bfour.fpjgui.components.CachedImageIcon;
+import com.github.bfour.jlib.gui.components.CachedImageIcon;
 
 public enum Icons {
 

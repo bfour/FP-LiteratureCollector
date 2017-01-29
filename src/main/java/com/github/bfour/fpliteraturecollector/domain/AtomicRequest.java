@@ -22,9 +22,9 @@ import java.util.Set;
 import org.neo4j.graphdb.Direction;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
-import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
-import com.github.bfour.fpjsearch.fpjsearch.Searchable;
 import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
+import com.github.bfour.jlib.persist.neo4j.model.Neo4JEntity;
+import com.github.bfour.jlib.search.lang.Searchable;
 
 public class AtomicRequest extends Neo4JEntity implements Searchable {
 

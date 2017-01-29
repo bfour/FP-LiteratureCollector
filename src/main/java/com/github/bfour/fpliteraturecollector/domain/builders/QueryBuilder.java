@@ -18,11 +18,11 @@ package com.github.bfour.fpliteraturecollector.domain.builders;
 
 import java.util.Set;
 
-import com.github.bfour.fpjcommons.lang.Builder;
-import com.github.bfour.fpjcommons.model.EntityBuilder;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Query;
 import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
+import com.github.bfour.jlib.commons.lang.Builder;
+import com.github.bfour.jlib.commons.model.EntityBuilder;
 
 public class QueryBuilder extends EntityBuilder<Query> implements
 		Builder<Query> {

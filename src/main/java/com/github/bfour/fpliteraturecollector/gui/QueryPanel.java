@@ -32,20 +32,6 @@ import net.miginfocom.swing.MigLayout;
 
 import org.jdesktop.swingx.JXPanel;
 
-import com.github.bfour.fpjcommons.lang.Tuple;
-import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjgui.abstraction.EntityFilter;
-import com.github.bfour.fpjgui.abstraction.EntityFilterPipeline;
-import com.github.bfour.fpjgui.abstraction.GUIOption;
-import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
-import com.github.bfour.fpjgui.abstraction.feedback.Feedback.FeedbackType;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
-import com.github.bfour.fpjgui.components.FPJGUILabel;
-import com.github.bfour.fpjgui.components.PlainToolbar;
-import com.github.bfour.fpjgui.layout.Orientation;
-import com.github.bfour.fpjgui.util.DefaultActionInterfaceHandler;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Query;
@@ -53,6 +39,20 @@ import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
 import com.github.bfour.fpliteraturecollector.gui.literature.LiteratureWindow;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
+import com.github.bfour.jlib.commons.lang.Tuple;
+import com.github.bfour.jlib.commons.services.ServiceException;
+import com.github.bfour.jlib.gui.abstraction.EntityFilter;
+import com.github.bfour.jlib.gui.abstraction.EntityFilterPipeline;
+import com.github.bfour.jlib.gui.abstraction.GUIOption;
+import com.github.bfour.jlib.gui.abstraction.feedback.Feedback;
+import com.github.bfour.jlib.gui.abstraction.feedback.Feedback.FeedbackType;
+import com.github.bfour.jlib.gui.abstraction.feedback.FeedbackListener;
+import com.github.bfour.jlib.gui.abstraction.feedback.FeedbackProvider;
+import com.github.bfour.jlib.gui.abstraction.feedback.FeedbackProviderProxy;
+import com.github.bfour.jlib.gui.components.FPJGUILabel;
+import com.github.bfour.jlib.gui.components.PlainToolbar;
+import com.github.bfour.jlib.gui.layout.Orientation;
+import com.github.bfour.jlib.gui.util.DefaultActionInterfaceHandler;
 
 public class QueryPanel extends JXPanel implements FeedbackProvider {
 

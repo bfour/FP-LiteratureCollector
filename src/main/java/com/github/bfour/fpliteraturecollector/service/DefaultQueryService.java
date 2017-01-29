@@ -16,11 +16,6 @@
 
 package com.github.bfour.fpliteraturecollector.service;
 
-import com.github.bfour.fpjcommons.lang.Tuple;
-import com.github.bfour.fpjcommons.services.DatalayerException;
-import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.DataIterator;
-import com.github.bfour.fpjcommons.services.CRUD.EventCreatingCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.AtomicRequest;
 import com.github.bfour.fpliteraturecollector.domain.ProtocolEntry;
 import com.github.bfour.fpliteraturecollector.domain.Query;
@@ -28,6 +23,11 @@ import com.github.bfour.fpliteraturecollector.domain.Query.QueryStatus;
 import com.github.bfour.fpliteraturecollector.domain.builders.QueryBuilder;
 import com.github.bfour.fpliteraturecollector.service.crawlers.Crawler;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.QueryDAO;
+import com.github.bfour.jlib.commons.lang.Tuple;
+import com.github.bfour.jlib.commons.services.DatalayerException;
+import com.github.bfour.jlib.commons.services.ServiceException;
+import com.github.bfour.jlib.commons.services.CRUD.DataIterator;
+import com.github.bfour.jlib.commons.services.CRUD.EventCreatingCRUDService;
 
 public class DefaultQueryService extends EventCreatingCRUDService<Query>
 		implements QueryService {

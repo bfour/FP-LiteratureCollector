@@ -18,10 +18,10 @@ package com.github.bfour.fpliteraturecollector.service;
 
 import java.util.List;
 
-import com.github.bfour.fpjcommons.lang.Tuple;
-import com.github.bfour.fpjcommons.services.ServiceException;
-import com.github.bfour.fpjcommons.services.CRUD.BidirectionalCRUDService;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
+import com.github.bfour.jlib.commons.lang.Tuple;
+import com.github.bfour.jlib.commons.services.ServiceException;
+import com.github.bfour.jlib.commons.services.CRUD.BidirectionalCRUDService;
 
 public interface LiteratureService extends BidirectionalCRUDService<Literature> {
 

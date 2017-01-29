@@ -18,18 +18,19 @@ package com.github.bfour.fpliteraturecollector.gui.authors;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.github.bfour.fpjcommons.lang.BuilderFactory;
-import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
-import com.github.bfour.fpjgui.components.FPJGUILabel;
-import com.github.bfour.fpjgui.components.FPJGUILabelPanel;
-import com.github.bfour.fpjgui.components.FPJGUIMultilineLabel;
-import com.github.bfour.fpjgui.components.FPJGUITextField;
-import com.github.bfour.fpjgui.components.ToggleEditFormComponent;
-import com.github.bfour.fpjgui.components.composite.EntityEditPanel;
-import com.github.bfour.fpjgui.util.ObjectGraphicalValueContainerMapper;
 import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.builders.AuthorBuilder;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
+import com.github.bfour.jlib.commons.lang.BuilderFactory;
+import com.github.bfour.jlib.gui.abstraction.valueContainer.ValidationRule;
+import com.github.bfour.jlib.gui.abstraction.valueContainer.ValidationRule.ValidationRuleResult;
+import com.github.bfour.jlib.gui.components.FPJGUILabel;
+import com.github.bfour.jlib.gui.components.FPJGUILabelPanel;
+import com.github.bfour.jlib.gui.components.FPJGUIMultilineLabel;
+import com.github.bfour.jlib.gui.components.FPJGUITextField;
+import com.github.bfour.jlib.gui.components.ToggleEditFormComponent;
+import com.github.bfour.jlib.gui.components.composite.EntityEditPanel;
+import com.github.bfour.jlib.gui.util.ObjectGraphicalValueContainerMapper;
 
 public class AuthorsPanel extends EntityEditPanel<Author, AuthorBuilder> {
 

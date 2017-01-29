@@ -25,13 +25,13 @@ import org.neo4j.graphdb.Direction;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
-import com.github.bfour.fpjpersist.neo4j.model.Neo4JEntity;
 import com.github.bfour.fpliteraturecollector.gui.design.Icons;
+import com.github.bfour.jlib.persist.neo4j.model.Neo4JEntity;
 
 public class Query extends Neo4JEntity {
 
 	public static enum QueryStatus {
-		CRAWLING("crawling", com.github.bfour.fpjgui.design.Icons.BUSY_16.getIcon()), 
+		CRAWLING("crawling", com.github.bfour.jlib.gui.design.Icons.BUSY_16.getIcon()), 
 		FINISHED("finished", Icons.FINISHED_20.getIcon()), 
 		FINISHED_WITH_ERROR("finished with error", Icons.FINISHED_WITH_ERROR_20.getIcon()), 
 		QUEUED("queued", Icons.QUEUED_20.getIcon()), 

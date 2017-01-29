@@ -26,18 +26,18 @@ import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.github.bfour.fpjgui.abstraction.feedback.Feedback;
-import com.github.bfour.fpjgui.abstraction.feedback.Feedback.FeedbackType;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackListener;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProvider;
-import com.github.bfour.fpjgui.abstraction.feedback.FeedbackProviderProxy;
-import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule;
-import com.github.bfour.fpjgui.abstraction.valueContainer.ValidationRule.ValidationRuleResult;
-import com.github.bfour.fpjgui.abstraction.valueContainer.ValueContainer;
-import com.github.bfour.fpjgui.components.FPJGUIButton;
-import com.github.bfour.fpjgui.components.FPJGUIButton.ButtonFormats;
-import com.github.bfour.fpjgui.components.FPJGUIButton.FPJGUIButtonFactory;
 import com.github.bfour.fpliteraturecollector.domain.Link;
+import com.github.bfour.jlib.gui.abstraction.feedback.Feedback;
+import com.github.bfour.jlib.gui.abstraction.feedback.Feedback.FeedbackType;
+import com.github.bfour.jlib.gui.abstraction.feedback.FeedbackListener;
+import com.github.bfour.jlib.gui.abstraction.feedback.FeedbackProvider;
+import com.github.bfour.jlib.gui.abstraction.feedback.FeedbackProviderProxy;
+import com.github.bfour.jlib.gui.abstraction.valueContainer.ValidationRule;
+import com.github.bfour.jlib.gui.abstraction.valueContainer.ValidationRule.ValidationRuleResult;
+import com.github.bfour.jlib.gui.abstraction.valueContainer.ValueContainer;
+import com.github.bfour.jlib.gui.components.FPJGUIButton;
+import com.github.bfour.jlib.gui.components.FPJGUIButton.ButtonFormats;
+import com.github.bfour.jlib.gui.components.FPJGUIButton.FPJGUIButtonFactory;
 
 public class LinkPanel extends JPanel implements ValueContainer<Link>,
 		FeedbackProvider {
