@@ -19,6 +19,8 @@ package com.github.bfour.fpliteraturecollector.gui.literature;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.JFileChooser;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingWorker;
 
@@ -36,6 +39,9 @@ import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 import com.github.bfour.fpliteraturecollector.service.LiteratureService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
+import com.github.bfour.jlib.commons.logic.ContainsExpression;
+import com.github.bfour.jlib.commons.logic.LogicException;
+import com.github.bfour.jlib.commons.logic.OrExpression;
 import com.github.bfour.jlib.commons.services.ServiceException;
 import com.github.bfour.jlib.commons.utils.Getter;
 import com.github.bfour.jlib.gui.abstraction.EntityFilterPipeline;
@@ -59,8 +65,6 @@ import com.github.bfour.jlib.gui.events.SelectionChangeSubscriber;
 import com.github.bfour.jlib.guiextended.tagging.TaggingPanel;
 import com.github.bfour.jlib.search.SearchEvent;
 import com.github.bfour.jlib.search.SearchException;
-import com.github.bfour.jlib.search.lang.ContainsExpression;
-import com.github.bfour.jlib.search.lang.OrExpression;
 import com.github.bfour.jlib.search.lang.SearchSpecification;
 
 public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
@@ -240,7 +244,7 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 				com.github.bfour.fpliteraturecollector.gui.design.Icons.TAG_16
 						.getIcon());
 		getMainPanel().add(tagButton, "cell 0 2");
-		tagButton.addActionListener(new ActionListener() {
+		ActionListener taggingActionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				List<Literature> selectedLiterature = getValue();
@@ -255,7 +259,11 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 				tagPopover.pack();
 				tagPopover.showPopup(tagButton);
 			}
-		});
+		};
+		tagButton.addActionListener(taggingActionListener);
+		getListLikeContainer().addAction("Tag",
+				KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK),
+				taggingActionListener);
 
 		// semantic tagging
 		SemanticTaggingPopover semanticsPopover = new SemanticTaggingPopover(
@@ -273,7 +281,7 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 				com.github.bfour.fpliteraturecollector.gui.design.Icons.TAG_16
 						.getIcon());
 		getMainPanel().add(semanticsButton, "cell 0 2");
-		semanticsButton.addActionListener(new ActionListener() {
+		ActionListener semanticTaggingActionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				List<Literature> selectedLiterature = getValue();
@@ -293,25 +301,36 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 				semanticsPopover.pack();
 				semanticsPopover.showPopup(tagButton);
 			}
-		});
+		};
+		semanticsButton.addActionListener(semanticTaggingActionListener);
+		getListLikeContainer().addAction("Semantic Tagging",
+				KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK),
+				semanticTaggingActionListener);
 
 		addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChanged(ValueChangeEvent event) {
 				List<Literature> selection = getListLikeContainer()
 						.getSelectedItems();
-				if (selection.isEmpty() || selection.size() > 1)
-					semanticsButton.setIcon(Icons.ORANGEFLAG_20.getIcon());
-				else {
+				if (selection.isEmpty() || selection.size() > 1) {
+					semanticsButton.setIcon(null);
+					semanticsButton.setEnabled(false);
+				} else {
+					semanticsButton.setEnabled(true);
 					Literature lit = selection.get(0);
 					try {
-						if (!SemanticValidator.getInstance(servMan).isComplete(
-								lit)
-								|| !SemanticValidator.getInstance(servMan)
-										.isValid(lit))
+						SemanticValidator val = SemanticValidator
+								.getInstance(servMan);
+						if (!val.isValid(lit))
 							semanticsButton.setIcon(Icons.EXCLAMATION_20
 									.getIcon());
-					} catch (SearchException e) {
+						else if (!val.isComplete(lit))
+							semanticsButton.setIcon(Icons.ORANGEFLAG_20
+									.getIcon());
+						else
+							semanticsButton.setIcon(Icons.GREENTICK_20
+									.getIcon());
+					} catch (LogicException e) {
 						e.printStackTrace();
 						feedbackBroadcasted(new Feedback(semanticsButton,
 								"Failed to evaluate semantic tagging.",
@@ -432,47 +451,72 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 				"IsDone", new FPJGUITableFieldGetter<Literature>() {
 					@Override
 					public String get(Literature item) {
-
 						try {
-							if (!SemanticValidator.getInstance(servMan)
+							if (SemanticValidator.getInstance(servMan)
 									.isComplete(item)
-									|| SemanticValidator.getInstance(servMan)
+									&& SemanticValidator.getInstance(servMan)
 											.isValid(item))
-								return "no";
+								return "yes";
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-
-						if (item.getYear() != null && item.getYear() < 2014)
-							return "no";
-
-						for (Tag tag : item.getTags()) {
-							if (tag.getName().equals("Access: inaccessible"))
-								return "yes";
-							if (tag.getName().equals("Topic: off-topic"))
-								return "yes";
-							// servMan.getTagService().g
-
-							// TODO complete
-						}
-
 						return "no";
 					}
 				}, true, 30, 30, "isDone", false);
 		getListLikeContainer().addColumn(isDoneColumn);
 
+		FPJGUITableColumn<Literature> isCompleteColumn = new FPJGUITableColumn<Literature>(
+				"IsComplete", new FPJGUITableFieldGetter<Literature>() {
+					@Override
+					public String get(Literature item) {
+						try {
+							if (SemanticValidator.getInstance(servMan)
+									.isComplete(item))
+								return "yes";
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						return "no";
+					}
+				}, true, 19, 19, "isComplete", false);
+		getListLikeContainer().addColumn(isCompleteColumn);
+
+		FPJGUITableColumn<Literature> isValidColumn = new FPJGUITableColumn<Literature>(
+				"IsValid", new FPJGUITableFieldGetter<Literature>() {
+					@Override
+					public String get(Literature item) {
+						try {
+							if (SemanticValidator.getInstance(servMan).isValid(
+									item))
+								return "yes";
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						return "no";
+					}
+				}, true, 19, 19, "isValid", false);
+		getListLikeContainer().addColumn(isValidColumn);
+
 		getListLikeContainer().setPreferredColumnWidth(idColumn, 30);
-		getListLikeContainer().setPreferredColumnWidth(titleColumn, 200);
-		getListLikeContainer().setPreferredColumnWidth(authorsColumn, 40);
+		getListLikeContainer().setPreferredColumnWidth(titleColumn, 500);
+		getListLikeContainer().setPreferredColumnWidth(authorsColumn, 50);
 		getListLikeContainer().setPreferredColumnWidth(tagsColumn, 30);
 		getListLikeContainer().setPreferredColumnWidth(yearColumn, 30);
+		getListLikeContainer().setPreferredColumnWidth(isDoneColumn, 30);
+		getListLikeContainer().setPreferredColumnWidth(isCompleteColumn, 30);
+		getListLikeContainer().setPreferredColumnWidth(isValidColumn, 30);
 
 		getListLikeContainer().setMinimumColumnWidth(idColumn, 30);
 		getListLikeContainer().setMinimumColumnWidth(titleColumn, 100);
 		getListLikeContainer().setMinimumColumnWidth(authorsColumn, 40);
 		getListLikeContainer().setMinimumColumnWidth(tagsColumn, 30);
 		getListLikeContainer().setMinimumColumnWidth(yearColumn, 30);
+		getListLikeContainer().setMinimumColumnWidth(isDoneColumn, 30);
+		getListLikeContainer().setMinimumColumnWidth(isCompleteColumn, 30);
+		getListLikeContainer().setMinimumColumnWidth(isValidColumn, 30);
 
 		// stats
 		FPJGUILabel<String> statsLabel = new FPJGUILabel<>();

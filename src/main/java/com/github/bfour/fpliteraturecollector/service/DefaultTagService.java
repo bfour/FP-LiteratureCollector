@@ -16,6 +16,9 @@
 
 package com.github.bfour.fpliteraturecollector.service;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.TagDAO;
 import com.github.bfour.jlib.commons.services.ServiceException;
@@ -65,11 +68,12 @@ public class DefaultTagService extends EventCreatingCRUDService<Tag> implements
 	}
 	
 	@Override
-	public Tag getByPrefix(String prefix) throws ServiceException {
+	public Set<Tag> getByPrefix(String prefix) throws ServiceException {
+		Set<Tag> tags = new HashSet<Tag>(); 
 		for (Tag tag : getAll())
 			if (tag.getName().startsWith(prefix))
-				return tag;
-		return null;
+				tags.add(tag);
+		return tags;
 	}
 
 }

@@ -2,28 +2,30 @@ package com.github.bfour.fpliteraturecollector.gui.literature;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.github.bfour.fpliteraturecollector.domain.Literature;
+import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
 import com.github.bfour.fpliteraturecollector.service.TagService;
+import com.github.bfour.jlib.commons.logic.AndExpression;
+import com.github.bfour.jlib.commons.logic.AtomicExpression;
+import com.github.bfour.jlib.commons.logic.BooleanExpression;
+import com.github.bfour.jlib.commons.logic.ContainsAnyOfExpression;
+import com.github.bfour.jlib.commons.logic.ContainsExpression;
+import com.github.bfour.jlib.commons.logic.EqualsExpression;
+import com.github.bfour.jlib.commons.logic.LogicException;
+import com.github.bfour.jlib.commons.logic.NotExpression;
+import com.github.bfour.jlib.commons.logic.translation.MathTranslator;
+import com.github.bfour.jlib.commons.logic.translation.TranslationException;
 import com.github.bfour.jlib.commons.services.ServiceException;
-import com.github.bfour.jlib.search.SearchException;
-import com.github.bfour.jlib.search.lang.AndExpression;
-import com.github.bfour.jlib.search.lang.AtomicExpression;
-import com.github.bfour.jlib.search.lang.BooleanExpression;
-import com.github.bfour.jlib.search.lang.ContainsExpression;
-import com.github.bfour.jlib.search.lang.EqualsExpression;
-import com.github.bfour.jlib.search.lang.ImpliesExpression;
-import com.github.bfour.jlib.search.lang.LessThanOrEqualExpression;
-import com.github.bfour.jlib.search.lang.NotExpression;
-import com.github.bfour.jlib.search.lang.OrExpression;
 
 public class SemanticValidator {
 
 	private static SemanticValidator instance;
 
 	private BooleanExpression isCompleteExpression;
-	private AndExpression isValidExpression;
+	private BooleanExpression isValidExpression;
 
 	private Map<String, BooleanExpression> topicMapForCompleteness = new HashMap<>();
 	private Map<String, BooleanExpression> topicMapForValidity = new HashMap<>();
@@ -32,7 +34,6 @@ public class SemanticValidator {
 
 		TagService tagServ = servMan.getTagService();
 		isCompleteExpression = new AtomicExpression(true);
-		isValidExpression = new AndExpression();
 
 		try {
 
@@ -41,14 +42,14 @@ public class SemanticValidator {
 			// ====================
 			topicMapForCompleteness.put("Year", new NotExpression(
 					new EqualsExpression("year", null)));
-			topicMapForCompleteness.put("Quality", new ContainsExpression(
+			topicMapForCompleteness.put("Quality", new ContainsAnyOfExpression(
 					"tags", tagServ.getByPrefix("Quality")));
-			topicMapForCompleteness.put("Access", new ContainsExpression(
+			topicMapForCompleteness.put("Access", new ContainsAnyOfExpression(
 					"tags", tagServ.getByPrefix("Access")));
-			topicMapForCompleteness.put("Topic", new ContainsExpression("tags",
-					tagServ.getByPrefix("Topic")));
-			topicMapForCompleteness.put("App", new ContainsExpression("tags",
-					tagServ.getByPrefix("App")));
+			topicMapForCompleteness.put("Topic", new ContainsAnyOfExpression(
+					"tags", tagServ.getByPrefix("Topic")));
+			topicMapForCompleteness.put("App", new ContainsAnyOfExpression(
+					"tags", tagServ.getByPrefix("App")));
 
 			// add all completeness-expressions to main completeness expression
 			AndExpression andExpr = new AndExpression();
@@ -58,75 +59,41 @@ public class SemanticValidator {
 					isCompleteExpression).addExpression(andExpr);
 
 			// add further rules to completeness
-			isCompleteExpression = new OrExpression()
-					.addExpression(new EqualsExpression("year", null))
-					.addExpression(new LessThanOrEqualExpression("year", 2013))
-					.addExpression(
-							new AndExpression()
-									.addExpression(
-											new NotExpression(
-													new ContainsExpression(
-															"tags",
-															tagServ.getByName("Quality: OK"))))
-									.addExpression(
-											new ContainsExpression(
-													"tags",
-													tagServ.getByPrefix("Quality"))))
-					.addExpression(
-							new ContainsExpression("tags", tagServ
-									.getByName("Topic: off-topic")))
-					.addExpression(
-							new ContainsExpression("tags", tagServ
-									.getByName("Access: inaccessible")))
-					.addExpression(isCompleteExpression);
+			// @formatter:off
+			isCompleteExpression = isCompleteExpression
+					.orContains("tags", tagServ.getByName("Topic: off-topic"))
+					.orContains("tags", tagServ.getByName("Access: inaccessible"))
+					.or(new ContainsExpression("tags", tagServ.getByName("Quality: OK")).negate().
+							andContainsAnyOf("tags", tagServ.getByPrefix("Quality")));
+			
+			// @formatter:on
 
 			// ================
 			// === VALIDITY ===
 			// ================
 
 			// Quality OK -> !Quality bad
-			isValidExpression.addExpression(new ImpliesExpression(
-					new ContainsExpression("tags", tagServ
-							.getByName("Quality: OK")), new NotExpression(
-							new ContainsExpression("tags", tagServ
-									.getByName("Quality: illegal language")))));
-			isValidExpression.addExpression(new ImpliesExpression(
-					new ContainsExpression("tags", tagServ
-							.getByName("Quality: OK")),
-					new NotExpression(new ContainsExpression("tags", tagServ
-							.getByName("Quality: inappropriate format")))));
-			isValidExpression
-					.addExpression(new ImpliesExpression(
-							new ContainsExpression("tags", tagServ
-									.getByName("Quality: OK")),
-							new NotExpression(
-									new ContainsExpression(
-											"tags",
-											tagServ.getByName("Quality: insufficient language proficiency")))));
-			isValidExpression.addExpression(new ImpliesExpression(
-					new ContainsExpression("tags", tagServ
-							.getByName("Quality: OK")), new NotExpression(
-							new ContainsExpression("tags", tagServ
-									.getByName("Quality: non-scientific")))));
-			isValidExpression.addExpression(new ImpliesExpression(
-					new ContainsExpression("tags", tagServ
-							.getByName("Quality: OK")), new NotExpression(
-							new ContainsExpression("tags", tagServ
-									.getByName("Quality: poor")))));
-
-			// accessible -> !inaccessible
-			isValidExpression.addExpression(new ImpliesExpression(
-					new ContainsExpression("tags", tagServ
-							.getByName("Access: OK")), new NotExpression(
-							new ContainsExpression("tags", tagServ
-									.getByName("Access: inacessible")))));
-
-			// topic defined -> !off-topic
-			isValidExpression.addExpression(new ImpliesExpression(
-					new ContainsExpression("tags", tagServ
-							.getByName("Topic: C")), new NotExpression(
-							new ContainsExpression("tags", tagServ
-									.getByName("Access: inacessible")))));
+			// @formatter:off
+			Set<Tag> nonQualityOKTags = tagServ.getByPrefix("Quality");
+			nonQualityOKTags.remove(tagServ.getByName("Quality: OK"));
+			
+			Set<Tag> nonAccessibleTags = tagServ.getByPrefix("Access");
+			nonAccessibleTags.remove(tagServ.getByName("Access: OK"));
+			
+			Set<Tag> nonOfftopicTags = tagServ.getByPrefix("Topic");
+			nonOfftopicTags.remove(tagServ.getByName("Topic: off-topic"));
+			
+			isValidExpression = new AndExpression()
+				.and(new ContainsExpression("tags", tagServ.getByName("Quality: OK"))
+					.impliesNot(new ContainsAnyOfExpression("tags", nonQualityOKTags)))
+				// accessible -> !inaccessible
+				.and(new ContainsExpression("tags", tagServ.getByName("Access: OK"))
+					.impliesNot(new ContainsAnyOfExpression("tags", nonQualityOKTags)))
+				// topic defined -> !off-topic
+				.and(new ContainsExpression("tags", tagServ.getByName("Topic: off-topic"))
+					.impliesNot(new ContainsAnyOfExpression("tags", nonOfftopicTags)));
+					
+			// @formatter:on
 
 		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
@@ -141,12 +108,12 @@ public class SemanticValidator {
 		return instance;
 	}
 
-	public boolean isComplete(Literature lit) throws SearchException {
+	public boolean isComplete(Literature lit) throws LogicException {
 		isCompleteExpression.setVariables(lit.getSearchData());
 		return isCompleteExpression.evaluate();
 	}
 
-	public boolean isValid(Literature lit) throws SearchException {
+	public boolean isValid(Literature lit) throws LogicException {
 		isValidExpression.setVariables(lit.getSearchData());
 		return isValidExpression.evaluate();
 	}
@@ -157,10 +124,10 @@ public class SemanticValidator {
 	 * @param topic
 	 * @param lit
 	 * @return
-	 * @throws SearchException
+	 * @throws LogicException 
 	 */
 	public boolean isTopicComplete(String topic, Literature lit)
-			throws SearchException {
+			throws LogicException {
 		BooleanExpression expr = topicMapForCompleteness.get(topic);
 		expr.setVariables(lit.getSearchData());
 		return expr.evaluate();
@@ -171,13 +138,24 @@ public class SemanticValidator {
 	 * 
 	 * @param lit
 	 * @return
-	 * @throws SearchException
+	 * @throws LogicException 
 	 */
-	public boolean isTopicValid(String topic, Literature lit)
-			throws SearchException {
+	public boolean isTopicValid(String topic, Literature lit) throws LogicException {
 		BooleanExpression expr = topicMapForValidity.get(topic);
 		expr.setVariables(lit.getSearchData());
 		return expr.evaluate();
+	}
+
+	private MathTranslator translator = new MathTranslator();
+
+	public void print() {
+		try {
+			System.out.println(isCompleteExpression.translate(translator));
+			System.out.println(isValidExpression.translate(translator));
+		} catch (TranslationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

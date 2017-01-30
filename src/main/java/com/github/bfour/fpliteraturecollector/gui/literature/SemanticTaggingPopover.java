@@ -23,6 +23,7 @@ import com.github.bfour.jlib.commons.events.ChangeListener;
 import com.github.bfour.jlib.commons.events.CreateEvent;
 import com.github.bfour.jlib.commons.events.DeleteEvent;
 import com.github.bfour.jlib.commons.events.UpdateEvent;
+import com.github.bfour.jlib.commons.logic.LogicException;
 import com.github.bfour.jlib.commons.services.ServiceException;
 import com.github.bfour.jlib.commons.utils.Getter;
 import com.github.bfour.jlib.gui.abstraction.feedback.Feedback;
@@ -37,7 +38,6 @@ import com.github.bfour.jlib.gui.components.FPJGUITextField;
 import com.github.bfour.jlib.gui.components.composite.EntityConfirmableOperationPanel;
 import com.github.bfour.jlib.gui.design.Icons;
 import com.github.bfour.jlib.gui.design.Lengths;
-import com.github.bfour.jlib.search.SearchException;
 
 public class SemanticTaggingPopover extends FPJGUIPopover implements
 		FeedbackProvider {
@@ -127,6 +127,8 @@ public class SemanticTaggingPopover extends FPJGUIPopover implements
 
 				SemanticValidator validator = SemanticValidator
 						.getInstance(servMan);
+				validator.print();
+
 				if (validator.isComplete(entity))
 					getContentPanel().add(
 							new JLabel("tagging is complete",
@@ -151,10 +153,10 @@ public class SemanticTaggingPopover extends FPJGUIPopover implements
 				// buttons
 				if (!validator.isTopicComplete("Year", entity)) {
 					FPJGUITextField yearField = new FPJGUITextField();
-					FPJGUIButton yearButton = FPJGUIButtonFactory.createButton(
-							ButtonFormats.DEFAULT,
-							Lengths.LARGE_BUTTON_HEIGHT.getLength(),
-							"Semantic Tagging", Icons.GREENTICK_20.getIcon());
+					FPJGUIButton yearButton = FPJGUIButtonFactory
+							.createButton(ButtonFormats.DEFAULT,
+									Lengths.LARGE_BUTTON_HEIGHT.getLength(),
+									"Set year");
 					getContentPanel().add(yearField, "grow x");
 					getContentPanel().add(yearButton, "wrap");
 					yearButton.addActionListener(new ActionListener() {
@@ -192,7 +194,7 @@ public class SemanticTaggingPopover extends FPJGUIPopover implements
 					});
 				}
 
-			} catch (SearchException e) {
+			} catch (LogicException e) {
 				e.printStackTrace();
 				getFeedbackProxy().feedbackBroadcasted(
 						new Feedback(SemanticTaggingPanel.this,
