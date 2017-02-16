@@ -18,6 +18,9 @@ package com.github.bfour.fpliteraturecollector.service;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.TagDAO;
@@ -58,7 +61,7 @@ public class DefaultTagService extends EventCreatingCRUDService<Tag> implements
 		if (tag.getColour() == null)
 			throw new ServiceException("colour of tag must be specified");
 	}
-	
+
 	@Override
 	public Tag getByName(String name) throws ServiceException {
 		for (Tag tag : getAll())
@@ -66,13 +69,26 @@ public class DefaultTagService extends EventCreatingCRUDService<Tag> implements
 				return tag;
 		return null;
 	}
-	
+
 	@Override
 	public Set<Tag> getByPrefix(String prefix) throws ServiceException {
-		Set<Tag> tags = new HashSet<Tag>(); 
+		Set<Tag> tags = new HashSet<Tag>();
 		for (Tag tag : getAll())
 			if (tag.getName().startsWith(prefix))
 				tags.add(tag);
+		return tags;
+	}
+
+	@Override
+	public Set<Tag> getByRegex(String patternString) throws ServiceException,
+			PatternSyntaxException {
+		Pattern pattern = Pattern.compile(patternString);
+		Set<Tag> tags = new HashSet<Tag>();
+		for (Tag tag : getAll()) {
+			Matcher m = pattern.matcher(tag.getName());
+			if (m.matches())
+				tags.add(tag);
+		}
 		return tags;
 	}
 

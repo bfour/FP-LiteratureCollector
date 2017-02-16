@@ -27,18 +27,21 @@ public class Tag extends Neo4JEntity implements
 
 	private String name;
 	private Color colour;
+	private String description;
 
 	public Tag(Long ID, Date creationTime, Date lastChangeTime, String name,
-			Color colour) {
+			String description, Color colour) {
 		super(ID, creationTime, lastChangeTime);
 		this.name = name;
 		this.colour = colour;
+		this.description = description;
 	}
 
-	public Tag(String name, Color colour) {
+	public Tag(String name, String description, Color colour) {
 		super();
 		this.name = name;
 		this.colour = colour;
+		this.description = description;
 	}
 
 	public Tag() {
@@ -49,10 +52,18 @@ public class Tag extends Neo4JEntity implements
 	public String getName() {
 		return name;
 	}
-	
+
 	@Override
 	public Color getColour() {
 		return colour;
+	}
+
+	/**
+	 * @return the description
+	 */
+	@Override
+	public String getDescription() {
+		return description;
 	}
 
 	@Override

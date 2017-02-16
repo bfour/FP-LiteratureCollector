@@ -28,12 +28,13 @@ public class TagBuilder extends
 		@Override
 		public Tag get(com.github.bfour.jlib.guiextended.tagging.Tag input) {
 			return new Tag(input.getID(), input.getCreationTime(),
-					input.getLastChangeTime(), input.getName(),
-					input.getColour());
+					input.getLastChangeTime(), input.getName(), "",
+					input.getColour()); // TODO implement description
 		}
 	};
 	private String name;
 	private Color colour;
+	private String description;
 
 	public TagBuilder() {
 		super(tagGetter);
@@ -49,13 +50,14 @@ public class TagBuilder extends
 
 		setName(tag.getName());
 		setColour(tag.getColour());
+		setDescription(tag.getDescription());
 
 	}
 
 	@Override
 	public Tag getObject() {
 		return new Tag(getID(), getCreationTime(), getLastChangeTime(),
-				getName(), getColour());
+				getName(), getDescription(), getColour());
 	}
 
 	@Override
@@ -76,6 +78,21 @@ public class TagBuilder extends
 	@Override
 	public void setColour(Color colour) {
 		this.colour = colour;
+	}
+
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * @param description
+	 *            the description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }

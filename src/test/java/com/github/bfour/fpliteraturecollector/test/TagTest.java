@@ -68,14 +68,14 @@ public class TagTest {
 	@Test
 	public void deleteNonExistentTagExpectNoChange() throws ServiceException {
 		assert(tagServ.getAll().isEmpty());
-		tagServ.delete(new Tag("red tag", Color.RED));
+		tagServ.delete(new Tag("red tag", "", Color.RED));
 		assert(tagServ.getAll().isEmpty());
 	}
 	
 	@Test (expected = ServiceException.class)
 	public void updateNonExistentTagExpectFailure() throws ServiceException {
 		assert(tagServ.getAll().isEmpty());
-		tagServ.update(new Tag("unknown tag", new Color(1, 1, 1)), new Tag("new tag", Color.GREEN));
+		tagServ.update(new Tag("unknown tag", "", new Color(1, 1, 1)), new Tag("new tag", "", Color.GREEN));
 		assert(tagServ.getAll().isEmpty());
 	}
 	
@@ -84,9 +84,9 @@ public class TagTest {
 			throws ServiceException, DatalayerException {
 
 		List<Tag> tagList = new LinkedList<Tag>();
-		tagList.add(new Tag("red tag", Color.GREEN));
-		tagList.add(new Tag("blå", Color.BLUE));
-		tagList.add(new Tag("transparent tag öäüßÖÄÜ?&%$§", Color.RED));
+		tagList.add(new Tag("red tag", "", Color.GREEN));
+		tagList.add(new Tag("blå", "", Color.BLUE));
+		tagList.add(new Tag("transparent tag öäüßÖÄÜ?&%$§", "", Color.RED));
 
 		for (Tag tag : tagList)
 			tagList.set(tagList.indexOf(tag), tagServ.create(tag));
@@ -104,9 +104,9 @@ public class TagTest {
 			throws ServiceException, DatalayerException {
 
 		List<Tag> tagList = new LinkedList<Tag>();
-		tagList.add(new Tag("red tag", Color.GREEN));
-		tagList.add(new Tag("blå", Color.BLUE));
-		tagList.add(new Tag("transparent tag", Color.RED));
+		tagList.add(new Tag("red tag", "", Color.GREEN));
+		tagList.add(new Tag("blå", "", Color.BLUE));
+		tagList.add(new Tag("transparent tag", "", Color.RED));
 
 		for (Tag tag : tagList)
 			tagList.set(tagList.indexOf(tag), tagServ.create(tag));

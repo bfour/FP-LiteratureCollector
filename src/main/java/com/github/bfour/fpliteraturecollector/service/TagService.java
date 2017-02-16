@@ -27,5 +27,7 @@ public interface TagService extends BidirectionalCRUDService<Tag> {
 	Tag getByName(String name) throws ServiceException;
 
 	Set<Tag> getByPrefix(String prefix) throws ServiceException;
+	
+	Set<Tag> getByRegex(String regexPattern) throws ServiceException;
 
 }
