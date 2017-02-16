@@ -500,6 +500,32 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 				}, true, 19, 19, "isValid", false);
 		getListLikeContainer().addColumn(isValidColumn);
 
+		FPJGUITableColumn<Literature> zoteroIDColumn = new FPJGUITableColumn<Literature>(
+				"Zotero ID", new FPJGUITableFieldGetter<Literature>() {
+					@Override
+					public String get(Literature item) {
+						// try {
+						// SearchQuery q = new SearchQuery();
+						// q.put(SearchKey.Q, item.getTitle());
+						// Observable<List<Item>> obs = servMan
+						// .getZoteroServ().getItems(LibraryType.USER,
+						// 1332518, q, null);
+						// obs.subscribe(new Action1<List<Item>>() {
+						// @Override
+						// public void call(List<Item> t1) {
+						// for (Item i : t1)
+						// System.out.println(i.getKey());
+						// }
+						// });
+						// } catch (Exception e) {
+						// // TODO Auto-generated catch block
+						// e.printStackTrace();
+						// }
+						return "no";
+					}
+				}, true, 19, 19, "zoteroID", false);
+		getListLikeContainer().addColumn(zoteroIDColumn);
+
 		getListLikeContainer().setPreferredColumnWidth(idColumn, 30);
 		getListLikeContainer().setPreferredColumnWidth(titleColumn, 500);
 		getListLikeContainer().setPreferredColumnWidth(authorsColumn, 50);

@@ -34,6 +34,7 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 	private String abstractText;
 	private LiteratureType type;
 	private Set<Author> authors;
+	private String zoteroID;
 	private String DOI;
 	private ISBN ISBN;
 	private String gScholarID;
@@ -68,6 +69,7 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 		setAbstractText(l.getAbstractText());
 		setType(l.getType());
 		setAuthors(l.getAuthors());
+		setZoteroID(l.getZoteroID());
 		setDOI(l.getDOI());
 		setISBN(l.getISBN());
 		setgScholarID(l.getgScholarID());
@@ -96,13 +98,13 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 	public Literature getObject() {
 		return new Literature(getID(), getCreationTime(), getLastChangeTime(),
 				getTitle(), getAbstractText(), getType(), getAuthors(),
-				getDOI(), getISBN(), getgScholarID(), getMsAcademicID(),
-				getPubmedID(), getAcmID(), getYear(), getPublicationContext(),
-				getPublisher(), getWebsiteURLs(), getFulltextURLs(),
-				getFulltextFilePaths(), getgScholarNumCitations(),
-				getMsAcademicNumCitations(), getAcmNumCitations(),
-				getPubmedNumCitations(), getIeeeNumCitations(), getTags(),
-				getNotes());
+				getZoteroID(), getDOI(), getISBN(), getgScholarID(),
+				getMsAcademicID(), getPubmedID(), getAcmID(), getYear(),
+				getPublicationContext(), getPublisher(), getWebsiteURLs(),
+				getFulltextURLs(), getFulltextFilePaths(),
+				getgScholarNumCitations(), getMsAcademicNumCitations(),
+				getAcmNumCitations(), getPubmedNumCitations(),
+				getIeeeNumCitations(), getTags(), getNotes());
 	}
 
 	public String getTitle() {
@@ -138,6 +140,21 @@ public class LiteratureBuilder extends EntityBuilder<Literature> implements
 	public LiteratureBuilder setAuthors(Set<Author> authors) {
 		this.authors = authors;
 		return this;
+	}
+
+	/**
+	 * @return the zoteroID
+	 */
+	public String getZoteroID() {
+		return zoteroID;
+	}
+
+	/**
+	 * @param zoteroID
+	 *            the zoteroID to set
+	 */
+	public void setZoteroID(String zoteroID) {
+		this.zoteroID = zoteroID;
 	}
 
 	public String getDOI() {

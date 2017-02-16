@@ -25,6 +25,9 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.font.TextAttribute;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,6 +39,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
+import net.engio.mbassy.listener.Handler;
 import net.miginfocom.swing.MigLayout;
 
 import com.github.bfour.fpliteraturecollector.domain.Author;
@@ -46,6 +50,7 @@ import com.github.bfour.fpliteraturecollector.domain.Literature.LiteratureType;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
+import com.github.bfour.jlib.commons.events.Subscriber;
 import com.github.bfour.jlib.commons.lang.BuilderFactory;
 import com.github.bfour.jlib.commons.services.ServiceException;
 import com.github.bfour.jlib.commons.utils.Getter;
@@ -67,6 +72,7 @@ import com.github.bfour.jlib.gui.components.table.FPJGUITableColumn;
 import com.github.bfour.jlib.gui.design.Borders;
 import com.github.bfour.jlib.gui.util.ObjectGraphicalValueContainerMapper;
 import com.github.bfour.jlib.guiextended.tagging.TagTilePanel;
+import com.github.bfour.jlib.io.DirectoryWatcher;
 
 public class LiteraturePanel extends
 		EntityEditPanel<Literature, LiteratureBuilder> {
@@ -116,39 +122,7 @@ public class LiteraturePanel extends
 					fileList = (List) t
 							.getTransferData(DataFlavor.javaFileListFlavor);
 					for (File file : fileList) {
-						Literature oldEntity = getEntityBuilder().getObject();
-						Link link = servMan.getFileServ().persist(file,
-								oldEntity);
-						if (getEntityBuilder().getFulltextFilePaths() == null)
-							getEntityBuilder().setFulltextFilePaths(
-									new HashSet<Link>());
-						getEntityBuilder().getFulltextFilePaths().add(link);
-						try {
-							servMan.getLiteratureService().update(oldEntity,
-									getEntityBuilder().getObject());
-							getFeedbackProxy()
-									.feedbackBroadcasted(
-											new Feedback(LiteraturePanel.this,
-													"Added " + file + ".",
-													FeedbackType.SUCCESS));
-							try {
-								file.delete();
-							} catch (SecurityException e) {
-								getFeedbackProxy().feedbackBroadcasted(
-										new Feedback(LiteraturePanel.this,
-												"File added, but could not delete source file "
-														+ file + ".", e
-														.getMessage(),
-												FeedbackType.WARN));
-							}
-						} catch (ServiceException e) {
-							e.printStackTrace();
-							getFeedbackProxy().feedbackBroadcasted(
-									new Feedback(LiteraturePanel.this,
-											"Sorry, failed to add file " + file
-													+ ".", e.getMessage(),
-											FeedbackType.ERROR));
-						}
+						addFile(servMan, file);
 					}
 				} catch (UnsupportedFlavorException | IOException e) {
 					e.printStackTrace();
@@ -160,10 +134,43 @@ public class LiteraturePanel extends
 			}
 		});
 
+		// listen for files in drop directory
+		String dropDirPath = "V:\\delete\\dropDir"; // TODO
+													// make
+													// configurable
+		DirectoryWatcher watcher = new DirectoryWatcher(Paths.get(dropDirPath));
+		watcher.registerCreateSubscriberTemp(new Subscriber<WatchEvent<Path>>() {
+			Path lastFile = null;
+
+			@Handler
+			public void receive(WatchEvent<Path> event) {
+				// // skip if same file
+				// if (event.context().equals(lastFile))
+				// return;
+				// lastFile = event.context();
+				try {
+					addFile(servMan, new File(dropDirPath + File.separator
+							+ event.context().toString()));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+
 		// ID
 		FPJGUILabel<String> IDLabel = new FPJGUILabel<String>();
 		getContentPane().add(new FPJGUILabelPanel("ID", IDLabel),
 				"growx,spanx 2,wrap");
+		
+		// zotero ID
+		FPJGUIMultilineLabel zoteroIDLabel = new FPJGUIMultilineLabel();
+		FPJGUITextField zoteroIDField = new FPJGUITextField();
+		ToggleEditFormComponent<String> zoteroIDToggle = new ToggleEditFormComponent<>(
+				zoteroIDLabel, zoteroIDField);
+		registerToggleComponent(zoteroIDToggle);
+		getContentPane().add(new FPJGUILabelPanel("Zotero ID", zoteroIDToggle),
+				"growx, w 100%, wrap");
 
 		// title
 		FPJGUITextPane titleField = new FPJGUITextPane();
@@ -332,7 +339,7 @@ public class LiteraturePanel extends
 				tagLabel, tagField);
 		registerToggleComponent(tagToggle);
 		getContentPane().add(new FPJGUILabelPanel("Tags", tagToggle),
-				"growx,spanx 2,wrap");
+				"growx,spanx 2,wrap,h 1cm:2cm:");
 
 		// website URL
 		LinkSetPanel websiteURLPanel = new LinkSetPanel();
@@ -649,6 +656,53 @@ public class LiteraturePanel extends
 			}
 		};
 		getMappers().add(notesMapper);
+		
+		ObjectGraphicalValueContainerMapper<LiteratureBuilder, String> zoteroIDMapper = new ObjectGraphicalValueContainerMapper<LiteratureBuilder, String>(
+				zoteroIDToggle) {
+			@Override
+			public String getValue(LiteratureBuilder object) {
+				return object.getZoteroID();
+			}
 
+			@Override
+			public void setValue(LiteratureBuilder object, String value) {
+				object.setZoteroID(value);
+			}
+		};
+		getMappers().add(zoteroIDMapper);
+
+		watcher.start();
+
+	}
+
+	protected void addFile(ServiceManager servMan, File file)
+			throws IOException {
+		Literature oldEntity = getEntityBuilder().getObject();
+		Link link = servMan.getFileServ().persist(file, oldEntity);
+		if (getEntityBuilder().getFulltextFilePaths() == null)
+			getEntityBuilder().setFulltextFilePaths(new HashSet<Link>());
+		getEntityBuilder().getFulltextFilePaths().add(link);
+		try {
+			servMan.getLiteratureService().update(oldEntity,
+					getEntityBuilder().getObject());
+			getFeedbackProxy().feedbackBroadcasted(
+					new Feedback(LiteraturePanel.this, "Added " + file + ".",
+							FeedbackType.SUCCESS));
+			try {
+				file.delete();
+			} catch (SecurityException e) {
+				getFeedbackProxy().feedbackBroadcasted(
+						new Feedback(LiteraturePanel.this,
+								"File added, but could not delete source file "
+										+ file + ".", e.getMessage(),
+								FeedbackType.WARN));
+			}
+		} catch (ServiceException e) {
+			e.printStackTrace();
+			getFeedbackProxy().feedbackBroadcasted(
+					new Feedback(LiteraturePanel.this,
+							"Sorry, failed to add file " + file + ".", e
+									.getMessage(), FeedbackType.ERROR));
+		}
 	}
 }
