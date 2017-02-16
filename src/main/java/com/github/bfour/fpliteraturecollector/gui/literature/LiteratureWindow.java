@@ -44,9 +44,9 @@ public class LiteratureWindow extends FPJGUIWindow {
 		crudPanel.addFeedbackListener(this);
 		crudPanel.remove(litLookPanel);
 		crudPanel.add(litLookPanel,
-				"cell 0 0, grow, h 6cm:8cm:, w 16cm:18cm:80%");
+				"cell 0 0, grow, h 6cm:8cm:, w 16cm:18cm:");
 		crudPanel.remove(litPanel);
-		crudPanel.add(litPanel, "cell 1 0, growy, w 8cm:10cm:11cm");
+		crudPanel.add(litPanel, "cell 1 0, growy, w 8cm:30%:18cm");
 
 		getContentPane().add(crudPanel, "grow");
 
