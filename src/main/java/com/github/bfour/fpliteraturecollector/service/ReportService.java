@@ -20,8 +20,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.swing.JFileChooser;
 
@@ -30,6 +34,7 @@ import com.github.bfour.fpliteraturecollector.domain.Author;
 import com.github.bfour.fpliteraturecollector.domain.Link;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Query;
+import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.jamesmurty.utils.XMLBuilder2;
 
 public class ReportService {
@@ -156,6 +161,103 @@ public class ReportService {
 
 	}
 
+	public void exportToHTMLFile(List<Literature> literature, File file)
+			throws FileNotFoundException {
+
+		PrintWriter writer = new PrintWriter(new FileOutputStream(file));
+		Properties outputProperties = new Properties();
+		outputProperties.put(javax.xml.transform.OutputKeys.INDENT, "yes");
+
+		getHTMLBuilder(literature).toWriter(writer, outputProperties);
+
+	}
+
+	public XMLBuilder2 getHTMLBuilder(List<Literature> literature) {
+
+		XMLBuilder2 builder = XMLBuilder2.create("html");
+		XMLBuilder2 body = builder.e("body");
+		
+		body.e("h1").text("Overview");
+		XMLBuilder2 overviewTable = body.e("table");
+		XMLBuilder2 headerRow = overviewTable.e("tr");
+		headerRow.e("th").text("Reference");
+		headerRow.e("th").text("Title");
+		headerRow.e("th").text("Year");
+		headerRow.e("th").text("Topics");
+		headerRow.e("th").text("Architectures");
+		headerRow.e("th").text("Communication");
+		headerRow.e("th").text("Web-App");
+		headerRow.e("th").text("OS");
+		headerRow.e("th").text("Devices");
+		headerRow.e("th").text("Smart Device Components");
+		headerRow.e("th").text("Wearable Types");
+		headerRow.e("th").text("Wearable Locations");
+		headerRow.e("th").text("Target Groups");
+		headerRow.e("th").text("Evaluation Methods");
+
+		for (Literature lit : literature) {
+			XMLBuilder2 row = overviewTable.e("tr");
+			row.e("td").text(
+					"ADDIN ZOTERO_ITEM CSL_CITATION {\"citationItems\":[{\"id\":0,\"uris\":[\""
+							+ lit.getZoteroID() + "\"],\"uri\":[\""
+							+ lit.getZoteroID() + "\"],\"itemData\":{}}]}");
+			row.e("td").text(lit.getTitle());
+			row.e("td").text(lit.getYear() + "");
+			row.e("td").text(getTagsWithPrefixAsString(lit, "Topic: "));
+			row.e("td").text(getTagsWithPrefixAsString(lit, "Architecture: "));
+			row.e("td").text(getTagsWithPrefixAsString(lit, "Communication: "));
+			boolean hasWebApp = false;
+			for (Tag t : lit.getTags())
+				if (t.getName().equals("App: web-based")) {
+					hasWebApp = true;
+					break;
+				}
+			row.e("td").text((hasWebApp ? "yes" : "no"));
+			row.e("td").text(getTagsWithPrefixAsString(lit, "OS: "));
+			row.e("td").text(getTagsWithPrefixAsString(lit, "Device: "));
+			row.e("td").text(
+					getTagsWithPrefixAsString(lit,
+							"Used SmartDevice Component: "));
+			row.e("td").text(getTagsWithPrefixAsString(lit, "Wearable Type: "));
+			row.e("td").text(
+					getTagsWithPrefixAsString(lit, "Wearable Location: "));
+			row.e("td").text(getTagsWithPrefixAsString(lit, "Target Group: "));
+			row.e("td").text(
+					getTagsWithPrefixAsString(lit, "Evaluation Method: "));
+		}
+
+		// arch vs comm crosstable
+		body.e("h1").text("Architecture vs. Communication");
+		body.importXMLBuilder(
+				getCrossTable(literature,
+						getTagsWithPrefix(literature, "Architecture: "),
+						getTagsWithPrefix(literature, "Communication: ")));
+
+		// wearable location vs communication#
+		body.e("h1").text("Wearable Location vs. Communication");
+		body.importXMLBuilder(
+				getCrossTable(literature,
+						getTagsWithPrefix(literature, "Wearable Location: "),
+						getTagsWithPrefix(literature, "Communication: ")));
+		
+		// topic vs architecture
+		body.e("h1").text("Topic vs. Architecture");
+		body.importXMLBuilder(
+				getCrossTable(literature,
+						getTagsWithPrefix(literature, "Topic: "),
+						getTagsWithPrefix(literature, "Architecture: ")));
+		
+		// topic vs communication
+		body.e("h1").text("Topic vs. Communication");
+		body.importXMLBuilder(
+				getCrossTable(literature,
+						getTagsWithPrefix(literature, "Topic: "),
+						getTagsWithPrefix(literature, "Communication: ")));
+		
+		return builder;
+
+	}
+
 	private XMLBuilder2 getXMLBuilder(Query query) {
 
 		XMLBuilder2 builder = XMLBuilder2.create("query");
@@ -182,6 +284,88 @@ public class ReportService {
 
 		return builder;
 
+	}
+
+	private XMLBuilder2 getCrossTable(List<Literature> literature,
+			Set<Tag> vertical, Set<Tag> horizontal) {
+
+		XMLBuilder2 table = XMLBuilder2.create("table");
+
+		// header
+		XMLBuilder2 headerRow = table.e("tr");
+		headerRow.e("th").text("");
+		headerRow.e("th").text("Total");
+		for (Tag t : horizontal)
+			headerRow.e("th").text(t.getName());
+
+		// rows
+		for (Tag vTag : vertical) {
+			XMLBuilder2 row = table.e("tr");
+			row.e("td").text(vTag.getName());
+			// total occurence count of this vertical tag
+			row.e("td").text(countHasAllTags(literature, vTag) + "");
+			// go through all horizontal tags and count combination
+			for (Tag hTag : horizontal) {
+				row.e("td").text(countHasAllTags(literature, vTag, hTag) + "");
+			}
+		}
+
+		// totals row
+		XMLBuilder2 row = table.e("tr");
+		row.e("td").text("Total");
+		row.e("td").text("");
+		for (Tag hTag : horizontal) {
+			row.e("td").text(countHasAllTags(literature, hTag) + "");
+		}
+
+		return table;
+
+	}
+
+	/**
+	 * Counts the number of the given literature entries that have all of the
+	 * given tags.
+	 * 
+	 * @param literature
+	 * @param tag
+	 * @return
+	 */
+	private int countHasAllTags(List<Literature> literature, Tag... tagAr) {
+		int i = 0;
+		List<Tag> tags = Arrays.asList(tagAr);
+		for (Literature lit : literature)
+			if (lit.getTags().containsAll(tags))
+				i++;
+		return i;
+	}
+
+	private Set<Tag> getTagsWithPrefix(List<Literature> lits, String prefix) {
+		Set<Tag> tags = new HashSet<Tag>();
+		for (Literature lit : lits)
+			for (Tag t : lit.getTags())
+				if (t.getName().startsWith(prefix))
+					tags.add(t);
+		return tags;
+	}
+
+	private String tagListToStringRemovingPrefix(Set<Tag> tags, String prefix) {
+		StringBuilder builder = new StringBuilder();
+		for (Tag t : tags) {
+			builder.append(t.getName().replace(prefix, ""));
+			builder.append("; ");
+		}
+		if (!(builder.length() > 0))
+			builder.append("-");
+		else
+			builder.delete(builder.length() - 2, builder.length());
+		return builder.toString();
+	}
+
+	private String getTagsWithPrefixAsString(Literature lit, String prefix) {
+		List<Literature> lits = new ArrayList<>(1);
+		lits.add(lit);
+		return tagListToStringRemovingPrefix(getTagsWithPrefix(lits, prefix),
+				prefix);
 	}
 
 }
