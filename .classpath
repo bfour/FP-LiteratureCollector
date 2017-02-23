@@ -23,5 +23,11 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.epop.acmdigitallibrary"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.epop.application"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.epop.core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.epop.googlescholar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.epop.isiwebofknowledge"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.epop.msacademicsearch"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
