@@ -17,31 +17,52 @@
 package com.github.bfour.fpliteraturecollector.gui.literature;
 
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingWorker;
 
+import rx.Observable;
+import rx.functions.Action1;
+
+import com.gimranov.libzotero.LibraryType;
+import com.gimranov.libzotero.SearchKey;
+import com.gimranov.libzotero.SearchQuery;
+import com.gimranov.libzotero.model.Item;
 import com.github.bfour.fpliteraturecollector.domain.Author;
+import com.github.bfour.fpliteraturecollector.domain.Link;
 import com.github.bfour.fpliteraturecollector.domain.Literature;
 import com.github.bfour.fpliteraturecollector.domain.Tag;
 import com.github.bfour.fpliteraturecollector.domain.builders.LiteratureBuilder;
 import com.github.bfour.fpliteraturecollector.service.LiteratureService;
 import com.github.bfour.fpliteraturecollector.service.ServiceManager;
+import com.github.bfour.jlib.commons.logic.BooleanExpression;
 import com.github.bfour.jlib.commons.logic.ContainsExpression;
+import com.github.bfour.jlib.commons.logic.GreaterThanOrEqualExpression;
 import com.github.bfour.jlib.commons.logic.LogicException;
 import com.github.bfour.jlib.commons.logic.OrExpression;
+import com.github.bfour.jlib.commons.logic.translation.MathTranslator;
+import com.github.bfour.jlib.commons.logic.translation.TranslationException;
 import com.github.bfour.jlib.commons.services.ServiceException;
 import com.github.bfour.jlib.commons.utils.Getter;
 import com.github.bfour.jlib.gui.abstraction.EntityFilterPipeline;
@@ -53,7 +74,7 @@ import com.github.bfour.jlib.gui.components.FPJGUIButton;
 import com.github.bfour.jlib.gui.components.FPJGUIButton.ButtonFormats;
 import com.github.bfour.jlib.gui.components.FPJGUIButton.FPJGUIButtonFactory;
 import com.github.bfour.jlib.gui.components.FPJGUILabel;
-import com.github.bfour.jlib.gui.components.FPJGUIPopover;
+import com.github.bfour.jlib.gui.components.HoverPanel;
 import com.github.bfour.jlib.gui.components.composite.EntityCheckboxTreeBrowsePanel;
 import com.github.bfour.jlib.gui.components.composite.EntityTableBrowsePanel;
 import com.github.bfour.jlib.gui.components.table.FPJGUITable.FPJGUITableFieldGetter;
@@ -118,6 +139,7 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 	}
 
 	private static final long serialVersionUID = 4500980555674670335L;
+	SemanticValidator semanticValidator;
 
 	public LiteratureBrowsePanel(final ServiceManager servMan) {
 		this(servMan, new EntityFilterPipeline<Literature>());
@@ -128,16 +150,19 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 
 		super(Literature.class, servMan.getLiteratureService(), false);
 
+		semanticValidator = new SemanticValidator(servMan, true);
+
 		setFilters(filters);
 
 		final TaggingPanel<Tag, Literature> taggingPanel = new TaggingPanel<>(
 				Tag.class, servMan.getTagService());
-		final FPJGUIPopover tagPopover = new FPJGUIPopover(taggingPanel);
+		final HoverPanel tagPopover = new HoverPanel(taggingPanel, true, true);
 
 		taggingPanel.addCancelListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				tagPopover.hidePopup();
+				requestFocusInWindow();
 			}
 		});
 		taggingPanel.addConfirmListener(new ActionListener() {
@@ -165,6 +190,7 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 								+ " literature entries set.",
 						FeedbackType.SUCCESS));
 				tagPopover.hidePopup();
+				requestFocusInWindow();
 			}
 		});
 
@@ -178,7 +204,7 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 				.createButton(
 						ButtonFormats.DEFAULT,
 						Lengths.LARGE_BUTTON_HEIGHT.getLength(),
-						"Export to MODS",
+						"Export MODS",
 						com.github.bfour.fpliteraturecollector.gui.design.Icons.EXPORT_20
 								.getIcon());
 		getMainPanel().add(exportButton, "cell 0 2");
@@ -224,7 +250,7 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 				.createButton(
 						ButtonFormats.DEFAULT,
 						Lengths.LARGE_BUTTON_HEIGHT.getLength(),
-						"Download Fulltext",
+						"Get Fulltext",
 						com.github.bfour.fpliteraturecollector.gui.design.Icons.DOWNLOAD_20
 								.getIcon());
 		getMainPanel().add(downloadFullTextButton, "cell 0 2");
@@ -257,23 +283,38 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 				}
 				taggingPanel.setTags(new ArrayList<>(allTags));
 				tagPopover.pack();
-				tagPopover.showPopup(tagButton);
+				tagPopover.showPopup(tagButton, false);
+				taggingPanel.requestFocusInWindow();
 			}
 		};
 		tagButton.addActionListener(taggingActionListener);
-		getListLikeContainer().addAction("Tag",
+		addAction("Tag",
 				KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK),
 				taggingActionListener);
 
 		// semantic tagging
-		SemanticTaggingPopover semanticsPopover = new SemanticTaggingPopover(
-				servMan, new Getter<Void, Literature>() {
-					@Override
-					public Literature get(Void arg0) {
-						return getListLikeContainer().getSelectedItem();
-					}
-
-				});
+		SemanticTaggingPanel semanticTaggingPanel = new SemanticTaggingPanel(
+				servMan);
+		HoverPanel semanticsPopover = new HoverPanel(semanticTaggingPanel,
+				true, true);
+		semanticTaggingPanel.addCancelListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				semanticsPopover.hidePopup();
+			}
+		});
+		semanticTaggingPanel.addConfirmListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				semanticsPopover.hidePopup();
+			}
+		});
+		semanticsPopover.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentHidden(ComponentEvent e) {
+				getListLikeContainer().getTable().requestFocusInWindow();
+			}
+		});
 
 		final FPJGUIButton semanticsButton = FPJGUIButtonFactory.createButton(
 				ButtonFormats.DEFAULT, Lengths.LARGE_BUTTON_HEIGHT.getLength(),
@@ -297,13 +338,13 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 							FeedbackType.WARN));
 					return;
 				}
-				semanticsPopover.setValue(selectedLiterature.get(0));
+				semanticTaggingPanel.setValue(selectedLiterature.get(0));
 				semanticsPopover.pack();
-				semanticsPopover.showPopup(tagButton);
+				semanticsPopover.showPopup(semanticsButton);
 			}
 		};
 		semanticsButton.addActionListener(semanticTaggingActionListener);
-		getListLikeContainer().addAction("Semantic Tagging",
+		addAction("Semantic Tagging",
 				KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK),
 				semanticTaggingActionListener);
 
@@ -319,12 +360,11 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 					semanticsButton.setEnabled(true);
 					Literature lit = selection.get(0);
 					try {
-						SemanticValidator val = SemanticValidator
-								.getInstance(servMan);
-						if (!val.isValid(lit))
+						semanticValidator = new SemanticValidator(servMan, true);
+						if (!semanticValidator.isValid(lit))
 							semanticsButton.setIcon(Icons.EXCLAMATION_20
 									.getIcon());
-						else if (!val.isComplete(lit))
+						else if (!semanticValidator.isComplete(lit))
 							semanticsButton.setIcon(Icons.ORANGEFLAG_20
 									.getIcon());
 						else
@@ -338,6 +378,155 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 					}
 				}
 
+			}
+		});
+
+		// google this
+		final FPJGUIButton googleButton = FPJGUIButtonFactory.createButton(
+				ButtonFormats.DEFAULT, Lengths.LARGE_BUTTON_HEIGHT.getLength(),
+				"Google",
+				com.github.bfour.jlib.gui.design.Icons.SEARCH_24.getIcon());
+		// getMainPanel().add(googleButton, "cell 0 2");
+		ActionListener googleActionListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Desktop.getDesktop().browse(
+							new URI("https", "www.google.com", "/", "", "q=\""
+									+ getListLikeContainer().getSelectedItem()
+											.getTitle() + "\""));
+				} catch (IOException e1) {
+					feedbackBroadcasted(new Feedback(
+							googleButton,
+							"Cannot google this, probably cannot access network.",
+							e1));
+				} catch (URISyntaxException e1) {
+					feedbackBroadcasted(new Feedback(googleButton,
+							"Cannot google this, URL is malformed.", e1));
+				}
+			}
+		};
+		googleButton.addActionListener(googleActionListener);
+		addAction("Google Title",
+				KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK),
+				googleActionListener);
+
+		// open links
+		final FPJGUIButton openLinksButton = FPJGUIButtonFactory.createButton(
+				ButtonFormats.DEFAULT, Lengths.LARGE_BUTTON_HEIGHT.getLength(),
+				"Open Links",
+				com.github.bfour.jlib.gui.design.Icons.SEARCH_24.getIcon());
+		// getMainPanel().add(openLinksButton, "cell 0 2");
+		ActionListener openLinksListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					for (Link link : getListLikeContainer().getSelectedItem()
+							.getWebsiteURLs())
+						Desktop.getDesktop().browse(link.getUri());
+				} catch (IOException e1) {
+					feedbackBroadcasted(new Feedback(
+							googleButton,
+							"Cannot open links, probably cannot access network.",
+							e1));
+				}
+			}
+		};
+		openLinksButton.addActionListener(openLinksListener);
+		addAction("Open Links",
+				KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK),
+				openLinksListener);
+
+		// export PDFs
+		JButton exportPDFsButton = new JButton("Export PDFs");
+		// getMainPanel().add(exportPDFsButton, "cell 0 2");
+		exportPDFsButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				List<Literature> selectedLiterature = getValue();
+				Feedback statusFeedback = new Feedback(
+						LiteratureBrowsePanel.this, "Exporting PDFs of "
+								+ selectedLiterature.size()
+								+ " literature entries.", "",
+						FeedbackType.PROGRESS.getColor(), FeedbackType.PROGRESS
+								.getIcon(), FeedbackType.PROGRESS, true);
+				feedbackBroadcasted(statusFeedback);
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+					File directory = fileChooser.getSelectedFile();
+					for (Literature lit : selectedLiterature) {
+						if (lit.getFulltextFilePaths() == null)
+							continue;
+						for (Link link : lit.getFulltextFilePaths()) {
+							if (!link.getName().endsWith(".pdf"))
+								continue;
+							try {
+								Files.copy(
+										new File(link.getUri()).toPath(),
+										new File(directory.getAbsolutePath()
+												+ File.separator
+												+ link.getName()).toPath(),
+										StandardCopyOption.COPY_ATTRIBUTES);
+							} catch (IOException e1) {
+								feedbackBroadcasted(new Feedback(
+										LiteratureBrowsePanel.this,
+										"Sorry, export of PDFs failed.", e1
+												.getMessage(),
+										FeedbackType.ERROR));
+							}
+						}
+					}
+					feedbackBroadcasted(new Feedback(
+							LiteratureBrowsePanel.this,
+							"Export of PDFs finished for "
+									+ selectedLiterature.size()
+									+ " literature entries.",
+							FeedbackType.SUCCESS));
+				} else {
+					feedbackBroadcasted(new Feedback(
+							LiteratureBrowsePanel.this,
+							"Export of PDFs cancelled.", FeedbackType.WARN));
+				}
+				feedbackRevoked(statusFeedback);
+			}
+		});
+
+		// fetch zoteroID
+		final FPJGUIButton fetchZoteroIDButton = FPJGUIButtonFactory
+				.createButton(ButtonFormats.DEFAULT,
+						Lengths.LARGE_BUTTON_HEIGHT.getLength(),
+						"Get zotero ID",
+						com.github.bfour.jlib.gui.design.Icons.SEARCH_24
+								.getIcon());
+		// getMainPanel().add(fetchZoteroIDButton, "cell 0 2");
+		fetchZoteroIDButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// List<Literature> selectedLiterature = getValue();
+				// TODO
+			}
+		});
+
+		// export summary table
+		final FPJGUIButton exportHTMLButton = FPJGUIButtonFactory.createButton(
+				ButtonFormats.DEFAULT, Lengths.LARGE_BUTTON_HEIGHT.getLength(),
+				"Export HTML", Icons.SAVE_20.getIcon());
+		getMainPanel().add(exportHTMLButton, "cell 0 2");
+		exportHTMLButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				List<Literature> selectedLiterature = getValue();
+				try {
+					servMan.getReportService().exportToHTMLFile(
+							selectedLiterature, new File("overviewTable.html"));
+				} catch (FileNotFoundException | ServiceException
+						| TranslationException | LogicException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					feedbackBroadcasted(new Feedback(exportHTMLButton,
+							"Sorry, something went wrong while exporting.", e1));
+				}
 			}
 		});
 
@@ -356,7 +545,8 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 		categoryTree.setEditEntityEnabled(false);
 		categoryTree.setCreateEntityEnabled(false);
 		categoryTree.setDeleteEntityEnabled(false);
-		getSidebarPanel().add(categoryTree, "grow, w 2cm:4cm:");
+		getSidebarPanel().add(categoryTree,
+				"grow, w 2cm:4cm:, h 3cm:100%, wrap");
 		setSidebarVisible(true);
 
 		categoryTree.getListLikeContainer().addTreeCheckingListener(
@@ -378,10 +568,107 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 							feedbackBroadcasted(new Feedback(
 									categoryTree,
 									"Sorry, something went wrong with your search.",
-									e.getMessage(), FeedbackType.ERROR));
+									e));
 						}
 					}
 				});
+
+		JButton showAllOld = new JButton("Old");
+		getSidebarPanel().add(showAllOld, "wrap");
+		showAllOld.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				BooleanExpression expr = semanticValidator.TOO_OLD;
+				try {
+					getSearchHandler().searchPerformed(
+							new SearchEvent<SearchSpecification>(this,
+									new SearchSpecification(null, expr)));
+				} catch (SearchException e1) {
+					e1.printStackTrace();
+					feedbackBroadcasted(new Feedback(categoryTree,
+							"Sorry, something went wrong with your search.", e1));
+				}
+			}
+		});
+
+		JButton showAllPoorQuality = new JButton("Poor quality");
+		getSidebarPanel().add(showAllPoorQuality, "wrap");
+		showAllPoorQuality.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					BooleanExpression expr = semanticValidator.TOO_OLD.negate()
+							.and(semanticValidator.POOR_QUALITY);
+					getSearchHandler().searchPerformed(
+							new SearchEvent<SearchSpecification>(this,
+									new SearchSpecification(null, expr)));
+				} catch (SearchException e1) {
+					e1.printStackTrace();
+					feedbackBroadcasted(new Feedback(categoryTree,
+							"Sorry, something went wrong with your search.", e1));
+				}
+			}
+		});
+
+		JButton inaccessibleButton = new JButton("Inaccessible");
+		getSidebarPanel().add(inaccessibleButton, "wrap");
+		inaccessibleButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					BooleanExpression expr = semanticValidator.TOO_OLD.negate()
+							.andNot(semanticValidator.POOR_QUALITY)
+							.and(semanticValidator.INACCESSIBLE);
+					getSearchHandler().searchPerformed(
+							new SearchEvent<SearchSpecification>(this,
+									new SearchSpecification(null, expr)));
+				} catch (SearchException e1) {
+					e1.printStackTrace();
+					feedbackBroadcasted(new Feedback(categoryTree,
+							"Sorry, something went wrong with your search.", e1));
+				}
+			}
+		});
+		
+		JButton offtopicButton = new JButton("Off-topic");
+		getSidebarPanel().add(offtopicButton, "wrap");
+		offtopicButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					BooleanExpression expr = semanticValidator.TOO_OLD.negate()
+							.andNot(semanticValidator.POOR_QUALITY)
+							.andNot(semanticValidator.INACCESSIBLE)
+							.and(semanticValidator.hasTag("Topic: off-topic"));
+					getSearchHandler().searchPerformed(
+							new SearchEvent<SearchSpecification>(this,
+									new SearchSpecification(null, expr)));
+				} catch (SearchException | ServiceException e1) {
+					e1.printStackTrace();
+					feedbackBroadcasted(new Feedback(categoryTree,
+							"Sorry, something went wrong with your search.", e1));
+				}
+			}
+		});
+
+		JButton suitableButton = new JButton("Suitable");
+		getSidebarPanel().add(suitableButton, "wrap");
+		suitableButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					BooleanExpression expr = semanticValidator.MAIN_SELECTION;
+					System.out.println(expr.translate(new MathTranslator()));
+					getSearchHandler().searchPerformed(
+							new SearchEvent<SearchSpecification>(this,
+									new SearchSpecification(null, expr)));
+				} catch (SearchException | TranslationException e1) {
+					e1.printStackTrace();
+					feedbackBroadcasted(new Feedback(categoryTree,
+							"Sorry, something went wrong.", e1));
+				}
+			}
+		});
 
 		// ==== columns ====
 		FPJGUITableColumn<Literature> idColumn = new FPJGUITableColumn<Literature>(
@@ -452,10 +739,8 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 					@Override
 					public String get(Literature item) {
 						try {
-							if (SemanticValidator.getInstance(servMan)
-									.isComplete(item)
-									&& SemanticValidator.getInstance(servMan)
-											.isValid(item))
+							if (semanticValidator.isComplete(item)
+									&& semanticValidator.isValid(item))
 								return "yes";
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
@@ -471,8 +756,7 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 					@Override
 					public String get(Literature item) {
 						try {
-							if (SemanticValidator.getInstance(servMan)
-									.isComplete(item))
+							if (semanticValidator.isComplete(item))
 								return "yes";
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
@@ -488,8 +772,7 @@ public class LiteratureBrowsePanel extends EntityTableBrowsePanel<Literature> {
 					@Override
 					public String get(Literature item) {
 						try {
-							if (SemanticValidator.getInstance(servMan).isValid(
-									item))
+							if (semanticValidator.isValid(item))
 								return "yes";
 						} catch (Exception e) {
 							// TODO Auto-generated catch block

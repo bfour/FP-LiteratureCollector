@@ -20,6 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Service;
 
+import retrofit2.Retrofit;
+
+import com.gimranov.libzotero.ZoteroService;
 import com.github.bfour.fpliteraturecollector.service.crawlers.CrawlerService;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JAtomicRequestDAO;
 import com.github.bfour.fpliteraturecollector.service.database.DAO.Neo4JAuthorDAO;
@@ -49,6 +52,7 @@ public class ServiceManager {
 	private CrawlerService crawlServ;
 	private ReportService reportServ;
 	private FileStorageService fileServ;
+	private ZoteroService zoteroServ;
 
 	@Autowired
 	private Neo4JAuthorDAO authDAO;
@@ -100,8 +104,13 @@ public class ServiceManager {
 			// }
 
 			this.crawlServ = CrawlerService.getInstance();
-			this.reportServ = ReportService.getInstance();
+			this.reportServ = ReportService.getInstance(this);
 			this.fileServ = FileStorageService.getInstance();
+
+			Retrofit retrofit = new Retrofit.Builder()
+					.baseUrl("http://zotero.org/")
+					.build();
+			this.zoteroServ = retrofit.create(ZoteroService.class);
 
 		} else {
 			throw new ServiceException("invalid service manager mode: " + mode);
@@ -161,6 +170,10 @@ public class ServiceManager {
 
 	public FileStorageService getFileServ() {
 		return fileServ;
+	}
+
+	public ZoteroService getZoteroServ() {
+		return zoteroServ;
 	}
 
 	/**
